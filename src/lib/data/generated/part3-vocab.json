@@ -1,0 +1,1902 @@
+{
+ "p3t1": [
+  {
+   "phrase": "Core curriculum",
+   "level": "B2",
+   "definition": "The mandatory set of basic subjects that all students must study.",
+   "example": "\"A well-rounded core curriculum ensures every child receives basic scientific literacy.\""
+  },
+  {
+   "phrase": "Rote learning",
+   "level": "B2",
+   "definition": "Learning information by pure repetition rather than active understanding.",
+   "example": "\"Moving away from rote learning helps children actually understand mathematical principles.\""
+  },
+  {
+   "phrase": "Holistic education",
+   "level": "C1",
+   "definition": "An approach to teaching that addresses emotional, social, and academic growth equally.",
+   "example": "\"Modern schools should focus on holistic education rather than just standard test scores.\""
+  },
+  {
+   "phrase": "Stream students",
+   "level": "C1",
+   "definition": "To group pupils according to their academic ability levels.",
+   "example": "\"If schools stream students too early, it can permanently damage a child's confidence.\""
+  },
+  {
+   "phrase": "Paradigm shift in pedagogy",
+   "level": "C2",
+   "definition": "A fundamental change in foundational teaching methodologies and educational philosophy.",
+   "example": "\"The rise of digital tools has caused a genuine paradigm shift in pedagogy.\""
+  },
+  {
+   "phrase": "Instill core values",
+   "level": "C2",
+   "definition": "To firmly establish moral principles and essential character traits in young learners.",
+   "example": "\"Primary schooling must instill core values like empathy alongside academic subjects.\""
+  }
+ ],
+ "p3t2": [
+  {
+   "phrase": "Secure a job",
+   "level": "B2",
+   "definition": "To successfully get employment, especially after finishing studies.",
+   "example": "\"A degree used to guarantee you would secure a job, but the market is far tighter now.\""
+  },
+  {
+   "phrase": "Living expenses",
+   "level": "B2",
+   "definition": "The money needed to pay for basic daily necessities like food and rent.",
+   "example": "\"Moving away to university forces young adults to manage their own living expenses.\""
+  },
+  {
+   "phrase": "Land a lucrative offer",
+   "level": "C1",
+   "definition": "To succeed in obtaining a job offer that pays a very high salary.",
+   "example": "\"Graduates in computer science are far more likely to land a lucrative offer.\""
+  },
+  {
+   "phrase": "Ivory tower",
+   "level": "C1",
+   "definition": "A state of privileged isolation from the practical realities of everyday life.",
+   "example": "\"Universities shouldn't exist in an ivory tower; they must connect with real industries.\""
+  },
+  {
+   "phrase": "Stepping stone",
+   "level": "C2",
+   "definition": "An event or accomplishment that helps you make progress toward a higher career goal.",
+   "example": "\"A bachelor's degree is increasingly viewed as a mere stepping stone to specialized study.\""
+  },
+  {
+   "phrase": "Post-secondary trajectory",
+   "level": "C2",
+   "definition": "The professional or academic path a person follows after graduating high school.",
+   "example": "\"Socio-economic factors still heavily influence an individual's post-secondary trajectory.\""
+  }
+ ],
+ "p3t3": [
+  {
+   "phrase": "Learning tool",
+   "level": "B2",
+   "definition": "Any object, app, or platform used to help people learn.",
+   "example": "\"Interactive tablets serve as a brilliant learning tool for young pupils.\""
+  },
+  {
+   "phrase": "Stretch imagination",
+   "level": "B2",
+   "definition": "To encourage someone to think in creative and new ways.",
+   "example": "\"Educational software should stretch your imagination rather than just give quick answers.\""
+  },
+  {
+   "phrase": "Tech-driven classroom",
+   "level": "C1",
+   "definition": "A learning environment relying heavily on software, tablets, and digital tools.",
+   "example": "\"A tech-driven classroom can personalize learning, but it requires solid teacher training.\""
+  },
+  {
+   "phrase": "Hybrid model",
+   "level": "C1",
+   "definition": "A educational structure combining online digital instruction with face-to-face classes.",
+   "example": "\"Most higher education institutions will likely stick with a permanent hybrid model.\""
+  },
+  {
+   "phrase": "Render obsolete",
+   "level": "C2",
+   "definition": "To make something completely unnecessary or out of date because of new tools.",
+   "example": "\"AI tools won't render teachers obsolete, but they will alter their daily roles.\""
+  },
+  {
+   "phrase": "Seamlessly integrate",
+   "level": "C2",
+   "definition": "To combine new software tools into traditional teaching smoothly without disruption.",
+   "example": "\"Educators need to seamlessly integrate new technology into daily lesson plans.\""
+  }
+ ],
+ "p3t4": [
+  {
+   "phrase": "Pick up a language",
+   "level": "B2",
+   "definition": "To learn a foreign language naturally through exposure rather than formal study.",
+   "example": "\"Children tend to pick up a language much faster when immersed in the culture.\""
+  },
+  {
+   "phrase": "Language barrier",
+   "level": "B2",
+   "definition": "A breakdown in communication caused by people speaking different native languages.",
+   "example": "\"Overcoming the language barrier is essential if you want to enjoy working abroad.\""
+  },
+  {
+   "phrase": "Immersive environment",
+   "level": "C1",
+   "definition": "A setting where a learner is surrounded continuously by the target foreign language.",
+   "example": "\"An immersive environment forces your brain to start thinking directly in the target language.\""
+  },
+  {
+   "phrase": "Linguistic competence",
+   "level": "C1",
+   "definition": "The functional ability and underlying structural knowledge a speaker has of a language.",
+   "example": "\"Achieving genuine linguistic competence takes years of consistent real-world usage.\""
+  },
+  {
+   "phrase": "Native-like fluency",
+   "level": "C2",
+   "definition": "The ability to speak a foreign language as smoothly and accurately as a native speaker.",
+   "example": "\"Very few adult learners achieve true native-like fluency, but clear communication is what counts.\""
+  },
+  {
+   "phrase": "Subtle nuances",
+   "level": "C2",
+   "definition": "Fine distinctions or delicate shades of meaning in words and cultural idioms.",
+   "example": "\"Advanced language learners must learn to grasp subtle nuances like irony and sarcasm.\""
+  }
+ ],
+ "p3t5": [
+  {
+   "phrase": "Problem-solving skills",
+   "level": "B2",
+   "definition": "The practical mental ability to analyze difficulties and find working solutions.",
+   "example": "\"Studying math isn't just about formulas; it builds essential problem-solving skills.\""
+  },
+  {
+   "phrase": "Trial and error",
+   "level": "B2",
+   "definition": "A method of finding a solution by trying different approaches until one works.",
+   "example": "\"Young children often grasp basic math concepts best through guided trial and error.\""
+  },
+  {
+   "phrase": "Abstract reasoning",
+   "level": "C1",
+   "definition": "The ability to analyze non-verbal information, patterns, and complex concepts.",
+   "example": "\"High school algebra pushes teenagers to shift from simple sums to abstract reasoning.\""
+  },
+  {
+   "phrase": "Numeracy skills",
+   "level": "C1",
+   "definition": "The basic capacity to understand, use, and critically evaluate numbers in daily life.",
+   "example": "\"Improving national numeracy skills is just as vital as raising basic literacy standards.\""
+  },
+  {
+   "phrase": "Innate aptitude",
+   "level": "C2",
+   "definition": "A natural, inborn talent or capacity for learning a specific subject easily.",
+   "example": "\"People often assume math performance depends on innate aptitude rather than practice.\""
+  },
+  {
+   "phrase": "Practical applicability",
+   "level": "C2",
+   "definition": "The extent to which theoretical academic concepts can be directly used in daily life.",
+   "example": "\"To make math engaging, educators must highlight its practical applicability in real tech.\""
+  }
+ ],
+ "p3t6": [
+  {
+   "phrase": "Job displacement",
+   "level": "B2",
+   "definition": "The loss of employment positions caused by technological or structural economic shifts.",
+   "example": "\"Widespread automation will inevitably cause short-term job displacement in factories.\""
+  },
+  {
+   "phrase": "Automated systems",
+   "level": "B2",
+   "definition": "Processes or equipment controlled entirely by computers without direct human work.",
+   "example": "\"Many routine administrative tasks are now handled entirely by automated systems.\""
+  },
+  {
+   "phrase": "Redundant workforce",
+   "level": "C1",
+   "definition": "Employees who are no longer needed because their job tasks have been automated.",
+   "example": "\"Companies must retrain employees rather than simply leaving behind a redundant workforce.\""
+  },
+  {
+   "phrase": "Human oversight",
+   "level": "C1",
+   "definition": "Monitoring and active control maintained by human experts over machine processes.",
+   "example": "\"AI medical diagnoses should always be conducted under strict human oversight.\""
+  },
+  {
+   "phrase": "Reshape the employment landscape",
+   "level": "C2",
+   "definition": "To fundamentally alter the types and availability of careers across an economy.",
+   "example": "\"Artificial intelligence will completely reshape the employment landscape over the next decade.\""
+  },
+  {
+   "phrase": "Cognitive automation",
+   "level": "C2",
+   "definition": "The use of advanced algorithms to perform complex intellectual tasks previously done by people.",
+   "example": "\"We are transitioning from simple physical mechanics to advanced cognitive automation.\""
+  }
+ ],
+ "p3t7": [
+  {
+   "phrase": "Reliable source",
+   "level": "B2",
+   "definition": "A trustworthy origin of information backed by verified facts and reliable evidence.",
+   "example": "\"It is getting harder for everyday users to distinguish a reliable source from online rumors.\""
+  },
+  {
+   "phrase": "Fact-check",
+   "level": "B2",
+   "definition": "To verify the accuracy and truth of claims made in digital or news media.",
+   "example": "\"People should always fact-check controversial stories before sharing them on social media.\""
+  },
+  {
+   "phrase": "Misinformation campaign",
+   "level": "C1",
+   "definition": "Organized efforts to spread false stories intentionally to deceive the public.",
+   "example": "\"State-backed misinformation campaigns pose a real threat to democratic elections.\""
+  },
+  {
+   "phrase": "Filter bubble",
+   "level": "C1",
+   "definition": "An online environment where an algorithm shows users only news that matches their views.",
+   "example": "\"Social media algorithms lock users into a filter bubble, reinforcing personal biases.\""
+  },
+  {
+   "phrase": "Separate signal from noise",
+   "level": "C2",
+   "definition": "To identify accurate, useful facts within massive amounts of useless or false data.",
+   "example": "\"In the digital age, the crucial skill is learning to separate signal from noise online.\""
+  },
+  {
+   "phrase": "Take with a grain of salt",
+   "level": "C2",
+   "definition": "To view claims with healthy skepticism rather than accepting them as immediate truth.",
+   "example": "\"Sensationalized headlines on social platforms should always be taken with a grain of salt.\""
+  }
+ ],
+ "p3t8": [
+  {
+   "phrase": "Screen time",
+   "level": "B2",
+   "definition": "The total amount of time a person spends looking at digital screens every day.",
+   "example": "\"Excessive screen time among toddlers raises serious cognitive development concerns.\""
+  },
+  {
+   "phrase": "Constant connectivity",
+   "level": "B2",
+   "definition": "Being continuously connected to digital networks and messages without breaks.",
+   "example": "\"The expectation of constant connectivity makes it difficult for professionals to unwind.\""
+  },
+  {
+   "phrase": "Digital detox",
+   "level": "C1",
+   "definition": "A planned period during which a person refrains from using electronic devices.",
+   "example": "\"Taking a weekend digital detox can dramatically lower stress and improve sleep quality.\""
+  },
+  {
+   "phrase": "Ubiquitous connectivity",
+   "level": "C1",
+   "definition": "The state where high-speed internet networks are available everywhere at all times.",
+   "example": "\"Ubiquitous connectivity has turned smartphones into essential daily instruments.\""
+  },
+  {
+   "phrase": "Tethered to devices",
+   "level": "C2",
+   "definition": "Mentally or practically dependent on electronic devices to an extreme degree.",
+   "example": "\"Modern workers often feel permanently tethered to devices, blurring work and personal life.\""
+  },
+  {
+   "phrase": "Interpersonal disconnect",
+   "level": "C2",
+   "definition": "A loss of genuine human connection caused by over-reliance on virtual messages.",
+   "example": "\"Heavy social media use can create a subtle interpersonal disconnect among teenagers.\""
+  }
+ ],
+ "p3t9": [
+  {
+   "phrase": "Breakthrough invention",
+   "level": "B2",
+   "definition": "A major, highly original discovery that alters technology or human capabilities.",
+   "example": "\"The development of penicillin was a breakthrough invention that saved millions of lives.\""
+  },
+  {
+   "phrase": "Patent rights",
+   "level": "B2",
+   "definition": "Legal ownership granting inventors exclusive rights to sell their unique creations.",
+   "example": "\"Firms invest in research only if they are confident their patent rights will be enforced.\""
+  },
+  {
+   "phrase": "Game-changer",
+   "level": "C1",
+   "definition": "An innovation or event that drastically changes how an industry or activity works.",
+   "example": "\"The mass production of affordable electric cars has proven to be a true game-changer.\""
+  },
+  {
+   "phrase": "Safeguard ideas",
+   "level": "C1",
+   "definition": "To protect intellectual creations legally and practically from theft or copying.",
+   "example": "\"Strong copyright laws are essential to safeguard ideas and encourage new creators.\""
+  },
+  {
+   "phrase": "Paradigm shift",
+   "level": "C2",
+   "definition": "A total, fundamental shift in standard methods, concepts, and experimental practices.",
+   "example": "\"Quantum computing represents a massive paradigm shift in computational processing power.\""
+  },
+  {
+   "phrase": "Infringe upon rights",
+   "level": "C2",
+   "definition": "To illegally break, bypass, or encroach upon established legal protections or laws.",
+   "example": "\"Piracy platforms blatantly infringe upon rights established to support independent artists.\""
+  }
+ ],
+ "p3t10": [
+  {
+   "phrase": "Financial allocation",
+   "level": "B2",
+   "definition": "The official distribution of money toward specific projects or public sectors.",
+   "example": "\"Governments must balance space program budgets with domestic financial allocation.\""
+  },
+  {
+   "phrase": "Practical benefits",
+   "level": "B2",
+   "definition": "Direct, useful advantages gained from scientific or exploratory research.",
+   "example": "\"Satellite weather tracking is one of many practical benefits coming from space research.\""
+  },
+  {
+   "phrase": "Commercialization of space",
+   "level": "C1",
+   "definition": "The growth of private businesses operating commercial space travel and satellites.",
+   "example": "\"The commercialization of space by private firms is drastically driving down launch costs.\""
+  },
+  {
+   "phrase": "Scientific yield",
+   "level": "C1",
+   "definition": "The total amount of useful knowledge, data, and technology gained from an investment.",
+   "example": "\"Deep-space missions offer a massive scientific yield relative to their total financial cost.\""
+  },
+  {
+   "phrase": "Pushing back frontiers",
+   "level": "C2",
+   "definition": "Expanding the absolute limits of human knowledge, technological power, or exploration.",
+   "example": "\"Investing in space exploration is fundamental to pushing back frontiers of human knowledge.\""
+  },
+  {
+   "phrase": "Questionable allocation",
+   "level": "C2",
+   "definition": "A use of public money or resources that lacks clear justification or public benefit.",
+   "example": "\"Critics argue spending billions on Mars is a questionable allocation given current poverty.\""
+  }
+ ],
+ "p3t11": [
+  {
+   "phrase": "Carbon footprint",
+   "level": "B2",
+   "definition": "The total amount of greenhouse gases produced by a person's or company's actions.",
+   "example": "\"Individuals can reduce their carbon footprint by taking public transit instead of driving.\""
+  },
+  {
+   "phrase": "Industrial emissions",
+   "level": "B2",
+   "definition": "Waste gases released into the atmosphere by factories, refineries, and power plants.",
+   "example": "\"Strict national caps on industrial emissions have successfully improved urban air quality.\""
+  },
+  {
+   "phrase": "Irreversible damage",
+   "level": "C1",
+   "definition": "Harm caused to natural ecosystems that can never be repaired or undone.",
+   "example": "\"Unchecked deforestation inflicts irreversible damage on fragile tropical ecosystems.\""
+  },
+  {
+   "phrase": "Eco-conscious mindset",
+   "level": "C1",
+   "definition": "An attitude that prioritizes environmental protection when making everyday choices.",
+   "example": "\"Fostering an eco-conscious mindset in schools is crucial for long-term sustainability.\""
+  },
+  {
+   "phrase": "Tip the ecological balance",
+   "level": "C2",
+   "definition": "To disrupt natural environmental systems beyond their capability to recover naturally.",
+   "example": "\"Overfishing can easily tip the ecological balance, causing entire marine species to collapse.\""
+  },
+  {
+   "phrase": "Ecological catastrophe",
+   "level": "C2",
+   "definition": "A sudden, devastating collapse of ecosystems caused by human activity or extreme weather.",
+   "example": "\"Toxic chemical spills risk triggering an ecological catastrophe in regional river networks.\""
+  }
+ ],
+ "p3t12": [
+  {
+   "phrase": "Severe weather",
+   "level": "B2",
+   "definition": "Harsh, dangerous weather conditions like typhoons, heatwaves, and heavy droughts.",
+   "example": "\"Coastal cities are spending millions to upgrade infrastructure against severe weather.\""
+  },
+  {
+   "phrase": "Natural disaster",
+   "level": "B2",
+   "definition": "A major environmental event caused by nature that inflicts widespread destruction.",
+   "example": "\"Early warning systems significantly reduce casualty rates during a natural disaster.\""
+  },
+  {
+   "phrase": "Erratic weather patterns",
+   "level": "C1",
+   "definition": "Unpredictable, unstable changes in local weather driven by global warming.",
+   "example": "\"Farmers struggle to plant crops effectively due to increasingly erratic weather patterns.\""
+  },
+  {
+   "phrase": "Psychological resilience",
+   "level": "C1",
+   "definition": "The mental strength needed to adapt to, cope with, and recover from severe hardship.",
+   "example": "\"Displaced coastal residents must build psychological resilience alongside physical sea walls.\""
+  },
+  {
+   "phrase": "Wreak havoc",
+   "level": "C2",
+   "definition": "To cause widespread damage, destruction, chaos, or extreme disruption to life.",
+   "example": "\"Flash flooding caused by heavy storms can wreak havoc on city transit networks.\""
+  },
+  {
+   "phrase": "Mitigate risk",
+   "level": "C2",
+   "definition": "To take proactive action to reduce the severity, impact, or likelihood of danger.",
+   "example": "\"Governments must invest in flood defenses to mitigate risk from rising sea levels.\""
+  }
+ ],
+ "p3t13": [
+  {
+   "phrase": "Endangered species",
+   "level": "B2",
+   "definition": "Wild animals or plants that face a very high risk of complete extinction.",
+   "example": "\"National reserves play a key role in protecting habitats for endangered species.\""
+  },
+  {
+   "phrase": "Natural habitat",
+   "level": "B2",
+   "definition": "The real natural environment in which an animal or plant normally lives and thrives.",
+   "example": "\"Releasing animals back into their natural habitat remains the core goal of conservation.\""
+  },
+  {
+   "phrase": "Biodiversity loss",
+   "level": "C1",
+   "definition": "The decline in the variety and numbers of different animal and plant species.",
+   "example": "\"Rapid urban expansion is one of the primary drivers accelerating global biodiversity loss.\""
+  },
+  {
+   "phrase": "Captive breeding",
+   "level": "C1",
+   "definition": "Breeding rare wild animals in controlled environments like zoos to boost numbers.",
+   "example": "\"Without captive breeding programs, several rare mammal species would be extinct today.\""
+  },
+  {
+   "phrase": "On the brink of extinction",
+   "level": "C2",
+   "definition": "Extremely close to disappearing completely from the world forever.",
+   "example": "\"Poaching has pushed black rhinos to the very brink of extinction in recent decades.\""
+  },
+  {
+   "phrase": "Human encroachment",
+   "level": "C2",
+   "definition": "The gradual, harmful expansion of human buildings and farms into wilderness areas.",
+   "example": "\"Wild animals enter human towns mainly because of ongoing human encroachment.\""
+  }
+ ],
+ "p3t14": [
+  {
+   "phrase": "Urban sprawl",
+   "level": "B2",
+   "definition": "The uncontrolled, messy expansion of city buildings into surrounding rural countryside.",
+   "example": "\"Strict greenbelt regulations are necessary to halt unchecked urban sprawl.\""
+  },
+  {
+   "phrase": "Green spaces",
+   "level": "B2",
+   "definition": "Areas of grass, trees, and vegetation set aside in cities for public recreation.",
+   "example": "\"Access to public green spaces directly improves the mental health of city residents.\""
+  },
+  {
+   "phrase": "Carbon sink",
+   "level": "C1",
+   "definition": "A natural environment like a forest or ocean that absorbs large amounts of carbon dioxide.",
+   "example": "\"Boreal forests act as a massive carbon sink, storing tons of global emissions.\""
+  },
+  {
+   "phrase": "Urban lung",
+   "level": "C1",
+   "definition": "A park or forested zone within a dense city that cleans the air and generates oxygen.",
+   "example": "\"Central parks function as an urban lung, improving air quality across metropolitan centers.\""
+  },
+  {
+   "phrase": "Mitigate heat island effect",
+   "level": "C2",
+   "definition": "To reduce the higher temperatures generated in concrete city centers relative to countryside.",
+   "example": "\"Planting rooftop gardens helps mitigate the heat island effect in dense urban centers.\""
+  },
+  {
+   "phrase": "Striking a balance",
+   "level": "C2",
+   "definition": "Finding a fair, practical middle ground between two opposing priorities or demands.",
+   "example": "\"City planners face a challenge in striking a balance between housing roads and green parks.\""
+  }
+ ],
+ "p3t15": [
+  {
+   "phrase": "Crop yield",
+   "level": "B2",
+   "definition": "The total quantity of agricultural food produced per unit of farmland cultivated.",
+   "example": "\"Modern irrigation systems drastically increased crop yield, helping prevent regional famine.\""
+  },
+  {
+   "phrase": "Food shortage",
+   "level": "B2",
+   "definition": "A severe lack of adequate food supplies across a regional community or population.",
+   "example": "\"Severe droughts cause sudden food shortages, driving up basic food prices globally.\""
+  },
+  {
+   "phrase": "Food insecurity",
+   "level": "C1",
+   "definition": "A state where people lack reliable, consistent access to affordable, nutritious food.",
+   "example": "\"Violent conflict and climate extremes remain the main drivers of chronic food insecurity.\""
+  },
+  {
+   "phrase": "Industrialized agriculture",
+   "level": "C1",
+   "definition": "Large-scale, highly mechanized commercial farming using chemical fertilizers and tech.",
+   "example": "\"While industrialized agriculture boosts output, it can degrade local soil health over time.\""
+  },
+  {
+   "phrase": "Vulnerable to shocks",
+   "level": "C2",
+   "definition": "Highly susceptible to sudden disruptions like weather disasters or economic crises.",
+   "example": "\"Globalized supply chains leave developing countries highly vulnerable to price shocks.\""
+  },
+  {
+   "phrase": "Agricultural resilience",
+   "level": "C2",
+   "definition": "The capacity of farming systems to withstand and recover quickly from weather stresses.",
+   "example": "\"Developing drought-resistant seeds is critical for long-term agricultural resilience.\""
+  }
+ ],
+ "p3t16": [
+  {
+   "phrase": "Rural-urban drift",
+   "level": "B2",
+   "definition": "The movement of people from countryside villages into major cities seeking employment.",
+   "example": "\"Industrial job growth in capital cities has accelerated rural-urban drift.\""
+  },
+  {
+   "phrase": "Quality of life",
+   "level": "B2",
+   "definition": "The overall level of health, comfort, safety, and everyday happiness experienced by people.",
+   "example": "\"Many young families leave city centers because they want a higher quality of life.\""
+  },
+  {
+   "phrase": "Overburdened infrastructure",
+   "level": "C1",
+   "definition": "Municipal roads, sewers, and transit systems struggling under excessive population loads.",
+   "example": "\"Unplanned population growth creates overburdened infrastructure and massive traffic jams.\""
+  },
+  {
+   "phrase": "Depopulated countryside",
+   "level": "C1",
+   "definition": "Rural areas suffering severe population decline as young people move away to cities.",
+   "example": "\"State investment in regional towns is needed to stop the countryside becoming depopulated.\""
+  },
+  {
+   "phrase": "Strain on public amenities",
+   "level": "C2",
+   "definition": "Heavy pressure placed on public services like state hospitals, parks, and schools.",
+   "example": "\"A sudden influx of new residents puts an immense strain on public amenities.\""
+  },
+  {
+   "phrase": "Dynamic metropolis",
+   "level": "C2",
+   "definition": "A vibrant, fast-growing major city that attracts international investment, culture, and talent.",
+   "example": "\"Tokyo has managed to remain a dynamic metropolis while maintaining exceptional safety.\""
+  }
+ ],
+ "p3t17": [
+  {
+   "phrase": "Municipal services",
+   "level": "B2",
+   "definition": "Local public services like waste collection, street cleaning, and water supply.",
+   "example": "\"High local taxes ought to guarantee efficient and reliable municipal services.\""
+  },
+  {
+   "phrase": "Public amenities",
+   "level": "B2",
+   "definition": "Useful public facilities such as libraries, parks, and sports centers provided for everyone.",
+   "example": "\"Upgrading public amenities directly builds community pride in low-income neighborhoods.\""
+  },
+  {
+   "phrase": "Civic pride",
+   "level": "C1",
+   "definition": "A sense of communal pride and personal care felt by residents toward their hometown.",
+   "example": "\"Well-maintained community parks foster a genuine sense of civic pride among locals.\""
+  },
+  {
+   "phrase": "Socio-economic disparity",
+   "level": "C1",
+   "definition": "Inequalities in wealth, opportunity, and access to resources across social groups.",
+   "example": "\"Providing free access to cultural facilities helps bridge the widening socio-economic disparity.\""
+  },
+  {
+   "phrase": "Foster social cohesion",
+   "level": "C2",
+   "definition": "To encourage a unified, cooperative, and inclusive feeling across diverse community groups.",
+   "example": "\"Shared public plazas are vital because they actively foster social cohesion.\""
+  },
+  {
+   "phrase": "Underfunded public realm",
+   "level": "C2",
+   "definition": "Public streets, parks, and facilities suffering from long-term financial neglect by state bodies.",
+   "example": "\"Vandalism tends to flourish in an underfunded public realm that lacks maintenance.\""
+  }
+ ],
+ "p3t18": [
+  {
+   "phrase": "Minor offense",
+   "level": "B2",
+   "definition": "A minor, non-violent illegal action like littering, double parking, or petty shoplifting.",
+   "example": "\"Doing unpaid community service is a fair punishment for a minor offense.\""
+  },
+  {
+   "phrase": "Deterrent effect",
+   "level": "B2",
+   "definition": "The ability of legal penalties or police presence to discourage people from breaking laws.",
+   "example": "\"Heavy fines for speeding have a clear deterrent effect on dangerous drivers.\""
+  },
+  {
+   "phrase": "Root causes of crime",
+   "level": "C1",
+   "definition": "The underlying social, financial, or psychological factors that lead people to break laws.",
+   "example": "\"To reduce crime long-term, legal systems must tackle the root causes of crime like poverty.\""
+  },
+  {
+   "phrase": "Repeat offender",
+   "level": "C1",
+   "definition": "A person who continually breaks the law despite having been caught and punished before.",
+   "example": "\"Prison educational programs aim to prevent a repeat offender from returning to crime.\""
+  },
+  {
+   "phrase": "Reintegrate into society",
+   "level": "C2",
+   "definition": "To help a former convict return successfully to normal community life and work.",
+   "example": "\"Without employment options, ex-prisoners struggle to reintegrate into society.\""
+  },
+  {
+   "phrase": "Break the cycle of recidivism",
+   "level": "C2",
+   "definition": "To stop the pattern where released criminals repeatedly reoffend and return to prison.",
+   "example": "\"Job training inside prisons is the single best tool to break the cycle of recidivism.\""
+  }
+ ],
+ "p3t19": [
+  {
+   "phrase": "Income inequality",
+   "level": "B2",
+   "definition": "The uneven, unfair distribution of earnings across different groups in a population.",
+   "example": "\"Rising income inequality can destabilize social harmony in expanding economies.\""
+  },
+  {
+   "phrase": "Tax burden",
+   "level": "B2",
+   "definition": "The total financial demand imposed on citizens and companies by government taxation.",
+   "example": "\"Small businesses often complain about an unfair tax burden compared to corporations.\""
+  },
+  {
+   "phrase": "Wealth disparity",
+   "level": "C1",
+   "definition": "A massive, unfair gap between the financial assets of the rich and the rest of society.",
+   "example": "\"Global economic changes have unfortunately widened the wealth disparity between classes.\""
+  },
+  {
+   "phrase": "Progressive taxation",
+   "level": "C1",
+   "definition": "A tax system where higher earners pay a higher percentage of their income in tax.",
+   "example": "\"Implementing progressive taxation ensures wealthy individuals contribute a fair share.\""
+  },
+  {
+   "phrase": "Social safety net",
+   "level": "C2",
+   "definition": "State financial support programs designed to protect poor and vulnerable citizens.",
+   "example": "\"A strong social safety net prevents unemployed workers from falling into total poverty.\""
+  },
+  {
+   "phrase": "Systemic poverty",
+   "level": "C2",
+   "definition": "Entrenched poverty caused by social structures and economic systems rather than choices.",
+   "example": "\"Overcoming systemic poverty requires sustained investment in public education and housing.\""
+  }
+ ],
+ "p3t20": [
+  {
+   "phrase": "Civic responsibility",
+   "level": "B2",
+   "definition": "The social duty and obligation citizens have to respect and care for their community.",
+   "example": "\"Disposing of trash properly is a basic civic responsibility everyone should follow.\""
+  },
+  {
+   "phrase": "Waste management",
+   "level": "B2",
+   "definition": "The collection, recycling, processing, and disposal of waste produced by communities.",
+   "example": "\"Growing cities require efficient waste management to prevent health problems.\""
+  },
+  {
+   "phrase": "Public indifference",
+   "level": "C1",
+   "definition": "A total lack of care, concern, or motivation among citizens regarding public issues.",
+   "example": "\"Tackling street littering is tough when you are up against widespread public indifference.\""
+  },
+  {
+   "phrase": "Enforce penalties",
+   "level": "C1",
+   "definition": "To actively apply legal punishments or financial fines to people who break rules.",
+   "example": "\"Local councils need to strictly enforce penalties for illegal dumping in public parks.\""
+  },
+  {
+   "phrase": "Civic consciousness",
+   "level": "C2",
+   "definition": "An active awareness among citizens of their impact on public hygiene and welfare.",
+   "example": "\"Clean public spaces rely on raising civic consciousness through school education.\""
+  },
+  {
+   "phrase": "Deterrent measures",
+   "level": "C2",
+   "definition": "Actions or physical steps taken specifically to prevent anti-social or illegal behavior.",
+   "example": "\"Installing security cameras acts as effective deterrent measures against public vandalism.\""
+  }
+ ],
+ "p3t21": [
+  {
+   "phrase": "Small business",
+   "level": "B2",
+   "definition": "A company that is privately owned and operated with a small staff and limited revenue.",
+   "example": "\"A local small business drives economic growth by creating jobs in the community.\""
+  },
+  {
+   "phrase": "Financial risk",
+   "level": "B2",
+   "definition": "The danger of losing money or going bankrupt when starting or running a enterprise.",
+   "example": "\"Launching a new enterprise involves taking on a considerable amount of financial risk.\""
+  },
+  {
+   "phrase": "Operational hurdles",
+   "level": "C1",
+   "definition": "Practical, administrative challenges faced when setting up and running a business.",
+   "example": "\"New startups face heavy operational hurdles, from licensing rules to supply delays.\""
+  },
+  {
+   "phrase": "Market niche",
+   "level": "C1",
+   "definition": "A specialized, distinct segment of a market targeted with a specific product or service.",
+   "example": "\"Successful small firms often find a profitable market niche ignored by corporations.\""
+  },
+  {
+   "phrase": "Cut-throat competition",
+   "level": "C2",
+   "definition": "Extremely fierce, aggressive, and ruthless competition between businesses in an industry.",
+   "example": "\"To survive cut-throat competition, small retailers must offer unique personal service.\""
+  },
+  {
+   "phrase": "Turn a profit",
+   "level": "C2",
+   "definition": "To earn more money from sales than the total expenses spent running the business.",
+   "example": "\"Most new businesses take at least two years before they begin to turn a profit.\""
+  }
+ ],
+ "p3t22": [
+  {
+   "phrase": "Interpersonal skills",
+   "level": "B2",
+   "definition": "The practical ability to communicate, work well, and interact smoothly with other people.",
+   "example": "\"A manager can have great technical knowledge, but without interpersonal skills, teams fail.\""
+  },
+  {
+   "phrase": "Motivate staff",
+   "level": "B2",
+   "definition": "To inspire, encourage, and drive employees to work hard and reach business goals.",
+   "example": "\"Good leaders know that money isn't the only way to motivate staff effectively.\""
+  },
+  {
+   "phrase": "Corporate culture",
+   "level": "C1",
+   "definition": "The shared values, beliefs, and everyday behaviors that characterize a company's staff.",
+   "example": "\"A healthy corporate culture encourages creative thinking and lowers staff turnover.\""
+  },
+  {
+   "phrase": "Lead by example",
+   "level": "C1",
+   "definition": "To guide employees through your own hard work and actions rather than just giving orders.",
+   "example": "\"The best managers lead by example, staying late with their team during big projects.\""
+  },
+  {
+   "phrase": "Articulate vision",
+   "level": "C2",
+   "definition": "The skill to describe future company goals clearly and inspiringly to staff and clients.",
+   "example": "\"An executive must be able to articulate a clear vision during times of market uncertainty.\""
+  },
+  {
+   "phrase": "Cultivate loyalty",
+   "level": "C2",
+   "definition": "To actively build long-term trust, dedication, and support among staff or customers.",
+   "example": "\"Firms that invest in worker training successfully cultivate loyalty across departments.\""
+  }
+ ],
+ "p3t23": [
+  {
+   "phrase": "Financial compensation",
+   "level": "B2",
+   "definition": "The money, salary, and financial benefits paid to a worker in return for their work.",
+   "example": "\"While financial compensation is vital, workplace flexibility matters just as much.\""
+  },
+  {
+   "phrase": "Remote working",
+   "level": "B2",
+   "definition": "The practice of working from home or another location outside a central office.",
+   "example": "\"The shift toward remote working has completely changed traditional office life.\""
+  },
+  {
+   "phrase": "Occupational burnout",
+   "level": "C1",
+   "definition": "State of extreme physical, emotional, and mental exhaustion caused by chronic work stress.",
+   "example": "\"Working 70 hours every week without breaks quickly leads to severe occupational burnout.\""
+  },
+  {
+   "phrase": "Career trajectory",
+   "level": "C1",
+   "definition": "The long-term progress, direction, and growth path of a person's professional life.",
+   "example": "\"Having a mentor can accelerate a young professional's career trajectory significantly.\""
+  },
+  {
+   "phrase": "Work ethic",
+   "level": "C2",
+   "definition": "A strong belief in the moral value, necessity, and importance of hard, diligent work.",
+   "example": "\"Employers prize a strong work ethic far more than raw theoretical talent alone.\""
+  },
+  {
+   "phrase": "Juggling competing demands",
+   "level": "C2",
+   "definition": "Managing several urgent work and personal responsibilities simultaneously under pressure.",
+   "example": "\"Working parents spend their daily lives juggling competing demands at home and office.\""
+  }
+ ],
+ "p3t24": [
+  {
+   "phrase": "Consumer habits",
+   "level": "B2",
+   "definition": "The typical purchasing patterns, choices, and buying behaviors demonstrated by shoppers.",
+   "example": "\"Online shopping apps have permanently changed everyday consumer habits globally.\""
+  },
+  {
+   "phrase": "Material possessions",
+   "level": "B2",
+   "definition": "Physical objects, goods, and products owned by a person rather than experiences.",
+   "example": "\"Younger consumers seem to value travel experiences over collecting material possessions.\""
+  },
+  {
+   "phrase": "Impulsive buying",
+   "level": "C1",
+   "definition": "Buying products suddenly on emotion without planning, thinking, or real necessity.",
+   "example": "\"Placing low-cost items near store checkouts is designed to trigger impulsive buying.\""
+  },
+  {
+   "phrase": "Consumerist mindset",
+   "level": "C1",
+   "definition": "A cultural focus on continuously buying new products as a path to personal happiness.",
+   "example": "\"A heavy consumerist mindset drives excessive manufacturing and massive waste.\""
+  },
+  {
+   "phrase": "Obsolete retail models",
+   "level": "C2",
+   "definition": "Outdated retail formats that can no longer compete with modern internet shopping systems.",
+   "example": "\"Traditional high-street shops are struggling because of obsolete retail models.\""
+  },
+  {
+   "phrase": "Subconscious manipulation",
+   "level": "C2",
+   "definition": "Clever marketing methods that influence buying choices without shoppers noticing it.",
+   "example": "\"Modern online advertising uses subconscious manipulation to drive consumer desires.\""
+  }
+ ],
+ "p3t25": [
+  {
+   "phrase": "Lodge a complaint",
+   "level": "B2",
+   "definition": "To make an official formal complaint about bad service or a faulty product.",
+   "example": "\"Most unhappy customers simply switch shops rather than take time to lodge a complaint.\""
+  },
+  {
+   "phrase": "Customer satisfaction",
+   "level": "B2",
+   "definition": "The degree to which products and services meet or exceed customer expectations.",
+   "example": "\"Maintaining high customer satisfaction is the most reliable way to build a brand.\""
+  },
+  {
+   "phrase": "Service recovery",
+   "level": "C1",
+   "definition": "Actions a company takes to fix a mistake and regain customer trust after poor service.",
+   "example": "\"A brilliant service recovery strategy can convert an angry client into a loyal fan.\""
+  },
+  {
+   "phrase": "Consumer rights",
+   "level": "C1",
+   "definition": "Legal protections guaranteeing buyers fair treatment, safety, and honest information.",
+   "example": "\"Governments must enforce strict regulations to protect basic consumer rights online.\""
+  },
+  {
+   "phrase": "Redress grievances",
+   "level": "C2",
+   "definition": "To formally fix, compensate, or resolve a customer's legitimate complaint or injury.",
+   "example": "\"Consumer protection agencies help citizens redress grievances against large banks.\""
+  },
+  {
+   "phrase": "Indifferent staff",
+   "level": "C2",
+   "definition": "Employees who show a total lack of care, interest, or enthusiasm toward helping customers.",
+   "example": "\"Nothing ruins a business reputation faster than indifferent staff at front desks.\""
+  }
+ ],
+ "p3t26": [
+  {
+   "phrase": "Preventive care",
+   "level": "B2",
+   "definition": "Healthcare steps focused on preventing illnesses before they occur rather than treating them.",
+   "example": "\"Spending money on preventive care saves governments millions in emergency hospital costs.\""
+  },
+  {
+   "phrase": "Free healthcare",
+   "level": "B2",
+   "definition": "Medical treatment paid for by state taxes that citizens access without direct charges.",
+   "example": "\"Many people view access to free healthcare at the point of delivery as a basic human right.\""
+  },
+  {
+   "phrase": "Healthcare expenditure",
+   "level": "C1",
+   "definition": "The total public and private money spent on medical services across a nation.",
+   "example": "\"An aging population forces governments to drastically increase national healthcare expenditure.\""
+  },
+  {
+   "phrase": "Universal coverage",
+   "level": "C1",
+   "definition": "A health system ensuring all citizens have equal access to essential medical services.",
+   "example": "\"Achieving true universal coverage remains a massive financial challenge for poor nations.\""
+  },
+  {
+   "phrase": "Point of delivery",
+   "level": "C2",
+   "definition": "The specific place or moment where medical treatment or care is directly provided to a patient.",
+   "example": "\"State medical services should be completely free at the point of delivery for everyone.\""
+  },
+  {
+   "phrase": "Proactive health intervention",
+   "level": "C2",
+   "definition": "Official policy actions taken by health authorities to stop disease outbreaks early.",
+   "example": "\"Taxing sugary drinks is a proactive health intervention aimed at lowering childhood obesity.\""
+  }
+ ],
+ "p3t27": [
+  {
+   "phrase": "Balanced diet",
+   "level": "B2",
+   "definition": "A way of eating that provides all necessary nutrients in healthy proportions.",
+   "example": "\"Maintaining a balanced diet is far more effective for long-term health than crash dieting.\""
+  },
+  {
+   "phrase": "Culinary tradition",
+   "level": "B2",
+   "definition": "The unique cooking methods, traditional recipes, and food customs of a specific culture.",
+   "example": "\"Traditional food festivals offer a wonderful taste of a country's rich culinary tradition.\""
+  },
+  {
+   "phrase": "Sedentary lifestyle",
+   "level": "C1",
+   "definition": "A way of living that involves very little physical exercise and lots of sitting.",
+   "example": "\"Combining a high-calorie diet with a sedentary lifestyle leads to chronic health issues.\""
+  },
+  {
+   "phrase": "Processed foods",
+   "level": "C1",
+   "definition": "Commercial food items heavily altered with chemical additives, artificial sugars, and fats.",
+   "example": "\"Cutting out heavily processed foods from school menus dramatically improves children's energy.\""
+  },
+  {
+   "phrase": "Dietary shift",
+   "level": "C2",
+   "definition": "A broad change in eating habits and food choices across an entire society or nation.",
+   "example": "\"Urbanization has triggered a sudden dietary shift toward fast food in developing cities.\""
+  },
+  {
+   "phrase": "Nutritional deficiency",
+   "level": "C2",
+   "definition": "A severe lack of essential vitamins or minerals needed for healthy biological function.",
+   "example": "\"Relying purely on cheap junk food leads to long-term nutritional deficiency over time.\""
+  }
+ ],
+ "p3t28": [
+  {
+   "phrase": "Routine exercise",
+   "level": "B2",
+   "definition": "Regular, planned physical activity done consistently to maintain physical health.",
+   "example": "\"Incorporating simple routine exercise like daily walking doubles senior mobility.\""
+  },
+  {
+   "phrase": "Baseline fitness",
+   "level": "B2",
+   "definition": "The basic foundational level of physical endurance and health a person maintains.",
+   "example": "\"You don't need intense athletic training to maintain a healthy baseline fitness.\""
+  },
+  {
+   "phrase": "Active aging",
+   "level": "C1",
+   "definition": "The process of keeping physically fit, mentally active, and socially involved as you age.",
+   "example": "\"Encouraging active aging ensures senior citizens remain independent for longer.\""
+  },
+  {
+   "phrase": "Physical degeneration",
+   "level": "C1",
+   "definition": "The natural decline in biological muscle strength, bone density, and health over time.",
+   "example": "\"Regular strength exercises help slow down natural physical degeneration in older adults.\""
+  },
+  {
+   "phrase": "Combat physical decline",
+   "level": "C2",
+   "definition": "To actively take exercise and health steps to resist the negative physical effects of aging.",
+   "example": "\"Seniors who stay active in community sports successfully combat physical decline.\""
+  },
+  {
+   "phrase": "Sedentary nature",
+   "level": "C2",
+   "definition": "The quality of involving long periods of sitting down with minimal physical movement.",
+   "example": "\"The inherently sedentary nature of modern office jobs requires intentional daily exercise.\""
+  }
+ ],
+ "p3t29": [
+  {
+   "phrase": "Psychological health",
+   "level": "B2",
+   "definition": "The state of emotional, mental, and psychological well-being of an individual.",
+   "example": "\"Societies are finally realizing that psychological health is just as vital as physical fitness.\""
+  },
+  {
+   "phrase": "Work overload",
+   "level": "B2",
+   "definition": "An excessive, unmanageable amount of work assigned to an employee or student.",
+   "example": "\"Persistent work overload damages employee morale and creates constant workplace anxiety.\""
+  },
+  {
+   "phrase": "Mental strain",
+   "level": "C1",
+   "definition": "The psychological pressure, tension, and exhaustion caused by long periods of worry or work.",
+   "example": "\"Unrealistic exam pressure puts immense mental strain on high school students.\""
+  },
+  {
+   "phrase": "Holistic well-being",
+   "level": "C1",
+   "definition": "An overall state of health that combines mental, physical, emotional, and social wellness.",
+   "example": "\"Modern workplaces must design policies that support the holistic well-being of staff.\""
+  },
+  {
+   "phrase": "Take its toll",
+   "level": "C2",
+   "definition": "To cause gradual damage, physical exhaustion, or emotional suffering over time.",
+   "example": "\"Working night shifts continually will eventually take its toll on a person's health.\""
+  },
+  {
+   "phrase": "Societal pressure",
+   "level": "C2",
+   "definition": "External mental expectations placed on individuals by social norms and cultural ideals.",
+   "example": "\"Relentless societal pressure to appear successful online drives widespread anxiety.\""
+  }
+ ],
+ "p3t30": [
+  {
+   "phrase": "Disease outbreak",
+   "level": "B2",
+   "definition": "The sudden, rapid occurrence of illness cases in a specific town or region.",
+   "example": "\"Rapid communication between health clinics is key to stopping a disease outbreak early.\""
+  },
+  {
+   "phrase": "Health crisis",
+   "level": "B2",
+   "definition": "A severe, widespread danger to public health that requires urgent government action.",
+   "example": "\"A global health crisis requires international cooperation and rapid resource sharing.\""
+  },
+  {
+   "phrase": "Containment protocols",
+   "level": "C1",
+   "definition": "Established medical steps and safety rules designed to isolate and stop disease spread.",
+   "example": "\"Hospitals must strictly enforce containment protocols to protect staff during epidemics.\""
+  },
+  {
+   "phrase": "Epidemiological threat",
+   "level": "C1",
+   "definition": "A danger posed by the spread of infectious disease across human populations.",
+   "example": "\"Expanded global air travel increases our vulnerability to a rapid epidemiological threat.\""
+  },
+  {
+   "phrase": "Global health infrastructure",
+   "level": "C2",
+   "definition": "The worldwide network of hospitals, research labs, and supply chains fighting disease.",
+   "example": "\"Investing in global health infrastructure is our best defense against future viruses.\""
+  },
+  {
+   "phrase": "Eradicate illness",
+   "level": "C2",
+   "definition": "To completely eliminate a dangerous disease pathogen from the world population.",
+   "example": "\"Mass vaccination programs managed to completely eradicate illness like smallpox globally.\""
+  }
+ ],
+ "p3t31": [
+  {
+   "phrase": "Aesthetic value",
+   "level": "B2",
+   "definition": "The level of visual beauty, artistic quality, or appreciation an artwork possesses.",
+   "example": "\"Deciding the true aesthetic value of modern abstract art is largely subjective.\""
+  },
+  {
+   "phrase": "Cultural expression",
+   "level": "B2",
+   "definition": "The way a society shows its values, history, and identity through creative art forms.",
+   "example": "\"Public murals serve as an important form of local cultural expression in cities.\""
+  },
+  {
+   "phrase": "Subjective interpretation",
+   "level": "C1",
+   "definition": "An understanding of art based on personal feelings and opinions rather than fixed rules.",
+   "example": "\"Fine art relies on subjective interpretation; there is no single 'correct' meaning.\""
+  },
+  {
+   "phrase": "Artistic expression",
+   "level": "C1",
+   "definition": "The conscious use of creative skill and imagination to produce beautiful objects or ideas.",
+   "example": "\"State funding ensures diverse forms of artistic expression can flourish freely.\""
+  },
+  {
+   "phrase": "Evoke profound emotions",
+   "level": "C2",
+   "definition": "To stir up intense, deeply felt emotional feelings inside a viewer or listener.",
+   "example": "\"A brilliant masterpiece has the unique power to evoke profound emotions instantly.\""
+  },
+  {
+   "phrase": "Stand the test of time",
+   "level": "C2",
+   "definition": "To remain valued, popular, and respected over centuries despite changing fashion trends.",
+   "example": "\"Great classical paintings continue to stand the test of time in global galleries.\""
+  }
+ ],
+ "p3t32": [
+  {
+   "phrase": "Digital reading",
+   "level": "B2",
+   "definition": "The activity of reading books or text on electronic screens like tablets or e-readers.",
+   "example": "\"While digital reading offers convenience, many readers still prefer physical paper books.\""
+  },
+  {
+   "phrase": "Reading habits",
+   "level": "B2",
+   "definition": "The recurring routines, frequency, and personal preferences a person has for reading books.",
+   "example": "\"Fostering strong reading habits early in childhood accelerates language acquisition.\""
+  },
+  {
+   "phrase": "Municipal library",
+   "level": "C1",
+   "definition": "A state-funded free public library serving a local city community.",
+   "example": "\"A modern municipal library acts as a community hub rather than just a storehouse for books.\""
+  },
+  {
+   "phrase": "Immersive reading",
+   "level": "C1",
+   "definition": "Deep, undistracted reading that completely absorbs a person's attention for long periods.",
+   "example": "\"Scrolling short social posts ruins our capacity for long, immersive reading.\""
+  },
+  {
+   "phrase": "Cognitive engagement",
+   "level": "C2",
+   "definition": "Active mental processing, critical thought, and focus applied while reading complex material.",
+   "example": "\"Deep literary fiction requires a high level of cognitive engagement from readers.\""
+  },
+  {
+   "phrase": "Foster a love of reading",
+   "level": "C2",
+   "definition": "To encourage a lasting, natural passion for reading books in children and young adults.",
+   "example": "\"Teachers should focus on fostering a love of reading rather than just testing grammar rules.\""
+  }
+ ],
+ "p3t33": [
+  {
+   "phrase": "Film rating",
+   "level": "B2",
+   "definition": "An official age age-suitability category given to movies to guide viewers and parents.",
+   "example": "\"Strict enforcement of film ratings helps parents protect children from mature content.\""
+  },
+  {
+   "phrase": "Cinematic experience",
+   "level": "B2",
+   "definition": "The unique, immersive feeling of watching a movie on a giant screen with high-quality sound.",
+   "example": "\"Streaming apps are convenient, but they can't match the authentic cinematic experience.\""
+  },
+  {
+   "phrase": "Age-appropriate content",
+   "level": "C1",
+   "definition": "Media material that is suitable for the emotional maturity of a specific age group.",
+   "example": "\"Broadcasters must ensure daytime TV shows contain strictly age-appropriate content.\""
+  },
+  {
+   "phrase": "Box office attraction",
+   "level": "C1",
+   "definition": "A popular film, actor, or franchise that draws huge paying crowds to movie theaters.",
+   "example": "\"Big-budget superhero movies remain the main box office attraction for cinemas today.\""
+  },
+  {
+   "phrase": "Impinge on personal choice",
+   "level": "C2",
+   "definition": "To unacceptably limit or intrude upon an adult's freedom to choose what they watch.",
+   "example": "\"Critics argue heavy film censorship threatens to impinge on personal choice.\""
+  },
+  {
+   "phrase": "Stifle creative freedom",
+   "level": "C2",
+   "definition": "To prevent artists and filmmakers from freely expressing creative or controversial ideas.",
+   "example": "\"Excessive state regulations can easily stifle creative freedom in the film industry.\""
+  }
+ ],
+ "p3t34": [
+  {
+   "phrase": "Streaming services",
+   "level": "B2",
+   "definition": "Internet platforms providing instant on-demand access to movies and TV shows.",
+   "example": "\"The rapid growth of streaming services has severely hurt traditional cable TV networks.\""
+  },
+  {
+   "phrase": "Public channel",
+   "level": "B2",
+   "definition": "A state-funded television channel dedicated to providing educational and news programs.",
+   "example": "\"A public channel often prioritizes high-quality documentaries over reality shows.\""
+  },
+  {
+   "phrase": "Mass broadcasting",
+   "level": "C1",
+   "definition": "The distribution of television or radio content to millions of viewers at the same time.",
+   "example": "\"Traditional mass broadcasting no longer holds the unified audience focus it once did.\""
+  },
+  {
+   "phrase": "Mindless consumption",
+   "level": "C1",
+   "definition": "Watching entertainment passively for hours without active critical thinking or thought.",
+   "example": "\"Binge-watching TV shows late at night often turns into passive, mindless consumption.\""
+  },
+  {
+   "phrase": "Pervasive impact",
+   "level": "C2",
+   "definition": "Having a deep, widespread, and inescapable influence across every area of society.",
+   "example": "\"Television news has a pervasive impact on how voters view political issues.\""
+  },
+  {
+   "phrase": "Commercial interests",
+   "level": "C2",
+   "definition": "Business goals that prioritize financial profits and ad revenue over educational quality.",
+   "example": "\"When networks are driven purely by commercial interests, news quality plummets.\""
+  }
+ ],
+ "p3t35": [
+  {
+   "phrase": "Capture a moment",
+   "level": "B2",
+   "definition": "To take a photograph that preserves a single point in time permanently.",
+   "example": "\"Smartphones allow us to capture a moment instantly, but we rarely print the photos.\""
+  },
+  {
+   "phrase": "Digital photos",
+   "level": "B2",
+   "definition": "Photographs taken and stored electronically on digital devices rather than printed.",
+   "example": "\"Storing thousands of digital photos on cloud servers has changed visual memory.\""
+  },
+  {
+   "phrase": "Preserve memories",
+   "level": "C1",
+   "definition": "To keep past events and personal experiences alive using physical or visual objects.",
+   "example": "\"Looking through old printed albums is a wonderful way to preserve family memories.\""
+  },
+  {
+   "phrase": "Visual narrative",
+   "level": "C1",
+   "definition": "A complete story told through a sequence of photographs or visual imagery.",
+   "example": "\"A powerful photojournalistic image conveys a complete visual narrative without words.\""
+  },
+  {
+   "phrase": "Nostalgic attachment",
+   "level": "C2",
+   "definition": "A deep emotional warmth and sentimental connection toward past memories and objects.",
+   "example": "\"People hold a strong nostalgic attachment to physical printed photos from childhood.\""
+  },
+  {
+   "phrase": "Distort objective reality",
+   "level": "C2",
+   "definition": "To manipulate digital images so they present a false, misleading picture of truth.",
+   "example": "\"Heavy photo editing on social media apps can completely distort objective reality.\""
+  }
+ ],
+ "p3t36": [
+  {
+   "phrase": "Media coverage",
+   "level": "B2",
+   "definition": "The amount of news focus and reporting given to a specific story or topic.",
+   "example": "\"Heavy media coverage forced local politicians to take fast action on river pollution.\""
+  },
+  {
+   "phrase": "Unbiased news",
+   "level": "B2",
+   "definition": "News reporting that presents objective facts neutrally without taking political sides.",
+   "example": "\"Finding truly unbiased news is getting harder in today's polarized political landscape.\""
+  },
+  {
+   "phrase": "Editorial bias",
+   "level": "C1",
+   "definition": "A subtle or obvious political opinion held by newspaper editors and media owners.",
+   "example": "\"Viewers need to spot editorial bias when watching political news broadcasts.\""
+  },
+  {
+   "phrase": "Sensationalized reporting",
+   "level": "C1",
+   "definition": "News stories that exaggerate shocking details to grab attention and boost viewers.",
+   "example": "\"Excessive sensationalized reporting creates unnecessary public panic over minor issues.\""
+  },
+  {
+   "phrase": "Epistemological credibility",
+   "level": "C2",
+   "definition": "The genuine truth, factual reliability, and evidence-based authority of reported information.",
+   "example": "\"Unverified stories on social platforms completely lack epistemological credibility.\""
+  },
+  {
+   "phrase": "Filtered perspective",
+   "level": "C2",
+   "definition": "A selective, biased view of world news presented after political censorship or editing.",
+   "example": "\"Reading news from only one news app provides a dangerously filtered perspective.\""
+  }
+ ],
+ "p3t37": [
+  {
+   "phrase": "Close-knit family",
+   "level": "B2",
+   "definition": "A supportive family whose members share strong emotional bonds and close contact.",
+   "example": "\"Growing up in a close-knit family gives children emotional stability.\""
+  },
+  {
+   "phrase": "Extended family",
+   "level": "B2",
+   "definition": "A family unit that includes grandparents, aunts, uncles, and cousins.",
+   "example": "\"During big celebrations, my whole extended family gathers at one house.\""
+  },
+  {
+   "phrase": "Multigenerational household",
+   "level": "C1",
+   "definition": "A home where three or more generations live together under one roof.",
+   "example": "\"High housing costs have made living in a multigenerational household common again.\""
+  },
+  {
+   "phrase": "Generational gap",
+   "level": "C1",
+   "definition": "Differences in attitudes, technology use, and values between young and old generations.",
+   "example": "\"Rapid tech shifts have widened the generational gap in communication styles.\""
+  },
+  {
+   "phrase": "Primary caregivers",
+   "level": "C2",
+   "definition": "The main adults holding daily legal and practical responsibility for raising a child.",
+   "example": "\"Because both parents work long hours, grandparents often act as primary caregivers.\""
+  },
+  {
+   "phrase": "Societal shifts in dynamics",
+   "level": "C2",
+   "definition": "Broad structural changes in how social institutions like families are organized over time.",
+   "example": "\"Economic shifts have led to profound societal shifts in family dynamics.\""
+  }
+ ],
+ "p3t38": [
+  {
+   "phrase": "Peer pressure",
+   "level": "B2",
+   "definition": "Social pressure from friends to conform to their behavior, fashion, or choices.",
+   "example": "\"Teenagers often make risky choices purely as a direct result of peer pressure.\""
+  },
+  {
+   "phrase": "Young adult",
+   "level": "B2",
+   "definition": "A person who has recently moved from adolescence into early adult life.",
+   "example": "\"Finding a first job makes being a young adult exciting yet highly stressful.\""
+  },
+  {
+   "phrase": "Impressionable age",
+   "level": "C1",
+   "definition": "A young developmental phase where a person is easily influenced by role models.",
+   "example": "\"Children at an impressionable age shouldn't be targeted by aggressive junk food ads.\""
+  },
+  {
+   "phrase": "Developmental milestones",
+   "level": "C1",
+   "definition": "Key cognitive, emotional, and social abilities achieved by children as they grow up.",
+   "example": "\"Excess screen time can stop toddlers reaching important developmental milestones.\""
+  },
+  {
+   "phrase": "Transition into adulthood",
+   "level": "C2",
+   "definition": "The biological, social, and psychological journey of maturing into an independent adult.",
+   "example": "\"Taking a gap year helps young adults navigate the transition into adulthood.\""
+  },
+  {
+   "phrase": "Moral compass",
+   "level": "C2",
+   "definition": "An internalized set of ethical values that guides an individual's personal behavior.",
+   "example": "\"Positive adult role models help young teenagers build a solid moral compass.\""
+  }
+ ],
+ "p3t39": [
+  {
+   "phrase": "Senior citizens",
+   "level": "B2",
+   "definition": "Older adults, usually retired people over the age of 60 or 65.",
+   "example": "\"Public buses should always provide discounted ticket fares for senior citizens.\""
+  },
+  {
+   "phrase": "Aging population",
+   "level": "B2",
+   "definition": "A demographic trend where the average age of a nation's population grows older.",
+   "example": "\"An aging population puts heavy strain on national health systems and pension funds.\""
+  },
+  {
+   "phrase": "Assisted living",
+   "level": "C1",
+   "definition": "Specialized housing that provides daily personal and medical care for older adults.",
+   "example": "\"Moving an aging relative into assisted living requires careful emotional planning.\""
+  },
+  {
+   "phrase": "Demographic dividend",
+   "level": "C1",
+   "definition": "Economic growth potential created when a nation has a large working-age population.",
+   "example": "\"Countries that invest in youth skill training maximize their demographic dividend.\""
+  },
+  {
+   "phrase": "Relegate to nursing homes",
+   "level": "C2",
+   "definition": "To pass off care responsibility for elderly parents entirely to residential care facilities.",
+   "example": "\"Traditional cultures often avoid relegating seniors to nursing homes.\""
+  },
+  {
+   "phrase": "Demographic burden",
+   "level": "C2",
+   "definition": "Socio-economic strain placed on a working population to support a retired population.",
+   "example": "\"Inadequate private savings will turn aging demographics into a demographic burden.\""
+  }
+ ],
+ "p3t40": [
+  {
+   "phrase": "Form friendships",
+   "level": "B2",
+   "definition": "To successfully make new friends and build personal social bonds.",
+   "example": "\"Joining local hobby clubs is a great way to form friendships in a new town.\""
+  },
+  {
+   "phrase": "Social circle",
+   "level": "B2",
+   "definition": "The group of close friends and personal contacts an individual interacts with regularly.",
+   "example": "\"Moving to a new city forces you to build a completely new social circle.\""
+  },
+  {
+   "phrase": "Digital communication",
+   "level": "C1",
+   "definition": "Interacting with people using internet apps, text messages, and social media networks.",
+   "example": "\"While digital communication is fast, it lacks non-verbal cues like tone and body language.\""
+  },
+  {
+   "phrase": "Superficial connections",
+   "level": "C1",
+   "definition": "Shallow, surface-level social relationships that lack real emotional depth or trust.",
+   "example": "\"Having thousands of online followers usually results in superficial connections.\""
+  },
+  {
+   "phrase": "Social cohesion",
+   "level": "C2",
+   "definition": "The strength of community bonds and solidarity among different social groups.",
+   "example": "\"Upgrading neighborhood parks actively builds long-term social cohesion.\""
+  },
+  {
+   "phrase": "Surface-level interactions",
+   "level": "C2",
+   "definition": "Quick, shallow conversations that fail to build genuine emotional understanding.",
+   "example": "\"Relying purely on text messages reduces personal relationships to surface-level interactions.\""
+  }
+ ],
+ "p3t41": [
+  {
+   "phrase": "Public eye",
+   "level": "B2",
+   "definition": "A situation where a person is constantly watched and reported on by media and public.",
+   "example": "\"Living in the public eye means every personal mistake gets reported online.\""
+  },
+  {
+   "phrase": "Role model",
+   "level": "B2",
+   "definition": "A famous or respected person whose conduct and achievements are copied by others.",
+   "example": "\"Famous athletes have a social responsibility to act as positive role models for youth.\""
+  },
+  {
+   "phrase": "Infringement on privacy",
+   "level": "C1",
+   "definition": "An unacceptable, illegal intrusion into a person's private personal life by media.",
+   "example": "\"Paparazzi following celebrities into private restaurants is an infringement on privacy.\""
+  },
+  {
+   "phrase": "Cult of personality",
+   "level": "C1",
+   "definition": "Intense, exaggerated public devotion built around a famous figure by mass media.",
+   "example": "\"Online influencers build a lucrative cult of personality to sell product brands.\""
+  },
+  {
+   "phrase": "Voracious appetite for gossip",
+   "level": "C2",
+   "definition": "An insatiable public desire to read sensational private details about celebrities.",
+   "example": "\"Tabloid sites profit from the public's voracious appetite for gossip.\""
+  },
+  {
+   "phrase": "Unrealistic expectations",
+   "level": "C2",
+   "definition": "Unattainable standards of physical appearance or wealth created by social media.",
+   "example": "\"Polished celebrity photos create unrealistic expectations about body image in teens.\""
+  }
+ ],
+ "p3t42": [
+  {
+   "phrase": "Sincere apology",
+   "level": "B2",
+   "definition": "A genuine, honest expression of regret offered after making a mistake or hurt.",
+   "example": "\"Offering a sincere apology de-escalates personal arguments immediately.\""
+  },
+  {
+   "phrase": "Social norm",
+   "level": "B2",
+   "definition": "The unwritten rules, accepted behaviors, and expectations of a polite society.",
+   "example": "\"Table manners vary across cultures; what is polite in one breaks a social norm in another.\""
+  },
+  {
+   "phrase": "Cultural nuances",
+   "level": "C1",
+   "definition": "Delicate, subtle differences in politeness, gestures, and customs across cultures.",
+   "example": "\"Doing international business successfully requires a deep grasp of cultural nuances.\""
+  },
+  {
+   "phrase": "Interpersonal friction",
+   "level": "C1",
+   "definition": "Minor tension, disagreements, or conflict between people working or living together.",
+   "example": "\"Poor communication between office co-workers inevitably creates interpersonal friction.\""
+  },
+  {
+   "phrase": "Save face",
+   "level": "C2",
+   "definition": "To avoid public humiliation, embarrassment, or loss of reputation during a dispute.",
+   "example": "\"In many Asian cultures, allowing your opponent to save face is essential in negotiations.\""
+  },
+  {
+   "phrase": "Breach of etiquette",
+   "level": "C2",
+   "definition": "A clear failure to follow polite social rules and accepted manners in a public space.",
+   "example": "\"Playing loud audio on a mobile phone in a quiet train is a blatant breach of etiquette.\""
+  }
+ ],
+ "p3t43": [
+  {
+   "phrase": "Traffic congestion",
+   "level": "B2",
+   "definition": "Heavy vehicle traffic that slows down movement and causes severe road delays.",
+   "example": "\"Expanding subway lines is the best way to cut down daily traffic congestion.\""
+  },
+  {
+   "phrase": "Public transit",
+   "level": "B2",
+   "definition": "Shared state or private transport systems like buses, subways, and trains.",
+   "example": "\"Making public transit completely free encourages commuters to leave cars at home.\""
+  },
+  {
+   "phrase": "Commuter route",
+   "level": "C1",
+   "definition": "A heavily used travel path taken daily by workers traveling between suburbs and city centers.",
+   "example": "\"Upgrading trains along major commuter routes cuts daily travel times in half.\""
+  },
+  {
+   "phrase": "Transit infrastructure",
+   "level": "C1",
+   "definition": "The foundational physical networks, tracks, roads, and stations supporting transport.",
+   "example": "\"Developing cities must prioritize spending money on modern transit infrastructure.\""
+  },
+  {
+   "phrase": "Alleviate gridlock",
+   "level": "C2",
+   "definition": "To dramatically lessen severe traffic jams that paralyze city road systems.",
+   "example": "\"Building ring roads around city suburbs helped alleviate gridlock in downtown areas.\""
+  },
+  {
+   "phrase": "Seamless connectivity",
+   "level": "C2",
+   "definition": "Smooth, uninterrupted transfers between different transport modes like buses and trains.",
+   "example": "\"Modern transit hubs are designed to provide seamless connectivity for travelers.\""
+  }
+ ],
+ "p3t44": [
+  {
+   "phrase": "Tourist destination",
+   "level": "B2",
+   "definition": "A famous geographic place or town that attracts large numbers of holiday visitors.",
+   "example": "\"Over-building mega-resorts can easily ruin a peaceful coastal tourist destination.\""
+  },
+  {
+   "phrase": "Local economy",
+   "level": "B2",
+   "definition": "The business activity, employment, and trade operating within a local community.",
+   "example": "\"Money spent by international tourists provides a huge boost to the local economy.\""
+  },
+  {
+   "phrase": "Mass tourism",
+   "level": "C1",
+   "definition": "Unregulated, large-scale travel by thousands of tourists to popular historical sites.",
+   "example": "\"Uncontrolled mass tourism damages fragile historic monuments and pollutes beaches.\""
+  },
+  {
+   "phrase": "Cultural exchange",
+   "level": "C1",
+   "definition": "The positive sharing of ideas, customs, and traditions between people from different nations.",
+   "example": "\"Authentic travel encourages meaningful cultural exchange, breaking down stereotypes.\""
+  },
+  {
+   "phrase": "Ecological footprint",
+   "level": "C2",
+   "definition": "The total environmental damage and resource consumption caused by tourist travel.",
+   "example": "\"Cheap flight expansion has significantly increased the ecological footprint of travel.\""
+  },
+  {
+   "phrase": "Commercialization of heritage",
+   "level": "C2",
+   "definition": "Turning sacred cultural traditions and historic sites into cheap commercial attractions.",
+   "example": "\"Locals often object to the commercialization of heritage in historic historic towns.\""
+  }
+ ],
+ "p3t45": [
+  {
+   "phrase": "National holiday",
+   "level": "B2",
+   "definition": "An official public holiday created by a government to celebrate a historic event.",
+   "example": "\"A national holiday gives busy workers a chance to relax and celebrate with family.\""
+  },
+  {
+   "phrase": "Cultural significance",
+   "level": "B2",
+   "definition": "The historical, spiritual, or traditional importance an event holds for a culture.",
+   "example": "\"Commercialization has caused many holidays to lose their original cultural significance.\""
+  },
+  {
+   "phrase": "Cultural preservation",
+   "level": "C1",
+   "definition": "The active protection and maintenance of traditional customs, crafts, and history.",
+   "example": "\"Funding local folk festivals plays a vital role in long-term cultural preservation.\""
+  },
+  {
+   "phrase": "Gap year",
+   "level": "C1",
+   "definition": "A year's break taken by students between school and university to travel or work.",
+   "example": "\"Taking a structured gap year abroad builds self-reliance and confidence in youth.\""
+  },
+  {
+   "phrase": "Reconnect with roots",
+   "level": "C2",
+   "definition": "To visit your birthplace or ancestral home to rediscover your family culture and heritage.",
+   "example": "\"Visiting rural family villages helps young adults reconnect with their roots.\""
+  },
+  {
+   "phrase": "Dilution of tradition",
+   "level": "C2",
+   "definition": "The gradual loss of original cultural meaning as customs are modernized or commercialized.",
+   "example": "\"Adapting local rituals to entertain foreign tourists leads to a dilution of tradition.\""
+  }
+ ],
+ "p3t46": [
+  {
+   "phrase": "Host country",
+   "level": "B2",
+   "definition": "A nation that provides the facilities and venue for a major international event.",
+   "example": "\"Selected as the host country for the Olympics brings global media visibility.\""
+  },
+  {
+   "phrase": "Global unity",
+   "level": "B2",
+   "definition": "A feeling of international peace, cooperation, and solidarity across global borders.",
+   "example": "\"International sports events help foster a temporary sense of global unity.\""
+  },
+  {
+   "phrase": "Diplomatic relations",
+   "level": "C1",
+   "definition": "The official political and diplomatic communication maintained between countries.",
+   "example": "\"Hosting cross-border summits offers a chance to rebuild broken diplomatic relations.\""
+  },
+  {
+   "phrase": "Soft power",
+   "level": "C1",
+   "definition": "A nation's ability to influence international opinions through cultural appeal rather than force.",
+   "example": "\"Exporting popular cinema and music is an exceptionally potent tool of modern soft power.\""
+  },
+  {
+   "phrase": "Cross-cultural solidarity",
+   "level": "C2",
+   "definition": "Genuine unity, mutual understanding, and support between people of differing cultures.",
+   "example": "\"Global disaster relief programs demonstrate authentic cross-cultural solidarity.\""
+  },
+  {
+   "phrase": "Financial white elephant",
+   "level": "C2",
+   "definition": "A massively expensive stadium or building constructed for an event that becomes useless later.",
+   "example": "\"Without post-game planning, new stadiums quickly become a financial white elephant.\""
+  }
+ ],
+ "p3t47": [
+  {
+   "phrase": "Grassroots sports",
+   "level": "B2",
+   "definition": "Local, community-level sports clubs and facilities open to the everyday public.",
+   "example": "\"Governments should direct tax money into grassroots sports rather than just elite stadiums.\""
+  },
+  {
+   "phrase": "Professional athlete",
+   "level": "B2",
+   "definition": "A person who earns their living by competing in organized sports at a high level.",
+   "example": "\"A professional athlete must maintain strict diet and daily training routines.\""
+  },
+  {
+   "phrase": "National pride",
+   "level": "C1",
+   "definition": "A shared feeling of patriotism, achievement, and unity among citizens during wins.",
+   "example": "\"Winning an Olympic gold medal creates a massive boost to overall national pride.\""
+  },
+  {
+   "phrase": "Geopolitical bridge",
+   "level": "C1",
+   "definition": "An event or platform that helps hostile nations communicate and build friendly ties.",
+   "example": "\"International sports tournaments can act as a helpful geopolitical bridge during political crises.\""
+  },
+  {
+   "phrase": "Channel competitive energy",
+   "level": "C2",
+   "definition": "To direct natural aggression, drive, and ambition into positive physical sports activities.",
+   "example": "\"School sports programs give teens a constructive way to channel competitive energy.\""
+  },
+  {
+   "phrase": "Promote physical well-being",
+   "level": "C2",
+   "definition": "To actively foster health, physical fitness, and active living across a community.",
+   "example": "\"Free local parks and sports courts help promote physical well-being in cities.\""
+  }
+ ],
+ "p3t48": [
+  {
+   "phrase": "Traditional toy",
+   "level": "B2",
+   "definition": "Non-electronic physical play items like wooden blocks, dolls, or board games.",
+   "example": "\"Simple traditional toys encourage far more open-ended, creative play than tablet apps.\""
+  },
+  {
+   "phrase": "Cognitive development",
+   "level": "B2",
+   "definition": "The growth of a child's brain, thinking skills, problem-solving ability, and memory.",
+   "example": "\"Playing with building blocks accelerates early childhood cognitive development.\""
+  },
+  {
+   "phrase": "Stretch imagination",
+   "level": "C1",
+   "definition": "To encourage a child to think in highly creative and original ways.",
+   "example": "\"Unstructured outdoor play forces young children to stretch their imagination.\""
+  },
+  {
+   "phrase": "Marketing to children",
+   "level": "C1",
+   "definition": "Commercial advertising of toys, sweets, and products directly targeted at young children.",
+   "example": "\"Governments should place strict legal limits on corporate marketing to children.\""
+  },
+  {
+   "phrase": "Spatial reasoning",
+   "level": "C2",
+   "definition": "The mental ability to visualize, understand, and manipulate 3D geometric shapes and spaces.",
+   "example": "\"Building complex physical models strengthens a child's spatial reasoning skills.\""
+  },
+  {
+   "phrase": "Over-stimulation",
+   "level": "C2",
+   "definition": "A state where excessive noise, flashing screens, and lights overwhelm a child's nervous system.",
+   "example": "\"Electronic gadgets with flashing screens often cause rapid mental over-stimulation.\""
+  }
+ ],
+ "p3t49": [
+  {
+   "phrase": "Strict schedule",
+   "level": "B2",
+   "definition": "A tightly planned timetable of daily tasks that leaves very little spare time.",
+   "example": "\"Working in corporate management demands adhering to a very strict schedule.\""
+  },
+  {
+   "phrase": "Chronic lateness",
+   "level": "B2",
+   "definition": "The persistent, habitual pattern of arriving late for work, meetings, or social events.",
+   "example": "\"Chronic lateness demonstrates a complete lack of basic respect for other people's time.\""
+  },
+  {
+   "phrase": "Time constraints",
+   "level": "C1",
+   "definition": "Strict limitations placed on projects or activities by tight deadlines and short hours.",
+   "example": "\"Engineers often have to drop minor features due to severe time constraints.\""
+  },
+  {
+   "phrase": "Prioritize tasks",
+   "level": "C1",
+   "definition": "To organize jobs in order of urgency and importance to manage time efficiently.",
+   "example": "\"The key to managing a busy workload is learning how to prioritize tasks daily.\""
+  },
+  {
+   "phrase": "Punctuality as respect",
+   "level": "C2",
+   "definition": "Treating arriving on time as a basic mark of personal courtesy and professional integrity.",
+   "example": "\"In modern corporate life, treating punctuality as respect builds immediate trust.\""
+  },
+  {
+   "phrase": "Fast-paced living",
+   "level": "C2",
+   "definition": "A modern lifestyle filled with constant activity, rapid communication, and high urgency.",
+   "example": "\"The pressure of fast-paced living in major cities leaves very little room for relaxation.\""
+  }
+ ],
+ "p3t50": [
+  {
+   "phrase": "Noise pollution",
+   "level": "B2",
+   "definition": "Harmful, excessive urban noise generated by traffic, aircraft, and heavy industry.",
+   "example": "\"Living near a busy highway exposes families to constant noise pollution.\""
+  },
+  {
+   "phrase": "Household chores",
+   "level": "B2",
+   "definition": "Routine domestic tasks like cleaning, washing dishes, and cooking done to maintain a home.",
+   "example": "\"Smart appliances have reduced the time families spend doing mundane household chores.\""
+  },
+  {
+   "phrase": "Acoustic discomfort",
+   "level": "C1",
+   "definition": "Physical irritation, stress, or headache caused by loud, harsh, or reverberating noise.",
+   "example": "\"Hard concrete restaurant architecture can create severe acoustic discomfort.\""
+  },
+  {
+   "phrase": "Urban hubbub",
+   "level": "C1",
+   "definition": "The continuous chaotic background noise, traffic, and activity of a crowded city center.",
+   "example": "\"Older adults often move to rural villages to escape the overwhelming urban hubbub.\""
+  },
+  {
+   "phrase": "Automated appliances",
+   "level": "C2",
+   "definition": "Smart home machines that execute domestic cleaning tasks independently without human labor.",
+   "example": "\"Fully automated appliances will soon handle routine house cleaning completely.\""
+  },
+  {
+   "phrase": "Reclaim personal downtime",
+   "level": "C2",
+   "definition": "To deliberately recover free leisure time for rest away from work and household labor.",
+   "example": "\"Outsourcing house cleaning allows busy working professionals to reclaim personal downtime.\""
+  }
+ ]
+}

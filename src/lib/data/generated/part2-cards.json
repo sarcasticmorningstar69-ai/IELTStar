@@ -1,0 +1,362 @@
+[
+ {
+  "id": "p2c1",
+  "title": "An Inspiring Individual",
+  "domain": "Interpersonal Profiles and Personalities",
+  "bullets": [
+   "Who this person is",
+   "How you know or learned about them",
+   "What qualities or achievements you admire in them"
+  ],
+  "prompt": "Describe a person who has inspired you.",
+  "finalPoint": "Explain why this person serves as an inspiration in your life."
+ },
+ {
+  "id": "p2c2",
+  "title": "An Engaging Senior Citizen",
+  "domain": "Interpersonal Profiles and Personalities",
+  "bullets": [
+   "Who this individual is and your relationship to them",
+   "How often and where you converse with them",
+   "What subjects or stories you typically discuss"
+  ],
+  "prompt": "Describe an elderly person you enjoy talking to.",
+  "finalPoint": "Explain why you find communicating with this person rewarding and interesting."
+ },
+ {
+  "id": "p2c3",
+  "title": "A Peer with Leadership Capabilities",
+  "domain": "Interpersonal Profiles and Personalities",
+  "bullets": [
+   "Who this person is and how you know them",
+   "What leadership roles or responsibilities they have undertaken",
+   "How they behave when managing or collaborating with others"
+  ],
+  "prompt": "Describe a friend or colleague who is an effective leader.",
+  "finalPoint": "Explain why you consider this person to be a good leader."
+ },
+ {
+  "id": "p2c4",
+  "title": "A Public Figure in Contemporary Media",
+  "domain": "Interpersonal Profiles and Personalities",
+  "bullets": [
+   "Who this public figure is",
+   "Why they frequently appear in the media",
+   "What sort of life or background they had before achieving prominence"
+  ],
+  "prompt": "Describe a person who is often in the news whom you would like to meet.",
+  "finalPoint": "And explain what you would discuss with this person if you met them."
+ },
+ {
+  "id": "p2c5",
+  "title": "An Influential Educator",
+  "domain": "Interpersonal Profiles and Personalities",
+  "bullets": [
+   "Who this teacher was and the academic subject they taught",
+   "When and where you were taught by them",
+   "What pedagogical methods or personal approaches they utilized"
+  ],
+  "prompt": "Describe a teacher who significantly influenced your educational development.",
+  "finalPoint": "Explain how this teacher shaped your attitude toward learning."
+ },
+ {
+  "id": "p2c6",
+  "title": "An Altruistic Individual",
+  "domain": "Interpersonal Profiles and Personalities",
+  "bullets": [
+   "Who this individual is and how you became acquainted with them",
+   "What kinds of assistance or support they provide",
+   "How often and under what circumstances they offer this help"
+  ],
+  "prompt": "Describe a person you know who frequently helps others.",
+  "finalPoint": "And explain how you feel about their contributions and character."
+ },
+ {
+  "id": "p2c7",
+  "title": "A Desired Living Space",
+  "domain": "Architectural Spaces, Geography, and Physical Environments",
+  "bullets": [
+   "Where this residence would be located",
+   "What architectural style and interior design it would feature",
+   "Who you would live with in this home"
+  ],
+  "prompt": "Describe a house or apartment you would like to live in.",
+  "finalPoint": "And explain why you would choose to live in this specific place."
+ },
+ {
+  "id": "p2c8",
+  "title": "A Significant Historical Site",
+  "domain": "Architectural Spaces, Geography, and Physical Environments",
+  "bullets": [
+   "What the historical place is and where it is situated",
+   "When and with whom you visited the location",
+   "What historical significance or architectural features it possesses"
+  ],
+  "prompt": "Describe a historical place you have visited.",
+  "finalPoint": "Explain why this historical visit left a strong impression on you."
+ },
+ {
+  "id": "p2c9",
+  "title": "A Tranquil Environment",
+  "domain": "Architectural Spaces, Geography, and Physical Environments",
+  "bullets": [
+   "Where this place is located",
+   "When and how frequently you visit it",
+   "What activities you engage in while there"
+  ],
+  "prompt": "Describe a place that you find exceptionally peaceful.",
+  "finalPoint": "And explain why this environment induces a sense of calm and peace."
+ },
+ {
+  "id": "p2c10",
+  "title": "A Densely Populated Public Space",
+  "domain": "Architectural Spaces, Geography, and Physical Environments",
+  "bullets": [
+   "Where this place is and when you went there",
+   "Why this location was populated with so many people",
+   "What you did while navigating the environment"
+  ],
+  "prompt": "Describe a crowded place you have visited.",
+  "finalPoint": "Explain how you felt about being in such a crowded setting."
+ },
+ {
+  "id": "p2c11",
+  "title": "An Aesthetically Distinct Urban Setting",
+  "domain": "Architectural Spaces, Geography, and Physical Environments",
+  "bullets": [
+   "What city it is and when you traveled there",
+   "How you traveled and who accompanied you",
+   "What prominent landmarks or landscape features characterized the city"
+  ],
+  "prompt": "Describe a city you visited that you consider exceptionally beautiful.",
+  "finalPoint": "And explain why you found the urban aesthetic so memorable."
+ },
+ {
+  "id": "p2c12",
+  "title": "A Meaningful Presentation Gift",
+  "domain": "Material Objects, Technological Artifacts, and Possessions",
+  "bullets": [
+   "What the gift was and who presented it to you",
+   "On what specific milestone or occasion you received it",
+   "What the physical appearance or utility of the object was"
+  ],
+  "prompt": "Describe a special gift you received on an important occasion.",
+  "finalPoint": "And explain why this gift held exceptional personal significance."
+ },
+ {
+  "id": "p2c13",
+  "title": "A High-Utility Digital Application or Website",
+  "domain": "Material Objects, Technological Artifacts, and Possessions",
+  "bullets": [
+   "What the platform is and how you initially discovered it",
+   "How frequently you access it and for what operational purposes",
+   "What distinct features or content it offers"
+  ],
+  "prompt": "Describe a useful website or digital platform you regularly use.",
+  "finalPoint": "Explain why this digital tool is indispensable to your daily routine."
+ },
+ {
+  "id": "p2c14",
+  "title": "A Notable Work of Visual Art",
+  "domain": "Material Objects, Technological Artifacts, and Possessions",
+  "bullets": [
+   "What the artwork is and who created it",
+   "Where and when you first viewed it",
+   "What subject matter, medium, or style it represents"
+  ],
+  "prompt": "Describe a piece of art (such as a painting or sculpture) that you like.",
+  "finalPoint": "Explain why this piece of art resonates with you aesthetically."
+ },
+ {
+  "id": "p2c15",
+  "title": "Specialized Institutional Attire",
+  "domain": "Material Objects, Technological Artifacts, and Possessions",
+  "bullets": [
+   "What the uniform looked like in terms of design and material",
+   "When, where, and under what institutional rules you were required to wear it",
+   "How you acquired and maintained the uniform"
+  ],
+  "prompt": "Describe a uniform you have worn for school or professional employment.",
+  "finalPoint": "Explain how you felt about wearing this standardized clothing."
+ },
+ {
+  "id": "p2c16",
+  "title": "An Underutilized Consumer Acquisition",
+  "domain": "Material Objects, Technological Artifacts, and Possessions",
+  "bullets": [
+   "What the product was and when you bought it",
+   "Why you decided to purchase the item initially",
+   "How often or in what manner you have actually used it"
+  ],
+  "prompt": "Describe an item you purchased but have not used very much.",
+  "finalPoint": "And explain why you ended up using this item far less than anticipated."
+ },
+ {
+  "id": "p2c17",
+  "title": "A Logistically Disrupted Journey",
+  "domain": "Episodic Events, Life Transitions, and Narrative Incidents",
+  "bullets": [
+   "Where you were traveling and what mode of transport you utilized",
+   "Who accompanied you on this trip",
+   "What unforeseen complications or delays occurred"
+  ],
+  "prompt": "Describe a journey that did not go according to your original plans.",
+  "finalPoint": "And explain how you resolved the disruption and what you would do differently in the future."
+ },
+ {
+  "id": "p2c18",
+  "title": "A Pivotal Personal Decision",
+  "domain": "Episodic Events, Life Transitions, and Narrative Incidents",
+  "bullets": [
+   "What the decision entailed",
+   "When and why you were required to make this choice",
+   "What alternative options or factors you had to evaluate"
+  ],
+  "prompt": "Describe an important decision you made that significantly affected your life.",
+  "finalPoint": "And explain how this decision altered the trajectory of your life."
+ },
+ {
+  "id": "p2c19",
+  "title": "A Demanding Accomplishment",
+  "domain": "Episodic Events, Life Transitions, and Narrative Incidents",
+  "bullets": [
+   "What the task or project involved",
+   "When and why you undertook this difficult endeavor",
+   "What specific obstacles arose and how you addressed them"
+  ],
+  "prompt": "Describe a challenging task or project that you successfully completed.",
+  "finalPoint": "And explain why completing this project was both challenging and gratifying."
+ },
+ {
+  "id": "p2c20",
+  "title": "An Unplanned or Memorable Celebration",
+  "domain": "Episodic Events, Life Transitions, and Narrative Incidents",
+  "bullets": [
+   "What the occasion was and where it was hosted",
+   "Who attended and what activities took place",
+   "What food, entertainment, or cultural rituals were included"
+  ],
+  "prompt": "Describe a special celebration or party you attended.",
+  "finalPoint": "And explain why this celebration left a lasting impression on you."
+ },
+ {
+  "id": "p2c21",
+  "title": "Receipt of Critical Information",
+  "domain": "Episodic Events, Life Transitions, and Narrative Incidents",
+  "bullets": [
+   "What the news was and who communicated it to you",
+   "When and via what medium you received it",
+   "What immediate actions you took upon hearing it"
+  ],
+  "prompt": "Describe a time when you received important or welcome news.",
+  "finalPoint": "Explain why this piece of information had such a strong impact on you."
+ },
+ {
+  "id": "p2c22",
+  "title": "A Physical Conditioning Regimen",
+  "domain": "Behavioral Habits, Skills, Repertoire, and Recreation",
+  "bullets": [
+   "What the activity is and how it is performed",
+   "When and where you typically participate in it",
+   "What equipment or environmental settings are required"
+  ],
+  "prompt": "Describe an exercise or athletic activity you do to maintain fitness.",
+  "finalPoint": "Explain why you consider this activity effective for your physical well-being."
+ },
+ {
+  "id": "p2c23",
+  "title": "An Acquired Skill or Competency",
+  "domain": "Behavioral Habits, Skills, Repertoire, and Recreation",
+  "bullets": [
+   "What the skill is and who taught it to you",
+   "How long it took to acquire competence",
+   "What training methods, tools, or practice routines you utilized"
+  ],
+  "prompt": "Describe a practical skill you learned over a period of time.",
+  "finalPoint": "Explain how this skill has proven useful in your personal or professional life."
+ },
+ {
+  "id": "p2c24",
+  "title": "A Post-Obligation Decompression Routine",
+  "domain": "Behavioral Habits, Skills, Repertoire, and Recreation",
+  "bullets": [
+   "What the activity involves",
+   "Where and with whom you engage in it",
+   "How frequently you dedicate time to this routine"
+  ],
+  "prompt": "Describe an activity you do after work or study to relax.",
+  "finalPoint": "And explain why this particular activity alleviates stress and restores mental energy."
+ },
+ {
+  "id": "p2c25",
+  "title": "A Structured Childhood Game",
+  "domain": "Behavioral Habits, Skills, Repertoire, and Recreation",
+  "bullets": [
+   "What the game was and what basic rules governed it",
+   "Where you typically played it and with whom",
+   "What equipment or physical spaces were required"
+  ],
+  "prompt": "Describe a traditional or recreational game you played in your childhood.",
+  "finalPoint": "And explain what made this game particularly engaging to you as a child."
+ },
+ {
+  "id": "p2c26",
+  "title": "A Memorable Interpersonal Dialogue",
+  "domain": "Behavioral Habits, Skills, Repertoire, and Recreation",
+  "bullets": [
+   "Whom you spoke with and where the interaction occurred",
+   "What core subject matter or points were explored",
+   "How the other participant contributed to the exchange"
+  ],
+  "prompt": "Describe an engaging conversation you had with another individual.",
+  "finalPoint": "And explain why this dialogue stimulated your interest or altered your perspective."
+ },
+ {
+  "id": "p2c27",
+  "title": "Informative Health Communication",
+  "domain": "Systems, Media, Abstract Phenomena, and Societal Issues",
+  "bullets": [
+   "What the article discussed and where you accessed it",
+   "When you read this material",
+   "What specific scientific evidence or lifestyle advice the author presented"
+  ],
+  "prompt": "Describe an article or publication on health that you found informative.",
+  "finalPoint": "Explain how the insights from this publication could improve public or individual health."
+ },
+ {
+  "id": "p2c28",
+  "title": "A Compelling Literary Work",
+  "domain": "Systems, Media, Abstract Phenomena, and Societal Issues",
+  "bullets": [
+   "What the book is and who authored it",
+   "What genre it belongs to and what core narrative or theme it develops",
+   "When and over what duration you read it"
+  ],
+  "prompt": "Describe an engaging book you recently finished reading.",
+  "finalPoint": "And explain why you found this literary work captivating."
+ },
+ {
+  "id": "p2c29",
+  "title": "Institutional Environmental Legislation",
+  "domain": "Systems, Media, Abstract Phenomena, and Societal Issues",
+  "bullets": [
+   "What the law regulates and how you learned about it",
+   "Which segments of society or industries are affected by it",
+   "How compliance with this policy is enforced"
+  ],
+  "prompt": "Describe a law or public policy concerning environmental protection in your country.",
+  "finalPoint": "And explain whether you believe this legal framework is effective in preserving ecological balance."
+ },
+ {
+  "id": "p2c30",
+  "title": "A Targeted Community Modification",
+  "domain": "Systems, Media, Abstract Phenomena, and Societal Issues",
+  "bullets": [
+   "What specific infrastructural or social intervention is needed",
+   "What local problems or systemic inefficiencies necessitate this change",
+   "How local authorities or civic groups could execute this improvement"
+  ],
+  "prompt": "Describe a positive change you would like to see implemented in your local community.",
+  "finalPoint": "Explain how this development would elevate the overall quality of life in the area."
+ }
+]

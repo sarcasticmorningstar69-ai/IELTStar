@@ -1,0 +1,1352 @@
+[
+ {
+  "id": "p1t1",
+  "title": "Work and Professional Employment",
+  "cluster": "Primary Biographical and Foundational Domains",
+  "questions": [
+   {
+    "id": "p1t1-q1",
+    "prompt": "What is your current profession, and where do you work?"
+   },
+   {
+    "id": "p1t1-q2",
+    "prompt": "Why did you choose that specific career path?"
+   },
+   {
+    "id": "p1t1-q3",
+    "prompt": "What primary tasks and responsibilities do you handle on a daily basis?"
+   },
+   {
+    "id": "p1t1-q4",
+    "prompt": "Do you get along well with your colleagues and coworkers?"
+   },
+   {
+    "id": "p1t1-q5",
+    "prompt": "If you had the opportunity, would you consider changing your line of work in the future?"
+   }
+  ]
+ },
+ {
+  "id": "p1t2",
+  "title": "Academic Studies and Disciplines",
+  "cluster": "Primary Biographical and Foundational Domains",
+  "questions": [
+   {
+    "id": "p1t2-q1",
+    "prompt": "What subject are you currently studying, and where are you enrolled?"
+   },
+   {
+    "id": "p1t2-q2",
+    "prompt": "What motivated you to choose this particular academic subject?"
+   },
+   {
+    "id": "p1t2-q3",
+    "prompt": "What do you find most interesting or intellectually stimulating about your coursework?"
+   },
+   {
+    "id": "p1t2-q4",
+    "prompt": "Do you intend to work within the same field once you complete your studies?"
+   },
+   {
+    "id": "p1t2-q5",
+    "prompt": "How did your initial expectations of university differ from the reality of your first day?"
+   }
+  ]
+ },
+ {
+  "id": "p1t3",
+  "title": "Hometown and Regional Origins",
+  "cluster": "Primary Biographical and Foundational Domains",
+  "questions": [
+   {
+    "id": "p1t3-q1",
+    "prompt": "Where is your hometown located, and what kind of place is it?"
+   },
+   {
+    "id": "p1t3-q2",
+    "prompt": "What is the most notable or popular landmark in your hometown?"
+   },
+   {
+    "id": "p1t3-q3",
+    "prompt": "Has your hometown undergone significant physical development in recent years?"
+   },
+   {
+    "id": "p1t3-q4",
+    "prompt": "What kinds of jobs do most people in your hometown do?"
+   },
+   {
+    "id": "p1t3-q5",
+    "prompt": "Would you consider your hometown an ideal location to raise a family?"
+   }
+  ]
+ },
+ {
+  "id": "p1t4",
+  "title": "Accommodation and Living Environment",
+  "cluster": "Primary Biographical and Foundational Domains",
+  "questions": [
+   {
+    "id": "p1t4-q1",
+    "prompt": "Do you live in a house or an apartment?"
+   },
+   {
+    "id": "p1t4-q2",
+    "prompt": "Which room in your home do you spend the most time in, and why?"
+   },
+   {
+    "id": "p1t4-q3",
+    "prompt": "How are the walls and interior spaces of your home decorated?"
+   },
+   {
+    "id": "p1t4-q4",
+    "prompt": "What changes or improvements would you make to your living space if possible?"
+   },
+   {
+    "id": "p1t4-q5",
+    "prompt": "What type of accommodation would you like to live in down the road?"
+   }
+  ]
+ },
+ {
+  "id": "p1t5",
+  "title": "Daily Routine",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t5-q1",
+    "prompt": "At what time do you usually wake up in the morning?"
+   },
+   {
+    "id": "p1t5-q2",
+    "prompt": "Do you follow a consistent schedule throughout the week?"
+   },
+   {
+    "id": "p1t5-q3",
+    "prompt": "How has your daily routine changed compared to when you were a child?"
+   },
+   {
+    "id": "p1t5-q4",
+    "prompt": "Do you think maintaining a set daily routine is important for staying organized?"
+   },
+   {
+    "id": "p1t5-q5",
+    "prompt": "What part of your typical day would you change if you had more control over your time?"
+   }
+  ]
+ },
+ {
+  "id": "p1t6",
+  "title": "Childhood Memories",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t6-q1",
+    "prompt": "Did you enjoy your childhood overall?"
+   },
+   {
+    "id": "p1t6-q2",
+    "prompt": "What is your earliest clear memory from when you were young?"
+   },
+   {
+    "id": "p1t6-q3",
+    "prompt": "Did you have a large circle of friends while growing up?"
+   },
+   {
+    "id": "p1t6-q4",
+    "prompt": "What activities or pastimes did you enjoy most as a child?"
+   },
+   {
+    "id": "p1t6-q5",
+    "prompt": "Do you think it is better for children to grow up in the city or in the countryside?"
+   }
+  ]
+ },
+ {
+  "id": "p1t7",
+  "title": "Family Dynamics and Relationships",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t7-q1",
+    "prompt": "How many members are there in your immediate family?"
+   },
+   {
+    "id": "p1t7-q2",
+    "prompt": "Which person in your family do you get along with best?"
+   },
+   {
+    "id": "p1t7-q3",
+    "prompt": "What kinds of activities do you and your family usually do together?"
+   },
+   {
+    "id": "p1t7-q4",
+    "prompt": "Do you stay in close touch with your extended relatives?"
+   },
+   {
+    "id": "p1t7-q5",
+    "prompt": "Why do you think family connections remain important across most cultures?"
+   }
+  ]
+ },
+ {
+  "id": "p1t8",
+  "title": "Friendships and Social Circles",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t8-q1",
+    "prompt": "Do you have a large circle of acquaintances or a few close friends?"
+   },
+   {
+    "id": "p1t8-q2",
+    "prompt": "What personal qualities do you value most in a friend?"
+   },
+   {
+    "id": "p1t8-q3",
+    "prompt": "What do you and your close friends typically do when you hang out?"
+   },
+   {
+    "id": "p1t8-q4",
+    "prompt": "Is it easy or difficult for you to make new friends nowadays?"
+   },
+   {
+    "id": "p1t8-q5",
+    "prompt": "When facing a difficult situation, do you prefer turning to friends or family for advice?"
+   }
+  ]
+ },
+ {
+  "id": "p1t9",
+  "title": "Personal Habits and Behavioral Patterns",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t9-q1",
+    "prompt": "What daily habit helps you stay productive during the week?"
+   },
+   {
+    "id": "p1t9-q2",
+    "prompt": "Have you ever successfully broken an unhealthy or unproductive habit?"
+   },
+   {
+    "id": "p1t9-q3",
+    "prompt": "Are there family routines or habits you have maintained since childhood?"
+   },
+   {
+    "id": "p1t9-q4",
+    "prompt": "How easy is it for you to adapt to a brand-new routine?"
+   },
+   {
+    "id": "p1t9-q5",
+    "prompt": "Do you think modern technology encourages bad daily habits?"
+   }
+  ]
+ },
+ {
+  "id": "p1t10",
+  "title": "Lifestyle and Personal Balance",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t10-q1",
+    "prompt": "Would you describe your current lifestyle as fast-paced or relaxed?"
+   },
+   {
+    "id": "p1t10-q2",
+    "prompt": "Do you manage to keep a healthy balance between work and personal time?"
+   },
+   {
+    "id": "p1t10-q3",
+    "prompt": "Has your everyday lifestyle changed noticeably over the past twelve months?"
+   },
+   {
+    "id": "p1t10-q4",
+    "prompt": "What adjustments would you make to improve your day-to-day well-being?"
+   },
+   {
+    "id": "p1t10-q5",
+    "prompt": "Do you maintain an active social life during the workweek?"
+   }
+  ]
+ },
+ {
+  "id": "p1t11",
+  "title": "Evenings and Nighttime Routines",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t11-q1",
+    "prompt": "What do you typically do during your evenings?"
+   },
+   {
+    "id": "p1t11-q2",
+    "prompt": "Do you prefer spending your evenings at home alone or going out with others?"
+   },
+   {
+    "id": "p1t11-q3",
+    "prompt": "Do you often have to work or study late into the night?"
+   },
+   {
+    "id": "p1t11-q4",
+    "prompt": "What are some popular evening activities for young people in your country?"
+   },
+   {
+    "id": "p1t11-q5",
+    "prompt": "How do your evening habits today compare to what you did as a child?"
+   }
+  ]
+ },
+ {
+  "id": "p1t12",
+  "title": "Birthdays and Celebrations",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t12-q1",
+    "prompt": "How do you usually celebrate your birthday?"
+   },
+   {
+    "id": "p1t12-q2",
+    "prompt": "What did you do to mark your most recent birthday?"
+   },
+   {
+    "id": "p1t12-q3",
+    "prompt": "Are certain milestone birthdays considered especially important in your country?"
+   },
+   {
+    "id": "p1t12-q4",
+    "prompt": "Do you think having large birthday parties is good for young children?"
+   },
+   {
+    "id": "p1t12-q5",
+    "prompt": "Do you prefer receiving material presents or experiential gifts on special occasions?"
+   }
+  ]
+ },
+ {
+  "id": "p1t13",
+  "title": "Happiness and Mood",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t13-q1",
+    "prompt": "Would you describe yourself as a generally happy person?"
+   },
+   {
+    "id": "p1t13-q2",
+    "prompt": "What specific things or events tend to put you in a good mood?"
+   },
+   {
+    "id": "p1t13-q3",
+    "prompt": "Does the weather have a noticeable impact on how you feel?"
+   },
+   {
+    "id": "p1t13-q4",
+    "prompt": "What simple, everyday moments make you smile?"
+   },
+   {
+    "id": "p1t13-q5",
+    "prompt": "Do you feel that people in your home country are generally satisfied with their lives?"
+   }
+  ]
+ },
+ {
+  "id": "p1t14",
+  "title": "Laughter and Sense of Humour",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t14-q1",
+    "prompt": "Do you like making other people laugh?"
+   },
+   {
+    "id": "p1t14-q2",
+    "prompt": "When was the last time you had a really good laugh?"
+   },
+   {
+    "id": "p1t14-q3",
+    "prompt": "What types of comedy, films, or shows do you find genuinely funny?"
+   },
+   {
+    "id": "p1t14-q4",
+    "prompt": "In what everyday situations do people commonly use laughter to ease tension?"
+   },
+   {
+    "id": "p1t14-q5",
+    "prompt": "Is it important for close friends to share the same sense of humour?"
+   }
+  ]
+ },
+ {
+  "id": "p1t15",
+  "title": "Dreams and Sleep Cognition",
+  "cluster": "Personal Routines, Biography, and Affective States",
+  "questions": [
+   {
+    "id": "p1t15-q1",
+    "prompt": "Do you often have vivid dreams when you sleep?"
+   },
+   {
+    "id": "p1t15-q2",
+    "prompt": "Are you usually able to remember your dreams when you wake up?"
+   },
+   {
+    "id": "p1t15-q3",
+    "prompt": "Do you believe that dreams hold any real personal or psychological meaning?"
+   },
+   {
+    "id": "p1t15-q4",
+    "prompt": "Do you ever catch yourself daydreaming during work or class?"
+   },
+   {
+    "id": "p1t15-q5",
+    "prompt": "What kinds of things do you usually daydream about?"
+   }
+  ]
+ },
+ {
+  "id": "p1t16",
+  "title": "Music and Listening Habits",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t16-q1",
+    "prompt": "What style of music do you enjoy listening to the most?"
+   },
+   {
+    "id": "p1t16-q2",
+    "prompt": "Have your musical tastes changed significantly since you were younger?"
+   },
+   {
+    "id": "p1t16-q3",
+    "prompt": "Do you prefer going to live concerts or listening to recorded music at home?"
+   },
+   {
+    "id": "p1t16-q4",
+    "prompt": "Did you ever learn to play a musical instrument at school?"
+   },
+   {
+    "id": "p1t16-q5",
+    "prompt": "Is traditional music still popular among young people in your culture?"
+   }
+  ]
+ },
+ {
+  "id": "p1t17",
+  "title": "Visual Arts and Galleries",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t17-q1",
+    "prompt": "Are you good at artistic activities like drawing, painting, or sculpting?"
+   },
+   {
+    "id": "p1t17-q2",
+    "prompt": "Did you have formal art classes when you were in primary or secondary school?"
+   },
+   {
+    "id": "p1t17-q3",
+    "prompt": "What styles or types of visual art appeal to you most?"
+   },
+   {
+    "id": "p1t17-q4",
+    "prompt": "Have you ever visited an art exhibition or museum?"
+   },
+   {
+    "id": "p1t17-q5",
+    "prompt": "Do you think visiting art galleries is beneficial for children?"
+   }
+  ]
+ },
+ {
+  "id": "p1t18",
+  "title": "Reading and Literature",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t18-q1",
+    "prompt": "How often do you make time to read books or articles?"
+   },
+   {
+    "id": "p1t18-q2",
+    "prompt": "What genres of books or writing do you enjoy most?"
+   },
+   {
+    "id": "p1t18-q3",
+    "prompt": "Do you prefer reading printed physical books or using e-readers and screens?"
+   },
+   {
+    "id": "p1t18-q4",
+    "prompt": "What kinds of stories or books did you read when you were younger?"
+   },
+   {
+    "id": "p1t18-q5",
+    "prompt": "Why is it important to encourage children to develop strong reading habits?"
+   }
+  ]
+ },
+ {
+  "id": "p1t19",
+  "title": "Cinema, Films, and Television",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t19-q1",
+    "prompt": "How often do you go to the cinema to see new releases?"
+   },
+   {
+    "id": "p1t19-q2",
+    "prompt": "What genres of movies or TV series do you watch regularly?"
+   },
+   {
+    "id": "p1t19-q3",
+    "prompt": "Do you frequently watch foreign-language films or television shows?"
+   },
+   {
+    "id": "p1t19-q4",
+    "prompt": "What are the main benefits of watching a movie in a theater compared to streaming it at home?"
+   },
+   {
+    "id": "p1t19-q5",
+    "prompt": "Should parents place limits on the amount of television their children watch?"
+   }
+  ]
+ },
+ {
+  "id": "p1t20",
+  "title": "Sports and Exercise",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t20-q1",
+    "prompt": "What sports or fitness activities do you participate in regularly?"
+   },
+   {
+    "id": "p1t20-q2",
+    "prompt": "Did you take part in organized school sports while growing up?"
+   },
+   {
+    "id": "p1t20-q3",
+    "prompt": "Do you enjoy playing sports more, or do you prefer watching them as a spectator?"
+   },
+   {
+    "id": "p1t20-q4",
+    "prompt": "Which sport attracts the largest following in your country?"
+   },
+   {
+    "id": "p1t20-q5",
+    "prompt": "Do local governments in your region provide adequate public sports facilities?"
+   }
+  ]
+ },
+ {
+  "id": "p1t21",
+  "title": "Photography and Capturing Memories",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t21-q1",
+    "prompt": "Do you enjoy taking photos of your daily life and surroundings?"
+   },
+   {
+    "id": "p1t21-q2",
+    "prompt": "What subjects do you photograph most often, such as scenery, food, or friends?"
+   },
+   {
+    "id": "p1t21-q3",
+    "prompt": "Do you prefer taking photos with a dedicated camera or with your smartphone?"
+   },
+   {
+    "id": "p1t21-q4",
+    "prompt": "How do you organize, back up, and store your personal photos?"
+   },
+   {
+    "id": "p1t21-q5",
+    "prompt": "Do you think digital cameras and phones have made photography less special?"
+   }
+  ]
+ },
+ {
+  "id": "p1t22",
+  "title": "Hobbies and Discretionary Time",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t22-q1",
+    "prompt": "What hobbies do you spend time on during your leisure hours?"
+   },
+   {
+    "id": "p1t22-q2",
+    "prompt": "How long have you been interested in your main hobby?"
+   },
+   {
+    "id": "p1t22-q3",
+    "prompt": "Did you have different hobbies when you were a child?"
+   },
+   {
+    "id": "p1t22-q4",
+    "prompt": "Why is it helpful for people to have hobbies that are separate from their work?"
+   },
+   {
+    "id": "p1t22-q5",
+    "prompt": "What hobbies are currently growing in popularity in your community?"
+   }
+  ]
+ },
+ {
+  "id": "p1t23",
+  "title": "Socializing and Going Out",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t23-q1",
+    "prompt": "How often do you head out for social activities during the week?"
+   },
+   {
+    "id": "p1t23-q2",
+    "prompt": "What venues or places do you typically visit when going out with friends?"
+   },
+   {
+    "id": "p1t23-q3",
+    "prompt": "Do you prefer going out independently or with a group of people?"
+   },
+   {
+    "id": "p1t23-q4",
+    "prompt": "Where do young people in your area usually go when they hang out?"
+   },
+   {
+    "id": "p1t23-q5",
+    "prompt": "Has the way people spend their leisure time changed over the past decade in your country?"
+   }
+  ]
+ },
+ {
+  "id": "p1t24",
+  "title": "Holidays and Vacations",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t24-q1",
+    "prompt": "How do you typically spend your annual holidays or work breaks?"
+   },
+   {
+    "id": "p1t24-q2",
+    "prompt": "Do you prefer planning your holiday schedule down to the detail or keeping things open?"
+   },
+   {
+    "id": "p1t24-q3",
+    "prompt": "What has been your most memorable holiday trip so far?"
+   },
+   {
+    "id": "p1t24-q4",
+    "prompt": "Do you prefer spending vacations in lively cities or in quiet natural areas?"
+   },
+   {
+    "id": "p1t24-q5",
+    "prompt": "How have holiday and travel preferences in your country shifted over time?"
+   }
+  ]
+ },
+ {
+  "id": "p1t25",
+  "title": "Travel and Tourism",
+  "cluster": "Leisure, Culture, and Recreation",
+  "questions": [
+   {
+    "id": "p1t25-q1",
+    "prompt": "What was the most recent place you visited as a tourist?"
+   },
+   {
+    "id": "p1t25-q2",
+    "prompt": "Would you like to travel back to that same destination again?"
+   },
+   {
+    "id": "p1t25-q3",
+    "prompt": "What types of attractions do you prioritize when visiting a new city or country?"
+   },
+   {
+    "id": "p1t25-q4",
+    "prompt": "What practical tips can help someone save money while traveling?"
+   },
+   {
+    "id": "p1t25-q5",
+    "prompt": "Have you ever hosted an international guest or visitor at your home?"
+   }
+  ]
+ },
+ {
+  "id": "p1t26",
+  "title": "Food Preferences and Diet",
+  "cluster": "Food, Beverages, and Culinary Habits",
+  "questions": [
+   {
+    "id": "p1t26-q1",
+    "prompt": "What is your favorite type of food or cuisine?"
+   },
+   {
+    "id": "p1t26-q2",
+    "prompt": "Have your food preferences remained mostly the same since you were young?"
+   },
+   {
+    "id": "p1t26-q3",
+    "prompt": "Are there any particular foods or ingredients that you strongly dislike?"
+   },
+   {
+    "id": "p1t26-q4",
+    "prompt": "What constitutes a typical, traditional dish in your home country?"
+   },
+   {
+    "id": "p1t26-q5",
+    "prompt": "Would you say you maintain a reasonably healthy and balanced diet?"
+   }
+  ]
+ },
+ {
+  "id": "p1t27",
+  "title": "Cooking and Kitchen Skills",
+  "cluster": "Food, Beverages, and Culinary Habits",
+  "questions": [
+   {
+    "id": "p1t27-q1",
+    "prompt": "Do you know how to cook, and how often do you prepare meals at home?"
+   },
+   {
+    "id": "p1t27-q2",
+    "prompt": "Did you ever help out with cooking or kitchen chores as a child?"
+   },
+   {
+    "id": "p1t27-q3",
+    "prompt": "What is your go-to meal or signature dish to make?"
+   },
+   {
+    "id": "p1t27-q4",
+    "prompt": "Do you find cooking to be a relaxing activity or a stressful chore?"
+   },
+   {
+    "id": "p1t27-q5",
+    "prompt": "Do you believe practical cooking skills should be taught in standard school programs?"
+   }
+  ]
+ },
+ {
+  "id": "p1t28",
+  "title": "Beverages and Refreshments",
+  "cluster": "Food, Beverages, and Culinary Habits",
+  "questions": [
+   {
+    "id": "p1t28-q1",
+    "prompt": "What is your favorite non-alcoholic drink to have during the day?"
+   },
+   {
+    "id": "p1t28-q2",
+    "prompt": "Is drinking tea or coffee more common in your home country?"
+   },
+   {
+    "id": "p1t28-q3",
+    "prompt": "Did you prefer different types of drinks when you were a child?"
+   },
+   {
+    "id": "p1t28-q4",
+    "prompt": "Do you make a conscious effort to drink enough water each day?"
+   },
+   {
+    "id": "p1t28-q5",
+    "prompt": "What is a traditional drink served during holidays or celebrations in your culture?"
+   }
+  ]
+ },
+ {
+  "id": "p1t29",
+  "title": "Desserts, Baking, and Confectionery",
+  "cluster": "Food, Beverages, and Culinary Habits",
+  "questions": [
+   {
+    "id": "p1t29-q1",
+    "prompt": "Do you enjoy having sweet desserts or cake after a meal?"
+   },
+   {
+    "id": "p1t29-q2",
+    "prompt": "How often do you treat yourself to baked goods or pastries?"
+   },
+   {
+    "id": "p1t29-q3",
+    "prompt": "Have you ever tried baking a cake or sweet treat from scratch?"
+   },
+   {
+    "id": "p1t29-q4",
+    "prompt": "Is there a wide variety of traditional sweets and desserts in your culture?"
+   },
+   {
+    "id": "p1t29-q5",
+    "prompt": "Do you think people in general consume too much refined sugar these days?"
+   }
+  ]
+ },
+ {
+  "id": "p1t30",
+  "title": "Chocolate and Sweets",
+  "cluster": "Food, Beverages, and Culinary Habits",
+  "questions": [
+   {
+    "id": "p1t30-q1",
+    "prompt": "Do you like eating chocolate, and what kind do you prefer?"
+   },
+   {
+    "id": "p1t30-q2",
+    "prompt": "Did you eat chocolate more frequently when you were a child?"
+   },
+   {
+    "id": "p1t30-q3",
+    "prompt": "Have you ever given high-quality chocolates to someone as a gift?"
+   },
+   {
+    "id": "p1t30-q4",
+    "prompt": "Is chocolate a popular gift item for special occasions in your country?"
+   },
+   {
+    "id": "p1t30-q5",
+    "prompt": "Why do you think chocolate is such a popular treat all around the world?"
+   }
+  ]
+ },
+ {
+  "id": "p1t31",
+  "title": "Weather, Climate, and Seasons",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t31-q1",
+    "prompt": "What kind of weather do you find most pleasant?"
+   },
+   {
+    "id": "p1t31-q2",
+    "prompt": "Does the weather in your area change dramatically from one season to the next?"
+   },
+   {
+    "id": "p1t31-q3",
+    "prompt": "Do you check the weather forecast before heading out for the day?"
+   },
+   {
+    "id": "p1t31-q4",
+    "prompt": "Do you prefer hot summer weather or cold winter climates?"
+   },
+   {
+    "id": "p1t31-q5",
+    "prompt": "Have weather patterns in your region become noticeably more unpredictable lately?"
+   }
+  ]
+ },
+ {
+  "id": "p1t32",
+  "title": "Countryside and Rural Life",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t32-q1",
+    "prompt": "Have you ever lived in or visited a rural country area?"
+   },
+   {
+    "id": "p1t32-q2",
+    "prompt": "What do you see as the biggest advantages of living out in the countryside?"
+   },
+   {
+    "id": "p1t32-q3",
+    "prompt": "What practical challenges do people face when living far away from major cities?"
+   },
+   {
+    "id": "p1t32-q4",
+    "prompt": "What kinds of jobs are most common in rural parts of your country?"
+   },
+   {
+    "id": "p1t32-q5",
+    "prompt": "Would you consider moving out to a quiet rural town later in life?"
+   }
+  ]
+ },
+ {
+  "id": "p1t33",
+  "title": "Cities and Urban Environments",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t33-q1",
+    "prompt": "Do you live in a large metropolitan city or a smaller urban center?"
+   },
+   {
+    "id": "p1t33-q2",
+    "prompt": "What is the most vibrant or enjoyable part of your city?"
+   },
+   {
+    "id": "p1t33-q3",
+    "prompt": "What major challenges, such as traffic or living costs, does your city face?"
+   },
+   {
+    "id": "p1t33-q4",
+    "prompt": "What public facilities and spaces does your city offer for local residents?"
+   },
+   {
+    "id": "p1t33-q5",
+    "prompt": "How do you expect major cities in your country to change over the coming decades?"
+   }
+  ]
+ },
+ {
+  "id": "p1t34",
+  "title": "Neighbours and Local Communities",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t34-q1",
+    "prompt": "Do you know your neighbours well, and do you have a friendly relationship with them?"
+   },
+   {
+    "id": "p1t34-q2",
+    "prompt": "Are neighbourhood communities in your home country generally close-knit?"
+   },
+   {
+    "id": "p1t34-q3",
+    "prompt": "What is the general atmosphere and safety of your current neighborhood like?"
+   },
+   {
+    "id": "p1t34-q4",
+    "prompt": "In what ways could local authorities make your neighborhood a better place to live?"
+   },
+   {
+    "id": "p1t34-q5",
+    "prompt": "Why is it helpful to maintain a respectful and cooperative relationship with neighbours?"
+   }
+  ]
+ },
+ {
+  "id": "p1t35",
+  "title": "Flowers, Plants, and Gardening",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t35-q1",
+    "prompt": "Do you like having fresh flowers or houseplants in your home?"
+   },
+   {
+    "id": "p1t35-q2",
+    "prompt": "Have you ever grown flowers, vegetables, or other plants in a garden?"
+   },
+   {
+    "id": "p1t35-q3",
+    "prompt": "Which specific flowers or plants have special cultural meaning in your country?"
+   },
+   {
+    "id": "p1t35-q4",
+    "prompt": "On what occasions is it standard to give flowers as a gift in your culture?"
+   },
+   {
+    "id": "p1t35-q5",
+    "prompt": "Should municipal governments spend more public money on creating green parks and gardens?"
+   }
+  ]
+ },
+ {
+  "id": "p1t36",
+  "title": "Animals, Pets, and Wildlife",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t36-q1",
+    "prompt": "Do you currently have a pet, or have you owned one before?"
+   },
+   {
+    "id": "p1t36-q2",
+    "prompt": "What is the most common household pet in your home country?"
+   },
+   {
+    "id": "p1t36-q3",
+    "prompt": "Did you learn about wildlife and animal habitats when you were at school?"
+   },
+   {
+    "id": "p1t36-q4",
+    "prompt": "Have you ever visited a wildlife reserve, national park, or zoo?"
+   },
+   {
+    "id": "p1t36-q5",
+    "prompt": "What steps should be taken to protect endangered animal species from losing their habitats?"
+   }
+  ]
+ },
+ {
+  "id": "p1t37",
+  "title": "Environmental Protection and Waste",
+  "cluster": "Physical Environment, Ecology, and Urban Living",
+  "questions": [
+   {
+    "id": "p1t37-q1",
+    "prompt": "What do you do when you see litter discarded on the street?"
+   },
+   {
+    "id": "p1t37-q2",
+    "prompt": "Do you regularly sort and recycle your household waste?"
+   },
+   {
+    "id": "p1t37-q3",
+    "prompt": "How do you feel when you see someone dropping trash in public areas?"
+   },
+   {
+    "id": "p1t37-q4",
+    "prompt": "Do you consider single-use plastic waste to be a critical environmental issue?"
+   },
+   {
+    "id": "p1t37-q5",
+    "prompt": "What personal changes have you made to reduce your daily environmental footprint?"
+   }
+  ]
+ },
+ {
+  "id": "p1t38",
+  "title": "Computers and Workstations",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t38-q1",
+    "prompt": "How often do you use a computer for work, study, or everyday tasks?"
+   },
+   {
+    "id": "p1t38-q2",
+    "prompt": "Do you prefer working on a portable laptop or a stationary desktop?"
+   },
+   {
+    "id": "p1t38-q3",
+    "prompt": "What software programs or online platforms do you use most frequently?"
+   },
+   {
+    "id": "p1t38-q4",
+    "prompt": "How old were you when you first learned to use a computer?"
+   },
+   {
+    "id": "p1t38-q5",
+    "prompt": "Do you think young children spend too much time interacting with computer screens?"
+   }
+  ]
+ },
+ {
+  "id": "p1t39",
+  "title": "Mobile Phones and Messaging",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t39-q1",
+    "prompt": "What model or type of smartphone do you currently use?"
+   },
+   {
+    "id": "p1t39-q2",
+    "prompt": "Which mobile apps do you find yourself opening most frequently?"
+   },
+   {
+    "id": "p1t39-q3",
+    "prompt": "Do you prefer calling people on the phone or sending text messages?"
+   },
+   {
+    "id": "p1t39-q4",
+    "prompt": "How have smartphones changed the way you stay in touch with friends and family?"
+   },
+   {
+    "id": "p1t39-q5",
+    "prompt": "Could you manage your everyday routine if you had to go without a phone for a week?"
+   }
+  ]
+ },
+ {
+  "id": "p1t40",
+  "title": "Internet Use and Digital Platforms",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t40-q1",
+    "prompt": "How many hours a day do you spend browsing the web or using online services?"
+   },
+   {
+    "id": "p1t40-q2",
+    "prompt": "What websites do you visit most often to read information or research topics?"
+   },
+   {
+    "id": "p1t40-q3",
+    "prompt": "Do you use social media regularly, and how does it help you stay connected?"
+   },
+   {
+    "id": "p1t40-q4",
+    "prompt": "Have you ever faced disruptions or issues caused by a poor internet connection?"
+   },
+   {
+    "id": "p1t40-q5",
+    "prompt": "Do you think the internet has made society more connected or more isolated overall?"
+   }
+  ]
+ },
+ {
+  "id": "p1t41",
+  "title": "News and Current Affairs",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t41-q1",
+    "prompt": "How do you usually stay updated on national and international news?"
+   },
+   {
+    "id": "p1t41-q2",
+    "prompt": "Do you prefer reading printed newspapers or browsing digital news websites?"
+   },
+   {
+    "id": "p1t41-q3",
+    "prompt": "What types of news stories do you follow most closely, like politics, business, or culture?"
+   },
+   {
+    "id": "p1t41-q4",
+    "prompt": "Did your family read daily printed newspapers when you were growing up?"
+   },
+   {
+    "id": "p1t41-q5",
+    "prompt": "Do you feel that modern news coverage is generally objective and reliable?"
+   }
+  ]
+ },
+ {
+  "id": "p1t42",
+  "title": "Public and Private Transportation",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t42-q1",
+    "prompt": "What mode of transportation do you use most frequently for your daily commute?"
+   },
+   {
+    "id": "p1t42-q2",
+    "prompt": "Is the public transport system in your city reliable and convenient?"
+   },
+   {
+    "id": "p1t42-q3",
+    "prompt": "Do you prefer using public transit or driving your own vehicle?"
+   },
+   {
+    "id": "p1t42-q4",
+    "prompt": "How could transit options in your local area be upgraded or improved?"
+   },
+   {
+    "id": "p1t42-q5",
+    "prompt": "What is the most practical way to travel long distances across your country?"
+   }
+  ]
+ },
+ {
+  "id": "p1t43",
+  "title": "Bicycles and Urban Cycling",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t43-q1",
+    "prompt": "Do you own a bicycle, and how often do you ride it?"
+   },
+   {
+    "id": "p1t43-q2",
+    "prompt": "How old were you when you first learned to ride a bike?"
+   },
+   {
+    "id": "p1t43-q3",
+    "prompt": "Is cycling a popular way to commute to work or school in your city?"
+   },
+   {
+    "id": "p1t43-q4",
+    "prompt": "Should urban planners build more dedicated, protected bike lanes in cities?"
+   },
+   {
+    "id": "p1t43-q5",
+    "prompt": "What are the main personal and environmental benefits of cycling regularly?"
+   }
+  ]
+ },
+ {
+  "id": "p1t44",
+  "title": "Retail and Everyday Shopping",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t44-q1",
+    "prompt": "Do you enjoy shopping for clothes and personal items, or do you find it tedious?"
+   },
+   {
+    "id": "p1t44-q2",
+    "prompt": "Where do you usually go to buy your groceries and household essentials?"
+   },
+   {
+    "id": "p1t44-q3",
+    "prompt": "Do you prefer ordering products online or shopping in brick-and-mortar stores?"
+   },
+   {
+    "id": "p1t44-q4",
+    "prompt": "What kinds of items do you feel you need to see and inspect in person before buying?"
+   },
+   {
+    "id": "p1t44-q5",
+    "prompt": "Is shopping considered a recreational weekend activity for people in your country?"
+   }
+  ]
+ },
+ {
+  "id": "p1t45",
+  "title": "Fashion and Clothing Choices",
+  "cluster": "Technology, Communication, and Consumer Habits",
+  "questions": [
+   {
+    "id": "p1t45-q1",
+    "prompt": "What style of clothing do you feel most comfortable wearing day-to-day?"
+   },
+   {
+    "id": "p1t45-q2",
+    "prompt": "Do you have to wear a specific uniform or formal clothing for your job or studies?"
+   },
+   {
+    "id": "p1t45-q3",
+    "prompt": "Do you pay close attention to current fashion trends, or do you prioritize comfort?"
+   },
+   {
+    "id": "p1t45-q4",
+    "prompt": "On what occasions do people in your culture wear traditional clothing?"
+   },
+   {
+    "id": "p1t45-q5",
+    "prompt": "Where do you usually buy most of your clothes?"
+   }
+  ]
+ },
+ {
+  "id": "p1t46",
+  "title": "Social Etiquette and Politeness",
+  "cluster": "Social Etiquette, Personal Growth, and Abstract Concepts",
+  "questions": [
+   {
+    "id": "p1t46-q1",
+    "prompt": "How do people in your culture show politeness and respect toward older generations?"
+   },
+   {
+    "id": "p1t46-q2",
+    "prompt": "Who taught you basic manners and social etiquette while you were growing up?"
+   },
+   {
+    "id": "p1t46-q3",
+    "prompt": "Are there situations where being overly polite can cause confusion or get in the way?"
+   },
+   {
+    "id": "p1t46-q4",
+    "prompt": "Do you think standards of everyday politeness have changed over the past few decades?"
+   },
+   {
+    "id": "p1t46-q5",
+    "prompt": "What behaviors or actions are considered especially disrespectful in your country?"
+   }
+  ]
+ },
+ {
+  "id": "p1t47",
+  "title": "Health, Fitness, and Wellness",
+  "cluster": "Social Etiquette, Personal Growth, and Abstract Concepts",
+  "questions": [
+   {
+    "id": "p1t47-q1",
+    "prompt": "What steps do you take to look after your physical health and energy levels?"
+   },
+   {
+    "id": "p1t47-q2",
+    "prompt": "Did your primary or secondary school put an emphasis on physical education?"
+   },
+   {
+    "id": "p1t47-q3",
+    "prompt": "Is it easy or difficult for you to maintain consistent sleep and exercise routines?"
+   },
+   {
+    "id": "p1t47-q4",
+    "prompt": "What health initiatives could governments introduce to encourage active lifestyles?"
+   },
+   {
+    "id": "p1t47-q5",
+    "prompt": "What do you typically do to relax and recover after a demanding week?"
+   }
+  ]
+ },
+ {
+  "id": "p1t48",
+  "title": "School Subjects and Learning",
+  "cluster": "Social Etiquette, Personal Growth, and Abstract Concepts",
+  "questions": [
+   {
+    "id": "p1t48-q1",
+    "prompt": "What was your favorite subject back when you were in school?"
+   },
+   {
+    "id": "p1t48-q2",
+    "prompt": "Did you find science and maths or humanities subjects more engaging?"
+   },
+   {
+    "id": "p1t48-q3",
+    "prompt": "Do you think the subjects taught in secondary school adequately prepare students for work?"
+   },
+   {
+    "id": "p1t48-q4",
+    "prompt": "Is there a specific subject, like coding or finance, that you wish you had learned earlier?"
+   },
+   {
+    "id": "p1t48-q5",
+    "prompt": "What qualities made a teacher memorable or inspiring during your school years?"
+   }
+  ]
+ },
+ {
+  "id": "p1t49",
+  "title": "Driving, Vehicles, and Road Safety",
+  "cluster": "Social Etiquette, Personal Growth, and Abstract Concepts",
+  "questions": [
+   {
+    "id": "p1t49-q1",
+    "prompt": "Do you have a driver’s license, and how often do you drive?"
+   },
+   {
+    "id": "p1t49-q2",
+    "prompt": "At what age can people legally start learning to drive in your country?"
+   },
+   {
+    "id": "p1t49-q3",
+    "prompt": "Do you prefer driving yourself or riding as a passenger?"
+   },
+   {
+    "id": "p1t49-q4",
+    "prompt": "How heavy is road traffic and congestion in your city?"
+   },
+   {
+    "id": "p1t49-q5",
+    "prompt": "Do you think driving tests should be made more rigorous to improve road safety?"
+   }
+  ]
+ },
+ {
+  "id": "p1t50",
+  "title": "Language Learning and IELTS Preparation",
+  "cluster": "Social Etiquette, Personal Growth, and Abstract Concepts",
+  "questions": [
+   {
+    "id": "p1t50-q1",
+    "prompt": "Why are you taking the IELTS examination at this stage in your life?"
+   },
+   {
+    "id": "p1t50-q2",
+    "prompt": "How long have you been studying English?"
+   },
+   {
+    "id": "p1t50-q3",
+    "prompt": "What aspect of the English language do you enjoy practicing most?"
+   },
+   {
+    "id": "p1t50-q4",
+    "prompt": "What do you find most challenging when speaking English in everyday situations?"
+   },
+   {
+    "id": "p1t50-q5",
+    "prompt": "How do you plan to use your English skills in your future career or academic studies?"
+   }
+  ]
+ }
+]

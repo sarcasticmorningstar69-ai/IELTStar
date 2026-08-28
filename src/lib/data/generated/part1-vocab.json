@@ -1,0 +1,2602 @@
+{
+ "p1t1": [
+  {
+   "phrase": "Hands-on experience",
+   "level": "B2",
+   "definition": "Practical, direct experience gained through doing something rather than just studying theory."
+  },
+  {
+   "phrase": "Heavy workload",
+   "level": "C1",
+   "definition": "A large volume of work that someone has to complete within a given period."
+  },
+  {
+   "phrase": "Deadlines to meet",
+   "level": "B2",
+   "definition": "Specific dates or times by which projects or tasks must be finished."
+  },
+  {
+   "phrase": "Get along with colleagues",
+   "level": "B2",
+   "definition": "To have a friendly, cooperative working relationship with coworkers."
+  },
+  {
+   "phrase": "Steep learning curve",
+   "level": "C1",
+   "definition": "A situation where you have to learn a lot of difficult skills in a very short time."
+  },
+  {
+   "phrase": "High-pressure environment",
+   "level": "C1",
+   "definition": "A demanding workplace where there is constant stress and urgency to perform."
+  },
+  {
+   "phrase": "Climb the career ladder",
+   "level": "C1",
+   "definition": "To make steady progress toward higher positions and promotions at work."
+  },
+  {
+   "phrase": "Work around the clock",
+   "level": "C2",
+   "definition": "To work nonstop, both day and night, to get something done."
+  },
+  {
+   "phrase": "Job satisfaction",
+   "level": "B2",
+   "definition": "The feeling of fulfillment and happiness someone gets from doing their job."
+  },
+  {
+   "phrase": "Stretch oneself",
+   "level": "C2",
+   "definition": "To push one’s capabilities and skills beyond current comfort limits."
+  }
+ ],
+ "p1t2": [
+  {
+   "phrase": "Major in",
+   "level": "B2",
+   "definition": "To specialize in a particular academic subject at university."
+  },
+  {
+   "phrase": "Fall behind on coursework",
+   "level": "B2",
+   "definition": "To fail to keep up with the required pace of assignments and readings."
+  },
+  {
+   "phrase": "Broaden my horizons",
+   "level": "C1",
+   "definition": "To expand one's knowledge, outlook, and understanding of the world."
+  },
+  {
+   "phrase": "Cram for an exam",
+   "level": "B2",
+   "definition": "To study intensely right before a test in a short burst of time."
+  },
+  {
+   "phrase": "Rigorous curriculum",
+   "level": "C1",
+   "definition": "A demanding, challenging, and thorough academic course of study."
+  },
+  {
+   "phrase": "Hit the books",
+   "level": "B2",
+   "definition": "An informal expression meaning to start studying with focus and effort."
+  },
+  {
+   "phrase": "Intellectual curiosity",
+   "level": "C1",
+   "definition": "A natural desire to learn new ideas and understand how things work."
+  },
+  {
+   "phrase": "Rote learning",
+   "level": "C2",
+   "definition": "Memorizing facts purely through repetition without deep conceptual understanding."
+  },
+  {
+   "phrase": "Hands-on approach",
+   "level": "B2",
+   "definition": "A practical learning style based on active participation rather than theory alone."
+  },
+  {
+   "phrase": "Grasp complex concepts",
+   "level": "C2",
+   "definition": "To fully understand and absorb difficult theoretical ideas."
+  }
+ ],
+ "p1t3": [
+  {
+   "phrase": "Born and raised",
+   "level": "B2",
+   "definition": "Having lived in a specific place from birth throughout one's childhood."
+  },
+  {
+   "phrase": "Hustle and bustle",
+   "level": "C1",
+   "definition": "The energetic, noisy, and busy activity of a lively town or city."
+  },
+  {
+   "phrase": "Within walking distance",
+   "level": "B2",
+   "definition": "Close enough to reach conveniently on foot."
+  },
+  {
+   "phrase": "Peace and quiet",
+   "level": "B2",
+   "definition": "A calm, tranquil setting free from noise, stress, and interruptions."
+  },
+  {
+   "phrase": "Quaint neighborhood",
+   "level": "C1",
+   "definition": "A charming, attractive area that has an appealing, traditional look."
+  },
+  {
+   "phrase": "Outskirts of town",
+   "level": "B2",
+   "definition": "The outer residential areas located far from the city center."
+  },
+  {
+   "phrase": "Steeped in history",
+   "level": "C2",
+   "definition": "Having a rich, long, and evident historical heritage."
+  },
+  {
+   "phrase": "Close-knit community",
+   "level": "C1",
+   "definition": "A supportive neighborhood where residents know, care for, and help one another."
+  },
+  {
+   "phrase": "Rapidly developing",
+   "level": "B2",
+   "definition": "Growing, modernizing, and building new infrastructure at a fast rate."
+  },
+  {
+   "phrase": "A sleepy backwater",
+   "level": "C2",
+   "definition": "A quiet, isolated place where very little happens or changes."
+  }
+ ],
+ "p1t4": [
+  {
+   "phrase": "Feel right at home",
+   "level": "B2",
+   "definition": "To feel relaxed, comfortable, and completely at ease in a space."
+  },
+  {
+   "phrase": "Spacious layout",
+   "level": "C1",
+   "definition": "An interior design with plenty of open room to move around comfortably."
+  },
+  {
+   "phrase": "Cramped living space",
+   "level": "B2",
+   "definition": "A small, narrow room or home that feels uncomfortably tight."
+  },
+  {
+   "phrase": "Tucked away",
+   "level": "C1",
+   "definition": "Situated in a quiet, secluded location away from busy roads."
+  },
+  {
+   "phrase": "High-rise apartment",
+   "level": "B2",
+   "definition": "A flat located in a modern multi-story residential building."
+  },
+  {
+   "phrase": "Modern conveniences",
+   "level": "C1",
+   "definition": "Household appliances and systems that make daily living easier and faster."
+  },
+  {
+   "phrase": "Let in plenty of natural light",
+   "level": "B2",
+   "definition": "Having large windows that allow lots of sunlight to enter."
+  },
+  {
+   "phrase": "Cozy ambiance",
+   "level": "B2",
+   "definition": "A warm, snug, and inviting atmosphere in a home."
+  },
+  {
+   "phrase": "Shared accommodation",
+   "level": "B2",
+   "definition": "Living in a rented house or apartment with roommates to split expenses."
+  },
+  {
+   "phrase": "A domestic sanctuary",
+   "level": "C2",
+   "definition": "A private, peaceful home that provides a safe shelter from outside stress."
+  }
+ ],
+ "p1t5": [
+  {
+   "phrase": "Early bird",
+   "level": "B2",
+   "definition": "A person who naturally wakes up early and feels most productive in the morning."
+  },
+  {
+   "phrase": "Get into a routine",
+   "level": "B2",
+   "definition": "To establish a regular, consistent daily schedule of habits."
+  },
+  {
+   "phrase": "Crack of dawn",
+   "level": "C1",
+   "definition": "The very earliest light of day in the morning."
+  },
+  {
+   "phrase": "Unwind after a long day",
+   "level": "B2",
+   "definition": "To relax and let go of stress in the evening."
+  },
+  {
+   "phrase": "Creature of habit",
+   "level": "C2",
+   "definition": "Someone who prefers to do the exact same things in the same way every day."
+  },
+  {
+   "phrase": "Squeeze something into my schedule",
+   "level": "B2",
+   "definition": "To manage to find a brief window of time for an activity."
+  },
+  {
+   "phrase": "Rush hour madness",
+   "level": "C1",
+   "definition": "The chaotic, frustrating traffic and crowds during peak commuting hours."
+  },
+  {
+   "phrase": "Set aside some downtime",
+   "level": "C1",
+   "definition": "To deliberately keep free time open just to rest and recharge."
+  },
+  {
+   "phrase": "Run on clockwork precision",
+   "level": "C2",
+   "definition": "Functioning smoothly, predictably, and with perfect punctuality."
+  },
+  {
+   "phrase": "Grab a quick bite",
+   "level": "B2",
+   "definition": "To eat a fast, informal snack or meal without sitting down for long."
+  }
+ ],
+ "p1t6": [
+  {
+   "phrase": "Fond memories",
+   "level": "B2",
+   "definition": "Warm, pleasant, and positive recollections of past events."
+  },
+  {
+   "phrase": "Grow up around",
+   "level": "B2",
+   "definition": "To spend one's youth in a particular environment or among specific people."
+  },
+  {
+   "phrase": "Carefree days",
+   "level": "C1",
+   "definition": "A period of life lived with minimal worries, stress, or heavy responsibilities."
+  },
+  {
+   "phrase": "Look back on",
+   "level": "B2",
+   "definition": "To reflect on and think about things that happened in the past."
+  },
+  {
+   "phrase": "Etched in my mind",
+   "level": "C2",
+   "definition": "A memory so vivid and clear that it is impossible to forget."
+  },
+  {
+   "phrase": "Get up to mischief",
+   "level": "C1",
+   "definition": "To engage in harmless, playful, or silly misbehavior as a child."
+  },
+  {
+   "phrase": "Formative years",
+   "level": "C2",
+   "definition": "The key developmental childhood years that shape a person's future character."
+  },
+  {
+   "phrase": "Vivid recollection",
+   "level": "C1",
+   "definition": "A remarkably clear and detailed mental picture of a past event."
+  },
+  {
+   "phrase": "Bring back memories",
+   "level": "B2",
+   "definition": "To cause someone to remember something from their past."
+  },
+  {
+   "phrase": "A nostalgic feeling",
+   "level": "B2",
+   "definition": "A bittersweet, affectionate emotional reaction when remembering the past."
+  }
+ ],
+ "p1t7": [
+  {
+   "phrase": "Get along like a house on fire",
+   "level": "C2",
+   "definition": "To become immediate friends and have an exceptionally close, fun relationship."
+  },
+  {
+   "phrase": "Look up to",
+   "level": "B2",
+   "definition": "To admire, respect, and view an older person or parent as a role model."
+  },
+  {
+   "phrase": "Take after",
+   "level": "B2",
+   "definition": "To resemble an older family member in physical appearance or personality."
+  },
+  {
+   "phrase": "Close-knit family",
+   "level": "B2",
+   "definition": "A family group where members love, support, and stay in regular contact with each other."
+  },
+  {
+   "phrase": "Generation gap",
+   "level": "C1",
+   "definition": "The difference in outlook, values, and habits between parents and children."
+  },
+  {
+   "phrase": "Rely on each other",
+   "level": "B2",
+   "definition": "To depend on family members for practical or emotional support during tough times."
+  },
+  {
+   "phrase": "Run in the family",
+   "level": "B2",
+   "definition": "A skill, personality trait, or feature shared by several family generations."
+  },
+  {
+   "phrase": "Family gathering",
+   "level": "B2",
+   "definition": "A casual or formal social get-together of relatives for a meal or holiday."
+  },
+  {
+   "phrase": "Flesh and blood",
+   "level": "C2",
+   "definition": "People who are related to you by birth and blood."
+  },
+  {
+   "phrase": "Provide a safety net",
+   "level": "C1",
+   "definition": "To offer reliable financial and emotional backup when someone faces difficulties."
+  }
+ ],
+ "p1t8": [
+  {
+   "phrase": "Have a lot in common",
+   "level": "B2",
+   "definition": "To share similar interests, tastes, and views with someone else."
+  },
+  {
+   "phrase": "Drift apart",
+   "level": "B2",
+   "definition": "To slowly lose contact and closeness with a friend over time."
+  },
+  {
+   "phrase": "Through thick and thin",
+   "level": "C1",
+   "definition": "Remaining loyal and supportive through both good and hard times."
+  },
+  {
+   "phrase": "Hit it off immediately",
+   "level": "C1",
+   "definition": "To form an instant connection and friendly rapport with someone new."
+  },
+  {
+   "phrase": "Inner circle",
+   "level": "C1",
+   "definition": "The small group of closest, most trusted friends you share everything with."
+  },
+  {
+   "phrase": "Keep in touch",
+   "level": "B2",
+   "definition": "To maintain regular contact through calls, messages, or visits."
+  },
+  {
+   "phrase": "A shoulder to cry on",
+   "level": "B2",
+   "definition": "A sympathetic friend who listens and offers comfort when you are upset."
+  },
+  {
+   "phrase": "Kindred spirit",
+   "level": "C2",
+   "definition": "A person whose personality, values, and outlook match your own deeply."
+  },
+  {
+   "phrase": "Hang out with",
+   "level": "B2",
+   "definition": "To spend relaxed, casual leisure time together."
+  },
+  {
+   "phrase": "A fair-weather friend",
+   "level": "C2",
+   "definition": "A person who is only around when things are easy and disappears during problems."
+  }
+ ],
+ "p1t9": [
+  {
+   "phrase": "Pick up a habit",
+   "level": "B2",
+   "definition": "To start doing something regularly without making a conscious plan to do so."
+  },
+  {
+   "phrase": "Kick the habit",
+   "level": "C1",
+   "definition": "To successfully stop doing an unwanted or unhealthy routine."
+  },
+  {
+   "phrase": "Second nature",
+   "level": "C1",
+   "definition": "An action so well practiced that you do it automatically without thinking."
+  },
+  {
+   "phrase": "Put things off",
+   "level": "B2",
+   "definition": "To delay or postpone tasks that should be done immediately."
+  },
+  {
+   "phrase": "Stick to a routine",
+   "level": "B2",
+   "definition": "To consistently follow a planned schedule without giving up."
+  },
+  {
+   "phrase": "Break the cycle",
+   "level": "C1",
+   "definition": "To intentionally stop a repeated pattern of negative behavior."
+  },
+  {
+   "phrase": "Nip it in the bud",
+   "level": "C2",
+   "definition": "To stop a bad habit or problem right at the very beginning before it worsens."
+  },
+  {
+   "phrase": "Mindful of my habits",
+   "level": "B2",
+   "definition": "Being aware of how daily actions affect health and productivity."
+  },
+  {
+   "phrase": "Old habits die hard",
+   "level": "C1",
+   "definition": "An expression meaning it is very difficult to change long-standing behaviors."
+  },
+  {
+   "phrase": "Default mode",
+   "level": "C2",
+   "definition": "The automatic way a person reacts or behaves when they are tired or stressed."
+  }
+ ],
+ "p1t10": [
+  {
+   "phrase": "Fast-paced lifestyle",
+   "level": "B2",
+   "definition": "A busy, energetic way of living characterized by constant action."
+  },
+  {
+   "phrase": "Sedentary lifestyle",
+   "level": "C1",
+   "definition": "A way of living involving long hours of sitting and very little exercise."
+  },
+  {
+   "phrase": "Work-life balance",
+   "level": "B2",
+   "definition": "The healthy division between time spent working and time for personal life."
+  },
+  {
+   "phrase": "Burn the candle at both ends",
+   "level": "C2",
+   "definition": "To exhaust yourself by staying up late and getting up very early for work."
+  },
+  {
+   "phrase": "Lead a balanced life",
+   "level": "B2",
+   "definition": "To manage time wisely so health, work, and relationships all stay healthy."
+  },
+  {
+   "phrase": "Take some time off",
+   "level": "B2",
+   "definition": "To take a break from work or studies to rest and recuperate."
+  },
+  {
+   "phrase": "Rat race",
+   "level": "C1",
+   "definition": "The stressful, competitive modern struggle for money, career status, and success."
+  },
+  {
+   "phrase": "Catch my breath",
+   "level": "B2",
+   "definition": "To take a short rest during a busy period to regain energy and calm."
+  },
+  {
+   "phrase": "Strike a balance",
+   "level": "C1",
+   "definition": "To find a sensible middle ground between two conflicting demands."
+  },
+  {
+   "phrase": "Downshift my pace",
+   "level": "C2",
+   "definition": "To deliberately slow down your daily life and reduce stress."
+  }
+ ],
+ "p1t11": [
+  {
+   "phrase": "Night owl",
+   "level": "B2",
+   "definition": "A person who loves staying awake and doing things late in the evening."
+  },
+  {
+   "phrase": "Wind down",
+   "level": "B2",
+   "definition": "To gradually relax and prepare for sleep at the end of the day."
+  },
+  {
+   "phrase": "Call it a day",
+   "level": "B2",
+   "definition": "To decide that you have done enough work and will stop for the day."
+  },
+  {
+   "phrase": "Hit the sack",
+   "level": "B2",
+   "definition": "An informal way of saying to go to bed to sleep."
+  },
+  {
+   "phrase": "Decompress from stress",
+   "level": "C1",
+   "definition": "To release built-up mental pressure through quiet, relaxing activities."
+  },
+  {
+   "phrase": "Stay up late",
+   "level": "B2",
+   "definition": "To remain awake well past your usual bedtime."
+  },
+  {
+   "phrase": "Dim the lights",
+   "level": "B2",
+   "definition": "To lower room lighting to create a calm, restful ambiance."
+  },
+  {
+   "phrase": "Clear my head",
+   "level": "B2",
+   "definition": "To stop thinking about worries and refresh your mental focus."
+  },
+  {
+   "phrase": "Toss and turn",
+   "level": "C1",
+   "definition": "To move around restlessly in bed because you cannot fall asleep."
+  },
+  {
+   "phrase": "A peaceful lull",
+   "level": "C2",
+   "definition": "A calm, quiet pause in activity late at night."
+  }
+ ],
+ "p1t12": [
+  {
+   "phrase": "Throw a party",
+   "level": "B2",
+   "definition": "To organize and host a celebration for friends or relatives."
+  },
+  {
+   "phrase": "Mark the occasion",
+   "level": "C1",
+   "definition": "To do something special or memorable to celebrate an important event."
+  },
+  {
+   "phrase": "Blow out the candles",
+   "level": "B2",
+   "definition": "To extinguish the candles on a birthday cake while making a wish."
+  },
+  {
+   "phrase": "A milestone birthday",
+   "level": "C1",
+   "definition": "A significant birthday marking a major age transition, like turning 18 or 30."
+  },
+  {
+   "phrase": "Shower with gifts",
+   "level": "B2",
+   "definition": "To give someone a large number of presents to make them feel special."
+  },
+  {
+   "phrase": "A low-key celebration",
+   "level": "C1",
+   "definition": "A simple, quiet gathering with just a few close people rather than a big party."
+  },
+  {
+   "phrase": "Paint the town red",
+   "level": "C2",
+   "definition": "To go out for an exciting, energetic night of celebrating in the city."
+  },
+  {
+   "phrase": "Heartfelt wishes",
+   "level": "B2",
+   "definition": "Sincere, warm, and meaningful congratulations sent to someone."
+  },
+  {
+   "phrase": "Cherish the moment",
+   "level": "C1",
+   "definition": "To fully appreciate and treasure a joyful experience while it happens."
+  },
+  {
+   "phrase": "Make a big fuss of",
+   "level": "C2",
+   "definition": "To give someone an enormous amount of special attention and celebration."
+  }
+ ],
+ "p1t13": [
+  {
+   "phrase": "In a good mood",
+   "level": "B2",
+   "definition": "Feeling cheerful, optimistic, and happy."
+  },
+  {
+   "phrase": "Brighten my day",
+   "level": "B2",
+   "definition": "When a small pleasant event suddenly makes your whole day feel much better."
+  },
+  {
+   "phrase": "On cloud nine",
+   "level": "C1",
+   "definition": "Extremely joyful, delighted, and euphoric about something great."
+  },
+  {
+   "phrase": "Lift my spirits",
+   "level": "C1",
+   "definition": "To make someone feel happier and more hopeful when they were feeling down."
+  },
+  {
+   "phrase": "Content with simple things",
+   "level": "B2",
+   "definition": "Feeling peaceful and completely satisfied without needing luxury."
+  },
+  {
+   "phrase": "Put a smile on my face",
+   "level": "B2",
+   "definition": "To do or say something that makes someone feel happy and smile."
+  },
+  {
+   "phrase": "Down in the dumps",
+   "level": "C1",
+   "definition": "Feeling unusually sad, discouraged, or low in energy."
+  },
+  {
+   "phrase": "Radiate positivity",
+   "level": "C1",
+   "definition": "To display an upbeat, warm, and inspiring attitude that affects others."
+  },
+  {
+   "phrase": "Walking on air",
+   "level": "C2",
+   "definition": "Overwhelmed with immense joy and happiness."
+  },
+  {
+   "phrase": "A sense of inner peace",
+   "level": "C2",
+   "definition": "A deep, calm mental state free from worry and emotional turmoil."
+  }
+ ],
+ "p1t14": [
+  {
+   "phrase": "Burst out laughing",
+   "level": "B2",
+   "definition": "To suddenly and loudly start laughing at something funny."
+  },
+  {
+   "phrase": "Sense of humour",
+   "level": "B2",
+   "definition": "The ability to appreciate, understand, and make jokes."
+  },
+  {
+   "phrase": "Crack a joke",
+   "level": "B2",
+   "definition": "To tell a funny story or humorous remark in conversation."
+  },
+  {
+   "phrase": "Break the ice",
+   "level": "B2",
+   "definition": "To ease social tension and make people feel comfortable talking."
+  },
+  {
+   "phrase": "In stitches",
+   "level": "C1",
+   "definition": "Laughing uncontrollably because something is hilarious."
+  },
+  {
+   "phrase": "Dry humour",
+   "level": "C1",
+   "definition": "Funny remarks delivered in a calm, serious, and unemotional voice."
+  },
+  {
+   "phrase": "Lighten the mood",
+   "level": "B2",
+   "definition": "To make a tense or serious situation more relaxed and cheerful."
+  },
+  {
+   "phrase": "Infectious laugh",
+   "level": "C1",
+   "definition": "A warm laugh that naturally makes other people around start laughing too."
+  },
+  {
+   "phrase": "Self-deprecating humor",
+   "level": "C2",
+   "definition": "The ability to make fun of your own flaws or mistakes in a charming way."
+  },
+  {
+   "phrase": "Witty comeback",
+   "level": "C2",
+   "definition": "A quick, clever, and amusing spoken reply during a conversation."
+  }
+ ],
+ "p1t15": [
+  {
+   "phrase": "Deep sleep",
+   "level": "B2",
+   "definition": "A solid, restful stage of sleep from which it is difficult to wake up."
+  },
+  {
+   "phrase": "Daydream about",
+   "level": "B2",
+   "definition": "To lose focus on the present and imagine pleasant scenarios in your mind."
+  },
+  {
+   "phrase": "Have a vivid dream",
+   "level": "C1",
+   "definition": "To experience a dream so clear and lifelike that it feels real."
+  },
+  {
+   "phrase": "Faint memory",
+   "level": "B2",
+   "definition": "A vague, partially forgotten mental impression of a dream or past event."
+  },
+  {
+   "phrase": "Drift off",
+   "level": "B2",
+   "definition": "To slowly and gently fall asleep."
+  },
+  {
+   "phrase": "Recurring dream",
+   "level": "C1",
+   "definition": "The same dream story or setting that happens repeatedly over time."
+  },
+  {
+   "phrase": "Lose sleep over",
+   "level": "C1",
+   "definition": "To worry so much about a problem that you cannot sleep at night."
+  },
+  {
+   "phrase": "Sleep like a log",
+   "level": "B2",
+   "definition": "To sleep very soundly and deeply without waking up once."
+  },
+  {
+   "phrase": "A flight of fancy",
+   "level": "C2",
+   "definition": "An imaginative, unrealistic idea or whimsical daydream."
+  },
+  {
+   "phrase": "Lucid dream",
+   "level": "C2",
+   "definition": "A dream where you are completely aware that you are dreaming while it happens."
+  }
+ ],
+ "p1t16": [
+  {
+   "phrase": "Catchy tune",
+   "level": "B2",
+   "definition": "A pleasing, memorable song melody that easily sticks in your head."
+  },
+  {
+   "phrase": "Listen on repeat",
+   "level": "B2",
+   "definition": "To play the same song over and over again continuously."
+  },
+  {
+   "phrase": "Eclectic taste in music",
+   "level": "C1",
+   "definition": "Enjoying a wide, diverse mixture of musical genres and styles."
+  },
+  {
+   "phrase": "Background music",
+   "level": "B2",
+   "definition": "Soft music played quietly while doing other activities like study or cooking."
+  },
+  {
+   "phrase": "Sing along to",
+   "level": "B2",
+   "definition": "To sing the words while listening to a recorded track."
+  },
+  {
+   "phrase": "Resonate with me",
+   "level": "C1",
+   "definition": "When a song's lyrics or melody touch your emotions and feel meaningful."
+  },
+  {
+   "phrase": "Lift my energy",
+   "level": "B2",
+   "definition": "When upbeat music gives you a burst of physical enthusiasm and motivation."
+  },
+  {
+   "phrase": "Live gig",
+   "level": "C1",
+   "definition": "A live concert performance by musicians in a club or theater."
+  },
+  {
+   "phrase": "Mellow vibes",
+   "level": "C1",
+   "definition": "Soft, relaxed, and soothing feelings created by calming music."
+  },
+  {
+   "phrase": "Soothe my frayed nerves",
+   "level": "C2",
+   "definition": "To use gentle music to calm acute stress and anxiety."
+  }
+ ],
+ "p1t17": [
+  {
+   "phrase": "Catch someone's eye",
+   "level": "B2",
+   "definition": "To suddenly attract attention because of interesting visual appeal."
+  },
+  {
+   "phrase": "Work of art",
+   "level": "B2",
+   "definition": "A high-quality painting, sculpture, or creative piece made by an artist."
+  },
+  {
+   "phrase": "Thought-provoking",
+   "level": "C1",
+   "definition": "Making you think seriously and deeply about an interesting topic."
+  },
+  {
+   "phrase": "Art gallery",
+   "level": "B2",
+   "definition": "A dedicated building or room where paintings and sculptures are displayed."
+  },
+  {
+   "phrase": "Aesthetically pleasing",
+   "level": "C1",
+   "definition": "Looking beautiful, balanced, and visually harmonious."
+  },
+  {
+   "phrase": "Abstract art",
+   "level": "B2",
+   "definition": "Art that uses shapes and colors to express ideas rather than realistic pictures."
+  },
+  {
+   "phrase": "Stir up emotions",
+   "level": "C1",
+   "definition": "When an artwork provokes strong feelings like sadness, wonder, or joy."
+  },
+  {
+   "phrase": "Express my creativity",
+   "level": "B2",
+   "definition": "To use drawing, painting, or crafts to show personal imagination."
+  },
+  {
+   "phrase": "A masterstroke",
+   "level": "C2",
+   "definition": "An exceptionally skillful and brilliant creative achievement."
+  },
+  {
+   "phrase": "Feast for the eyes",
+   "level": "C2",
+   "definition": "A visual scene or artwork that is wonderful and delightful to look at."
+  }
+ ],
+ "p1t18": [
+  {
+   "phrase": "A real page-turner",
+   "level": "B2",
+   "definition": "A book that is so exciting that you cannot stop reading it."
+  },
+  {
+   "phrase": "Avid reader",
+   "level": "C1",
+   "definition": "Someone who reads very frequently, enthusiastically, and broadly."
+  },
+  {
+   "phrase": "Get lost in a book",
+   "level": "B2",
+   "definition": "To become so absorbed in a story that you forget the world around you."
+  },
+  {
+   "phrase": "Broaden my perspective",
+   "level": "B2",
+   "definition": "To learn new viewpoints that change how you see life and people."
+  },
+  {
+   "phrase": "Compelling storyline",
+   "level": "C1",
+   "definition": "A narrative plot that is powerful, fascinating, and holds your interest."
+  },
+  {
+   "phrase": "Paperback edition",
+   "level": "B2",
+   "definition": "A book bound with a flexible, soft paper cover rather than hard cardboard."
+  },
+  {
+   "phrase": "Flick through the pages",
+   "level": "B2",
+   "definition": "To turn pages quickly to look at pictures or skim text."
+  },
+  {
+   "phrase": "A classic novel",
+   "level": "B2",
+   "definition": "A famous, high-quality literary book that has remained popular for generations."
+  },
+  {
+   "phrase": "Food for thought",
+   "level": "C1",
+   "definition": "Information or ideas that make you reflect seriously and rethink opinions."
+  },
+  {
+   "phrase": "Immerse myself in the narrative",
+   "level": "C2",
+   "definition": "To deeply engage your entire mind in a story’s imaginary world."
+  }
+ ],
+ "p1t19": [
+  {
+   "phrase": "Box-office hit",
+   "level": "B2",
+   "definition": "A highly popular movie that sells an enormous number of tickets."
+  },
+  {
+   "phrase": "Binge-watch",
+   "level": "B2",
+   "definition": "To watch several episodes of a TV show in one single viewing session."
+  },
+  {
+   "phrase": "Gripping plot",
+   "level": "C1",
+   "definition": "A dramatic story that keeps you completely hooked from start to end."
+  },
+  {
+   "phrase": "Special effects",
+   "level": "B2",
+   "definition": "Visual and sound illusions created by computers for movies."
+  },
+  {
+   "phrase": "Keep me on the edge of my seat",
+   "level": "C1",
+   "definition": "Making you feel very excited and nervous about what will happen next."
+  },
+  {
+   "phrase": "Stellar performance",
+   "level": "C1",
+   "definition": "An outstanding, brilliant acting display in a film."
+  },
+  {
+   "phrase": "A predictable ending",
+   "level": "B2",
+   "definition": "A conclusion to a story that you could easily guess well beforehand."
+  },
+  {
+   "phrase": "A tear-jerker",
+   "level": "B2",
+   "definition": "A movie or show that is so sad and touching that it makes you cry."
+  },
+  {
+   "phrase": "Silver screen",
+   "level": "C2",
+   "definition": "A classic phrase referring to the cinema industry and movie theaters."
+  },
+  {
+   "phrase": "A clichéd trope",
+   "level": "C2",
+   "definition": "An overused idea, storyline, or scene that feels unoriginal and tired."
+  }
+ ],
+ "p1t20": [
+  {
+   "phrase": "Stay in shape",
+   "level": "B2",
+   "definition": "To keep your body healthy, strong, and fit through regular activity."
+  },
+  {
+   "phrase": "Work up a sweat",
+   "level": "B2",
+   "definition": "To exercise intensely enough that your body begins sweating."
+  },
+  {
+   "phrase": "Boost my stamina",
+   "level": "C1",
+   "definition": "To improve your physical endurance so you do not tire easily."
+  },
+  {
+   "phrase": "Team spirit",
+   "level": "B2",
+   "definition": "The feeling of pride, unity, and cooperation among members of a sports team."
+  },
+  {
+   "phrase": "Push myself",
+   "level": "B2",
+   "definition": "To work harder than usual to reach a personal fitness target."
+  },
+  {
+   "phrase": "Sedentary lifestyle",
+   "level": "C1",
+   "definition": "A habit of sitting down for most of the day with very little physical exercise."
+  },
+  {
+   "phrase": "A grueling workout",
+   "level": "C1",
+   "definition": "An extremely tough, demanding, and exhausting exercise session."
+  },
+  {
+   "phrase": "Hit the gym",
+   "level": "B2",
+   "definition": "An informal expression meaning to go to a fitness center to work out."
+  },
+  {
+   "phrase": "A personal best",
+   "level": "B2",
+   "definition": "The highest score or fastest time you have ever achieved yourself."
+  },
+  {
+   "phrase": "Peak physical condition",
+   "level": "C2",
+   "definition": "Being at the absolute best level of fitness, strength, and health."
+  }
+ ],
+ "p1t21": [
+  {
+   "phrase": "Snap a photo",
+   "level": "B2",
+   "definition": "To take a quick, casual picture with a camera or mobile phone."
+  },
+  {
+   "phrase": "Candid shot",
+   "level": "C1",
+   "definition": "A natural, unposed photograph taken without the subject preparing."
+  },
+  {
+   "phrase": "Capture the moment",
+   "level": "B2",
+   "definition": "To preserve a special memory by taking a picture of it."
+  },
+  {
+   "phrase": "Pose for the camera",
+   "level": "B2",
+   "definition": "To stand or sit in a specific position to be photographed nicely."
+  },
+  {
+   "phrase": "Scenic view",
+   "level": "B2",
+   "definition": "A lovely, attractive natural landscape that looks great in pictures."
+  },
+  {
+   "phrase": "High-resolution camera",
+   "level": "B2",
+   "definition": "A camera capable of taking very clear, sharp, and detailed photos."
+  },
+  {
+   "phrase": "Flattering angle",
+   "level": "C1",
+   "definition": "A camera position that makes the person in the photo look their best."
+  },
+  {
+   "phrase": "Immortalize a memory",
+   "level": "C2",
+   "definition": "To preserve a moment forever so that it is never forgotten."
+  },
+  {
+   "phrase": "Scroll through the photo gallery",
+   "level": "B2",
+   "definition": "To swipe through pictures stored on your smartphone."
+  },
+  {
+   "phrase": "An eye for composition",
+   "level": "C2",
+   "definition": "Natural talent for arranging objects beautifully within a photo frame."
+  }
+ ],
+ "p1t22": [
+  {
+   "phrase": "Take up a new hobby",
+   "level": "B2",
+   "definition": "To start practicing a new leisure activity or craft for fun."
+  },
+  {
+   "phrase": "Pass the time",
+   "level": "B2",
+   "definition": "To do an enjoyable activity to make hours go by pleasantly."
+  },
+  {
+   "phrase": "Creative outlet",
+   "level": "C1",
+   "definition": "A recreational way to express personal artistic talent and feelings."
+  },
+  {
+   "phrase": "Lose track of time",
+   "level": "B2",
+   "definition": "To become so engrossed in an activity that you forget what time it is."
+  },
+  {
+   "phrase": "Get a lot out of it",
+   "level": "B2",
+   "definition": "To derive great enjoyment, benefits, or personal satisfaction from doing something."
+  },
+  {
+   "phrase": "While away the hours",
+   "level": "C1",
+   "definition": "To spend free time in a calm, pleasant, and unhurried way."
+  },
+  {
+   "phrase": "Hands-on craft",
+   "level": "B2",
+   "definition": "A hobby involving manual physical work like knitting, woodwork, or pottery."
+  },
+  {
+   "phrase": "A great stress-buster",
+   "level": "B2",
+   "definition": "An activity that helps relieve tension and relax your mind."
+  },
+  {
+   "phrase": "A therapeutic pastime",
+   "level": "C2",
+   "definition": "A relaxing hobby that feels healing and restores emotional calm."
+  },
+  {
+   "phrase": "Indulge in my passion",
+   "level": "C2",
+   "definition": "To allow yourself the joy of spending time on something you love deeply."
+  }
+ ],
+ "p1t23": [
+  {
+   "phrase": "Hang out with friends",
+   "level": "B2",
+   "definition": "To meet up casually with friends to chat and relax."
+  },
+  {
+   "phrase": "Catch up on news",
+   "level": "B2",
+   "definition": "To talk with friends to find out what has happened in their lives recently."
+  },
+  {
+   "phrase": "Vibrant atmosphere",
+   "level": "C1",
+   "definition": "An energetic, lively, and exciting feeling in a venue or public place."
+  },
+  {
+   "phrase": "Grab a coffee",
+   "level": "B2",
+   "definition": "To meet someone informally for a quick cup of coffee and conversation."
+  },
+  {
+   "phrase": "Social butterfly",
+   "level": "C1",
+   "definition": "An outgoing person who loves interacting and makes friends everywhere easily."
+  },
+  {
+   "phrase": "Hit the town",
+   "level": "B2",
+   "definition": "To go out to restaurants, clubs, or events in the city for fun."
+  },
+  {
+   "phrase": "Paint the town red",
+   "level": "C2",
+   "definition": "To go out for an exciting, energetic celebration in the city at night."
+  },
+  {
+   "phrase": "Mingle with people",
+   "level": "B2",
+   "definition": "To move around a room talking casually to different people at a party."
+  },
+  {
+   "phrase": "A cozy café",
+   "level": "B2",
+   "definition": "A small, comfortable, and warm coffee shop where you can chat peacefully."
+  },
+  {
+   "phrase": "Revel in good company",
+   "level": "C2",
+   "definition": "To thoroughly enjoy being around friendly, engaging companions."
+  }
+ ],
+ "p1t24": [
+  {
+   "phrase": "Get away from it all",
+   "level": "B2",
+   "definition": "To go on a holiday to escape daily work pressure and routine."
+  },
+  {
+   "phrase": "Recharge my batteries",
+   "level": "C1",
+   "definition": "To take a rest during a vacation so you get your energy back."
+  },
+  {
+   "phrase": "Off the beaten track",
+   "level": "C1",
+   "definition": "In a quiet, remote place far away from crowds and standard tourist spots."
+  },
+  {
+   "phrase": "Pack my bags",
+   "level": "B2",
+   "definition": "To put clothes and items into luggage ready for a trip."
+  },
+  {
+   "phrase": "An idyllic spot",
+   "level": "C1",
+   "definition": "A peaceful, beautiful, and perfect location for a relaxing holiday."
+  },
+  {
+   "phrase": "Sun-drenched beach",
+   "level": "B2",
+   "definition": "A warm seaside beach filled with bright, pleasant sunshine."
+  },
+  {
+   "phrase": "Book in advance",
+   "level": "B2",
+   "definition": "To reserve hotels or flights early to avoid high prices and full bookings."
+  },
+  {
+   "phrase": "A weekend getaway",
+   "level": "B2",
+   "definition": "A short trip taken over Saturday and Sunday to rest."
+  },
+  {
+   "phrase": "A scenic road trip",
+   "level": "B2",
+   "definition": "Driving through beautiful landscapes and countryside for pleasure."
+  },
+  {
+   "phrase": "A breath of fresh air",
+   "level": "C2",
+   "definition": "A welcome, refreshing change from a dull or stressful environment."
+  }
+ ],
+ "p1t25": [
+  {
+   "phrase": "Broaden my horizons",
+   "level": "B2",
+   "definition": "To expand understanding of different cultures by traveling."
+  },
+  {
+   "phrase": "Tourist attraction",
+   "level": "B2",
+   "definition": "A famous landmark or place that many travelers visit."
+  },
+  {
+   "phrase": "Travel on a shoestring",
+   "level": "C1",
+   "definition": "To travel very cheaply on a tight, minimal budget."
+  },
+  {
+   "phrase": "Soak up the culture",
+   "level": "C1",
+   "definition": "To observe, experience, and enjoy the local customs of a place."
+  },
+  {
+   "phrase": "Wanderlust",
+   "level": "C2",
+   "definition": "A strong, persistent desire to travel and explore the world."
+  },
+  {
+   "phrase": "Tourist trap",
+   "level": "B2",
+   "definition": "An overpriced venue that tries to take money from tourists without offering real value."
+  },
+  {
+   "phrase": "Experience firsthand",
+   "level": "C1",
+   "definition": "To see or do something directly yourself rather than reading about it."
+  },
+  {
+   "phrase": "Immerse myself in the culture",
+   "level": "C1",
+   "definition": "To fully participate in local daily life while abroad."
+  },
+  {
+   "phrase": "A guided tour",
+   "level": "B2",
+   "definition": "A sightseeing trip led by an expert who explains the history of the sights."
+  },
+  {
+   "phrase": "An unforgettable journey",
+   "level": "B2",
+   "definition": "A travel experience that is so special you will always remember it."
+  }
+ ],
+ "p1t26": [
+  {
+   "phrase": "A fussy eater",
+   "level": "B2",
+   "definition": "Someone who only likes certain foods and refuses to try unfamiliar dishes."
+  },
+  {
+   "phrase": "Balanced diet",
+   "level": "B2",
+   "definition": "Eating the right variety of foods to supply the body with proper nutrients."
+  },
+  {
+   "phrase": "Comfort food",
+   "level": "B2",
+   "definition": "Familiar, hearty food that makes you feel emotionally warm and happy."
+  },
+  {
+   "phrase": "An acquired taste",
+   "level": "C1",
+   "definition": "A flavor or dish you only learn to enjoy after trying it several times."
+  },
+  {
+   "phrase": "Mouth-watering dish",
+   "level": "B2",
+   "definition": "Food that looks or smells so delicious it makes you want to eat immediately."
+  },
+  {
+   "phrase": "Nutrient-rich ingredients",
+   "level": "C1",
+   "definition": "Fresh foods packed with vitamins, minerals, and natural goodness."
+  },
+  {
+   "phrase": "Cut down on junk food",
+   "level": "B2",
+   "definition": "To reduce how much processed, unhealthy food you eat."
+  },
+  {
+   "phrase": "A sweet tooth",
+   "level": "B2",
+   "definition": "A strong, regular craving for sugary treats, chocolates, and cakes."
+  },
+  {
+   "phrase": "A discerning palate",
+   "level": "C2",
+   "definition": "A sophisticated sense of taste able to notice subtle culinary flavors."
+  },
+  {
+   "phrase": "A staple food",
+   "level": "B2",
+   "definition": "A basic everyday food item that forms the main part of a regional diet."
+  }
+ ],
+ "p1t27": [
+  {
+   "phrase": "Whip up a quick meal",
+   "level": "B2",
+   "definition": "To make a fast, tasty dish easily without a lot of complicated steps."
+  },
+  {
+   "phrase": "Cook from scratch",
+   "level": "C1",
+   "definition": "To prepare food using fresh raw ingredients rather than pre-made sauces."
+  },
+  {
+   "phrase": "Follow a recipe",
+   "level": "B2",
+   "definition": "To cook step-by-step using written instructions."
+  },
+  {
+   "phrase": "Season to taste",
+   "level": "B2",
+   "definition": "Adding salt, pepper, or herbs until the flavor is just right for you."
+  },
+  {
+   "phrase": "Try out new dishes",
+   "level": "B2",
+   "definition": "Experimenting with different cooking recipes in the kitchen."
+  },
+  {
+   "phrase": "Culinary skills",
+   "level": "C1",
+   "definition": "Practical ability, knowledge, and techniques used in preparing good food."
+  },
+  {
+   "phrase": "Simmer over low heat",
+   "level": "B2",
+   "definition": "To cook food gently in hot liquid kept just below boiling."
+  },
+  {
+   "phrase": "A signature dish",
+   "level": "C1",
+   "definition": "The special meal someone cooks best and is most known for making."
+  },
+  {
+   "phrase": "Rustle something up",
+   "level": "C2",
+   "definition": "To quickly prepare a meal using whatever ingredients are in the kitchen."
+  },
+  {
+   "phrase": "A culinary disaster",
+   "level": "C1",
+   "definition": "A cooking attempt that fails completely and turns out inedible."
+  }
+ ],
+ "p1t28": [
+  {
+   "phrase": "Quench my thirst",
+   "level": "B2",
+   "definition": "To drink enough liquid to completely stop feeling thirsty."
+  },
+  {
+   "phrase": "A piping-hot cup of tea",
+   "level": "C1",
+   "definition": "A freshly poured, steaming cup of hot tea."
+  },
+  {
+   "phrase": "Stay well-hydrated",
+   "level": "B2",
+   "definition": "Drinking enough water throughout the day to keep your body healthy."
+  },
+  {
+   "phrase": "A morning caffeine fix",
+   "level": "B2",
+   "definition": "Your first cup of coffee in the morning that wakes up your brain."
+  },
+  {
+   "phrase": "A refreshing drink",
+   "level": "B2",
+   "definition": "A cool beverage that makes you feel refreshed when hot or tired."
+  },
+  {
+   "phrase": "Sip slowly",
+   "level": "B2",
+   "definition": "To drink a beverage in tiny amounts to enjoy the flavor."
+  },
+  {
+   "phrase": "Cut back on sugary drinks",
+   "level": "B2",
+   "definition": "Reducing how many sodas or sweetened juices you drink."
+  },
+  {
+   "phrase": "Herbal infusion",
+   "level": "C1",
+   "definition": "A soothing, caffeine-free tea made by steeping dried herbs or flowers."
+  },
+  {
+   "phrase": "An artisanal coffee roast",
+   "level": "C1",
+   "definition": "High-grade coffee beans carefully selected and roasted by specialists."
+  },
+  {
+   "phrase": "Invigorating beverage",
+   "level": "C2",
+   "definition": "A drink that sharpens mental alertness and provides fresh bodily energy."
+  }
+ ],
+ "p1t29": [
+  {
+   "phrase": "Have a sweet tooth",
+   "level": "B2",
+   "definition": "Having a constant liking and craving for sugary baked goods and sweets."
+  },
+  {
+   "phrase": "Baked fresh daily",
+   "level": "B2",
+   "definition": "Breads or pastries made in the oven every morning."
+  },
+  {
+   "phrase": "Fluffy and light",
+   "level": "B2",
+   "definition": "A soft, delicate texture in cakes and pastries with lots of air inside."
+  },
+  {
+   "phrase": "An indulgent dessert",
+   "level": "C1",
+   "definition": "A rich, sweet treat eaten purely for pleasure without worrying about calories."
+  },
+  {
+   "phrase": "Straight out of the oven",
+   "level": "B2",
+   "definition": "Freshly baked food that is still warm and delicious."
+  },
+  {
+   "phrase": "Melt in the mouth",
+   "level": "B2",
+   "definition": "Pastry or sweets so tender and soft they dissolve easily when eaten."
+  },
+  {
+   "phrase": "A guilty pleasure",
+   "level": "B2",
+   "definition": "Something you love eating even though you know it is not very healthy."
+  },
+  {
+   "phrase": "A touch of sweetness",
+   "level": "B2",
+   "definition": "A subtle, pleasant amount of sugar in a dessert that is not overpowering."
+  },
+  {
+   "phrase": "Gooey caramel filling",
+   "level": "C1",
+   "definition": "A soft, thick, and runny sweet sauce inside a pastry or cake."
+  },
+  {
+   "phrase": "An epicurean treat",
+   "level": "C2",
+   "definition": "A luxurious gourmet dessert crafted for refined culinary appreciation."
+  }
+ ],
+ "p1t30": [
+  {
+   "phrase": "Dark chocolate cravings",
+   "level": "B2",
+   "definition": "A strong desire to eat rich, slightly bitter chocolate."
+  },
+  {
+   "phrase": "Treat myself to",
+   "level": "B2",
+   "definition": "To buy or eat something special as a personal reward."
+  },
+  {
+   "phrase": "A box of chocolates",
+   "level": "B2",
+   "definition": "An assortment of filled chocolates given as a nice gift."
+  },
+  {
+   "phrase": "Smooth and creamy",
+   "level": "B2",
+   "definition": "A pleasant, silky texture in milk chocolate or confectionery."
+  },
+  {
+   "phrase": "Can't resist chocolate",
+   "level": "B2",
+   "definition": "Finding it impossible to say no when chocolate is offered."
+  },
+  {
+   "phrase": "Rich cocoa flavor",
+   "level": "C1",
+   "definition": "A deep, intense taste coming from high percentages of pure cocoa beans."
+  },
+  {
+   "phrase": "Sugar rush",
+   "level": "B2",
+   "definition": "A short surge of physical energy felt after eating lots of sweets."
+  },
+  {
+   "phrase": "Savor every bite",
+   "level": "C1",
+   "definition": "To eat slowly and mindfully to enjoy every bit of delicious flavor."
+  },
+  {
+   "phrase": "Bittersweet taste",
+   "level": "C1",
+   "definition": "A flavor that balances deep bitterness with gentle sweetness."
+  },
+  {
+   "phrase": "A decadent indulgence",
+   "level": "C2",
+   "definition": "An extremely rich, luxurious sweet treat eaten for pure sensory joy."
+  }
+ ],
+ "p1t31": [
+  {
+   "phrase": "Pour down with rain",
+   "level": "B2",
+   "definition": "To rain very hard, heavily, and continuously."
+  },
+  {
+   "phrase": "Soaking wet",
+   "level": "B2",
+   "definition": "Completely drenched with water from being outside in a downpour."
+  },
+  {
+   "phrase": "Scorching hot",
+   "level": "B2",
+   "definition": "Extremely hot, sweltering weather during summer."
+  },
+  {
+   "phrase": "A breath of fresh air",
+   "level": "B2",
+   "definition": "Cool, clean air outside after being indoors for a long time."
+  },
+  {
+   "phrase": "Unpredictable weather",
+   "level": "B2",
+   "definition": "Weather that changes quickly and cannot be reliably forecast."
+  },
+  {
+   "phrase": "A cold snap",
+   "level": "C1",
+   "definition": "A sudden, short period of freezing temperatures in winter."
+  },
+  {
+   "phrase": "Crisp morning air",
+   "level": "C1",
+   "definition": "Fresh, cool, and invigorating outdoor air in early autumn or spring."
+  },
+  {
+   "phrase": "Torrential rain",
+   "level": "C1",
+   "definition": "Intense, heavy rainfall that quickly causes puddles and localized floods."
+  },
+  {
+   "phrase": "Inclement weather",
+   "level": "C2",
+   "definition": "Harsh, stormy, or unpleasant weather conditions like freezing sleet or storms."
+  },
+  {
+   "phrase": "Mercurial climate",
+   "level": "C2",
+   "definition": "A regional climate prone to sudden, volatile, and frequent shifts."
+  }
+ ],
+ "p1t32": [
+  {
+   "phrase": "Breathe fresh country air",
+   "level": "B2",
+   "definition": "To enjoy the clean, unpolluted atmosphere of rural areas."
+  },
+  {
+   "phrase": "Peace and quiet",
+   "level": "B2",
+   "definition": "A calm, tranquil setting with no city sirens or loud traffic."
+  },
+  {
+   "phrase": "Rolling green hills",
+   "level": "B2",
+   "definition": "Smooth, curving grass-covered hills stretching across the countryside."
+  },
+  {
+   "phrase": "Get away from the city",
+   "level": "B2",
+   "definition": "Leaving urban areas for a while to relax in rural scenery."
+  },
+  {
+   "phrase": "A slow pace of life",
+   "level": "B2",
+   "definition": "A relaxed daily rhythm without the rush and stress of city life."
+  },
+  {
+   "phrase": "A remote village",
+   "level": "B2",
+   "definition": "A small settlement located far away from towns and major highways."
+  },
+  {
+   "phrase": "Scenic countryside",
+   "level": "B2",
+   "definition": "Beautiful natural landscapes featuring farms, meadows, and trees."
+  },
+  {
+   "phrase": "Bucolic charm",
+   "level": "C2",
+   "definition": "The peaceful, picturesque, and rustic simplicity of rural living."
+  },
+  {
+   "phrase": "Off the beaten track",
+   "level": "C1",
+   "definition": "Far away from tourist crowds and standard highway routes."
+  },
+  {
+   "phrase": "Idyllic rural setting",
+   "level": "C1",
+   "definition": "A perfect, postcard-like countryside environment."
+  }
+ ],
+ "p1t33": [
+  {
+   "phrase": "Concrete jungle",
+   "level": "B2",
+   "definition": "A modern city dominated by gray skyscrapers and concrete with few green parks."
+  },
+  {
+   "phrase": "Bustling streets",
+   "level": "B2",
+   "definition": "Crowded, lively sidewalks full of people, shops, and activity."
+  },
+  {
+   "phrase": "Convenient public transport",
+   "level": "B2",
+   "definition": "Buses and trains that make traveling around town fast and easy."
+  },
+  {
+   "phrase": "High cost of living",
+   "level": "B2",
+   "definition": "Expensive prices for rent, food, and transport in major metropolitan cities."
+  },
+  {
+   "phrase": "Lively nightlife",
+   "level": "B2",
+   "definition": "Lots of evening entertainment options like restaurants, bars, and theaters."
+  },
+  {
+   "phrase": "Traffic gridlock",
+   "level": "C1",
+   "definition": "A situation where traffic on city roads comes to a complete standstill."
+  },
+  {
+   "phrase": "A sprawling metropolis",
+   "level": "C1",
+   "definition": "A vast city that has expanded across a huge geographic area."
+  },
+  {
+   "phrase": "Urban amenities",
+   "level": "C1",
+   "definition": "Public facilities like libraries, parks, pools, and gymnasiums in a city."
+  },
+  {
+   "phrase": "The city’s vibrant pulse",
+   "level": "C2",
+   "definition": "The exciting, nonstop energetic atmosphere that defines city life."
+  },
+  {
+   "phrase": "Gentrified district",
+   "level": "C2",
+   "definition": "A formerly rundown area that has been renovated with trendy shops and cafes."
+  }
+ ],
+ "p1t34": [
+  {
+   "phrase": "Get along with my neighbours",
+   "level": "B2",
+   "definition": "To have a polite, friendly relationship with the people living next door."
+  },
+  {
+   "phrase": "Lend a helping hand",
+   "level": "B2",
+   "definition": "To readily assist someone with carrying groceries or doing home repairs."
+  },
+  {
+   "phrase": "Keep to themselves",
+   "level": "B2",
+   "definition": "People who are quiet, private, and do not get involved in other people's business."
+  },
+  {
+   "phrase": "A noisy neighbour",
+   "level": "B2",
+   "definition": "Someone who causes annoyance by playing loud music or making noise late."
+  },
+  {
+   "phrase": "Look out for each other",
+   "level": "B2",
+   "definition": "Neighbors keeping an eye on each other's homes to ensure safety."
+  },
+  {
+   "phrase": "Sense of community",
+   "level": "B2",
+   "definition": "The feeling of unity and mutual support among people living in the same area."
+  },
+  {
+   "phrase": "A nosy neighbour",
+   "level": "C1",
+   "definition": "Someone who is overly curious and intrusive about other people's private lives."
+  },
+  {
+   "phrase": "Live in close proximity",
+   "level": "C1",
+   "definition": "Residing very close to other houses or in adjacent flats."
+  },
+  {
+   "phrase": "Foster good relations",
+   "level": "C1",
+   "definition": "To deliberately build friendly and respectful connections with neighbors."
+  },
+  {
+   "phrase": "Cordial interactions",
+   "level": "C2",
+   "definition": "Warm, polite, and civil conversations between community members."
+  }
+ ],
+ "p1t35": [
+  {
+   "phrase": "Have a green thumb",
+   "level": "B2",
+   "definition": "To have a natural talent for growing healthy flowers and plants."
+  },
+  {
+   "phrase": "Water the plants regularly",
+   "level": "B2",
+   "definition": "Giving houseplants or garden flowers water so they thrive."
+  },
+  {
+   "phrase": "Brighten up the room",
+   "level": "B2",
+   "definition": "Adding fresh flowers to make an interior look cheerful and colorful."
+  },
+  {
+   "phrase": "In full bloom",
+   "level": "B2",
+   "definition": "When flowers have opened up completely and look their most colorful."
+  },
+  {
+   "phrase": "Grow from seed",
+   "level": "B2",
+   "definition": "Planting a small seed in soil and caring for it until it grows into a plant."
+  },
+  {
+   "phrase": "Sweet floral fragrance",
+   "level": "C1",
+   "definition": "A pleasant, natural perfume given off by blossoming flowers."
+  },
+  {
+   "phrase": "Low-maintenance houseplant",
+   "level": "C1",
+   "definition": "A potted plant, like a cactus, that needs very little care or water."
+  },
+  {
+   "phrase": "Prune the dead leaves",
+   "level": "B2",
+   "definition": "Cutting away dry, dead stems so a plant can grow new green shoots."
+  },
+  {
+   "phrase": "Lush foliage",
+   "level": "C2",
+   "definition": "Thick, healthy, and vibrant green leaves covering plants and shrubs."
+  },
+  {
+   "phrase": "Botanical variety",
+   "level": "C2",
+   "definition": "A rich, diverse selection of different plant species in a garden."
+  }
+ ],
+ "p1t36": [
+  {
+   "phrase": "A loyal companion",
+   "level": "B2",
+   "definition": "A faithful pet dog or cat that provides constant friendship and love."
+  },
+  {
+   "phrase": "Take the dog for a walk",
+   "level": "B2",
+   "definition": "Walking a pet outside daily for fresh air and exercise."
+  },
+  {
+   "phrase": "Endangered species",
+   "level": "B2",
+   "definition": "Types of wild animals that are in danger of dying out completely."
+  },
+  {
+   "phrase": "Natural habitat",
+   "level": "B2",
+   "definition": "The wild environment where an animal naturally lives and feeds."
+  },
+  {
+   "phrase": "Feed the pets",
+   "level": "B2",
+   "definition": "Providing food and fresh water to household animals every day."
+  },
+  {
+   "phrase": "Stray animals",
+   "level": "B2",
+   "definition": "Homeless dogs or cats wandering on the streets without an owner."
+  },
+  {
+   "phrase": "Unconditional love",
+   "level": "C1",
+   "definition": "Affection given freely without any demands, typical of household pets."
+  },
+  {
+   "phrase": "Wildlife conservation",
+   "level": "C1",
+   "definition": "Protecting wild animal populations and saving their natural habitats."
+  },
+  {
+   "phrase": "An apex predator",
+   "level": "C2",
+   "definition": "A powerful hunting animal at the top of the food chain that has no natural enemies."
+  },
+  {
+   "phrase": "Cohabitate with fauna",
+   "level": "C2",
+   "definition": "Living peacefully alongside wild animals in a shared ecosystem."
+  }
+ ],
+ "p1t37": [
+  {
+   "phrase": "Throw in the bin",
+   "level": "B2",
+   "definition": "To discard garbage properly into a trash container."
+  },
+  {
+   "phrase": "Sort the recycling",
+   "level": "B2",
+   "definition": "Separating paper, glass, and plastic waste into different bins."
+  },
+  {
+   "phrase": "Single-use plastic",
+   "level": "B2",
+   "definition": "Disposable plastic items used once and thrown away, like straws and bags."
+  },
+  {
+   "phrase": "Reduce my carbon footprint",
+   "level": "C1",
+   "definition": "Taking actions to produce fewer greenhouse gases in daily life."
+  },
+  {
+   "phrase": "Drop litter",
+   "level": "B2",
+   "definition": "Irresponsibly leaving trash on streets or in public parks."
+  },
+  {
+   "phrase": "Eco-friendly habits",
+   "level": "B2",
+   "definition": "Daily choices that do not harm nature, like carrying reusable shopping bags."
+  },
+  {
+   "phrase": "Renewable energy",
+   "level": "B2",
+   "definition": "Clean power generated from infinite sources like the sun and wind."
+  },
+  {
+   "phrase": "Biodegradable packaging",
+   "level": "C1",
+   "definition": "Wrappers and boxes that break down naturally in the ground without toxic pollution."
+  },
+  {
+   "phrase": "The landfill problem",
+   "level": "C1",
+   "definition": "The crisis caused by massive garbage dump sites running out of space."
+  },
+  {
+   "phrase": "Curb environmental degradation",
+   "level": "C2",
+   "definition": "To stop and reverse the destruction of nature, soil, and air quality."
+  }
+ ],
+ "p1t38": [
+  {
+   "phrase": "Surf the web",
+   "level": "B2",
+   "definition": "To browse through different websites and internet pages easily."
+  },
+  {
+   "phrase": "Crash unexpectedly",
+   "level": "B2",
+   "definition": "When a computer or app suddenly shuts down or stops working."
+  },
+  {
+   "phrase": "User-friendly interface",
+   "level": "B2",
+   "definition": "A software layout that is simple and easy to understand and use."
+  },
+  {
+   "phrase": "Back up my files",
+   "level": "B2",
+   "definition": "To save extra copies of important documents on a flash drive or cloud server."
+  },
+  {
+   "phrase": "State-of-the-art tech",
+   "level": "C1",
+   "definition": "The very newest, most advanced computer hardware available."
+  },
+  {
+   "phrase": "Multitask smoothly",
+   "level": "B2",
+   "definition": "Running several computer programs at once without any lag."
+  },
+  {
+   "phrase": "An ergonomic desk setup",
+   "level": "C1",
+   "definition": "A chair and desk adjusted properly to avoid back and neck strain."
+  },
+  {
+   "phrase": "Glitch in the software",
+   "level": "B2",
+   "definition": "A small temporary error or bug in a computer program."
+  },
+  {
+   "phrase": "Technological obsolescence",
+   "level": "C2",
+   "definition": "When devices become outdated and useless because new models come out."
+  },
+  {
+   "phrase": "High-performance processing",
+   "level": "C2",
+   "definition": "Fast, powerful computing capability needed for complex tasks."
+  }
+ ],
+ "p1t39": [
+  {
+   "phrase": "Glued to my phone",
+   "level": "B2",
+   "definition": "Constantly staring at and using your smartphone screen all day."
+  },
+  {
+   "phrase": "Drop a text",
+   "level": "B2",
+   "definition": "To send someone a quick text message on your phone."
+  },
+  {
+   "phrase": "Screen time",
+   "level": "B2",
+   "definition": "The total amount of time spent looking at a smartphone or tablet screen."
+  },
+  {
+   "phrase": "Pop-up notification",
+   "level": "B2",
+   "definition": "A small alert that appears on your phone screen when a new message arrives."
+  },
+  {
+   "phrase": "Take a digital detox",
+   "level": "C1",
+   "definition": "Spending a few days without checking your phone or using social media."
+  },
+  {
+   "phrase": "Keep in touch on the go",
+   "level": "B2",
+   "definition": "Texting or calling friends while traveling or moving around outside."
+  },
+  {
+   "phrase": "Run out of battery",
+   "level": "B2",
+   "definition": "When a smartphone loses all its charge and turns off."
+  },
+  {
+   "phrase": "Scroll mindlessly",
+   "level": "C1",
+   "definition": "Swiping down on a mobile screen for hours without any real goal."
+  },
+  {
+   "phrase": "Instant communication",
+   "level": "B2",
+   "definition": "Sending and receiving text or voice messages in real-time instantly."
+  },
+  {
+   "phrase": "Nomophobia",
+   "level": "C2",
+   "definition": "The anxiety or uncomfortable feeling caused by not having your mobile phone with you."
+  }
+ ],
+ "p1t40": [
+  {
+   "phrase": "Go viral online",
+   "level": "B2",
+   "definition": "When a video or post spreads across the internet and gets millions of views."
+  },
+  {
+   "phrase": "Reliable connection",
+   "level": "B2",
+   "definition": "Fast, steady internet service that does not cut out or drop."
+  },
+  {
+   "phrase": "Scroll through the feed",
+   "level": "B2",
+   "definition": "Moving down a social media timeline to see updates and photos."
+  },
+  {
+   "phrase": "Information at our fingertips",
+   "level": "C1",
+   "definition": "Having instant access to facts and knowledge online anytime."
+  },
+  {
+   "phrase": "Social media presence",
+   "level": "B2",
+   "definition": "Having accounts and posting updates regularly on digital platforms."
+  },
+  {
+   "phrase": "Online security risks",
+   "level": "B2",
+   "definition": "Threats like viruses, hackers, and scams that steal personal data."
+  },
+  {
+   "phrase": "An algorithmic feed",
+   "level": "C1",
+   "definition": "A feed sorted by computer math based on what you click on."
+  },
+  {
+   "phrase": "Fall down an internet rabbit hole",
+   "level": "C1",
+   "definition": "Getting distracted and spending hours reading linked topics online."
+  },
+  {
+   "phrase": "Digital footprint",
+   "level": "B2",
+   "definition": "The trail of data and history you leave behind when using the web."
+  },
+  {
+   "phrase": "Unfettered access to information",
+   "level": "C2",
+   "definition": "Complete, unrestricted freedom to find facts and data on the web."
+  }
+ ],
+ "p1t41": [
+  {
+   "phrase": "Keep up with the news",
+   "level": "B2",
+   "definition": "Staying informed about what is happening in the world every day."
+  },
+  {
+   "phrase": "Breaking news alert",
+   "level": "B2",
+   "definition": "An urgent news bulletin about an event that has just happened."
+  },
+  {
+   "phrase": "Catch the headlines",
+   "level": "B2",
+   "definition": "Reading just the titles of news stories to get a quick summary."
+  },
+  {
+   "phrase": "Biased reporting",
+   "level": "C1",
+   "definition": "News that unfairly favors one political opinion instead of stating objective facts."
+  },
+  {
+   "phrase": "Reliable news source",
+   "level": "B2",
+   "definition": "A trusted newspaper or website known for accurate, verified facts."
+  },
+  {
+   "phrase": "Fake news and rumors",
+   "level": "B2",
+   "definition": "False, fabricated stories shared online to deceive readers."
+  },
+  {
+   "phrase": "Keep abreast of developments",
+   "level": "C1",
+   "definition": "Staying thoroughly updated on ongoing political or economic events."
+  },
+  {
+   "phrase": "Sensationalist headlines",
+   "level": "C1",
+   "definition": "Dramatic, exaggerated titles designed purely to get clicks."
+  },
+  {
+   "phrase": "In-depth investigative report",
+   "level": "C2",
+   "definition": "Thorough, detailed journalism that uncovers hidden truths or scandals."
+  },
+  {
+   "phrase": "Media literacy",
+   "level": "C1",
+   "definition": "The skill to analyze news critically and tell truth from exaggeration."
+  }
+ ],
+ "p1t42": [
+  {
+   "phrase": "Stuck in a traffic jam",
+   "level": "B2",
+   "definition": "Unable to move because cars are blocked on a crowded road."
+  },
+  {
+   "phrase": "Hop on the bus",
+   "level": "B2",
+   "definition": "To get on a public city bus quickly."
+  },
+  {
+   "phrase": "Packed like sardines",
+   "level": "C1",
+   "definition": "Crowded so tightly together on a train that you can barely move."
+  },
+  {
+   "phrase": "Daily commute",
+   "level": "B2",
+   "definition": "The journey you take between your home and your workplace every day."
+  },
+  {
+   "phrase": "Run on time",
+   "level": "B2",
+   "definition": "Trains or buses that arrive and leave strictly according to schedule."
+  },
+  {
+   "phrase": "Catch the subway",
+   "level": "B2",
+   "definition": "Getting onto the underground metro train to travel across the city."
+  },
+  {
+   "phrase": "Bumper-to-bumper traffic",
+   "level": "C1",
+   "definition": "Long lines of cars moving extremely slowly right behind one another."
+  },
+  {
+   "phrase": "Convenient transit links",
+   "level": "B2",
+   "definition": "Easy connections between buses, trains, and metro stations."
+  },
+  {
+   "phrase": "Eco-friendly public transit",
+   "level": "C1",
+   "definition": "Electric buses and trains that do not pollute city air."
+  },
+  {
+   "phrase": "Seamless connectivity",
+   "level": "C2",
+   "definition": "A well-integrated transport network that makes transfers fast and effortless."
+  }
+ ],
+ "p1t43": [
+  {
+   "phrase": "Ride a bike",
+   "level": "B2",
+   "definition": "To travel by pedaling a two-wheeled bicycle."
+  },
+  {
+   "phrase": "Dedicated cycle lane",
+   "level": "B2",
+   "definition": "A special lane on the road reserved only for bicycle riders."
+  },
+  {
+   "phrase": "Wear a helmet for safety",
+   "level": "B2",
+   "definition": "Wearing head protection to prevent injury in a bike accident."
+  },
+  {
+   "phrase": "Pedal-powered commute",
+   "level": "C1",
+   "definition": "Riding a bicycle to work or school using your own physical energy."
+  },
+  {
+   "phrase": "Eco-friendly way to travel",
+   "level": "B2",
+   "definition": "A green travel method that produces no exhaust fumes."
+  },
+  {
+   "phrase": "Lock up my bike",
+   "level": "B2",
+   "definition": "Fastening a bicycle to a metal rack with a lock to prevent theft."
+  },
+  {
+   "phrase": "Share the road safely",
+   "level": "B2",
+   "definition": "Drivers and cyclists being respectful and giving each other space."
+  },
+  {
+   "phrase": "Bike-sharing system",
+   "level": "B2",
+   "definition": "Renting a public city bike from a dock station for a short trip."
+  },
+  {
+   "phrase": "Weave through traffic",
+   "level": "C1",
+   "definition": "Riding skillfully around slow or stopped cars on a busy street."
+  },
+  {
+   "phrase": "Cycling infrastructure",
+   "level": "C2",
+   "definition": "Safe bridges, lanes, and parking spots built specifically for cyclists."
+  }
+ ],
+ "p1t44": [
+  {
+   "phrase": "Window shopping",
+   "level": "B2",
+   "definition": "Looking at items in store displays without intending to buy anything."
+  },
+  {
+   "phrase": "Hunt for bargains",
+   "level": "B2",
+   "definition": "Searching through sales to find goods at discounted prices."
+  },
+  {
+   "phrase": "Impulse buy",
+   "level": "B2",
+   "definition": "Buying something suddenly on emotion without planning or needing it."
+  },
+  {
+   "phrase": "Shop online",
+   "level": "B2",
+   "definition": "Ordering products on apps and websites to be delivered to your house."
+  },
+  {
+   "phrase": "Try on clothes",
+   "level": "B2",
+   "definition": "Putting on a garment in a fitting room to see if it fits well."
+  },
+  {
+   "phrase": "Good value for money",
+   "level": "B2",
+   "definition": "A product that is worth the price because of its good quality."
+  },
+  {
+   "phrase": "Shop till you drop",
+   "level": "C1",
+   "definition": "Spending a whole afternoon shopping until you are physically tired."
+  },
+  {
+   "phrase": "Retail therapy",
+   "level": "C1",
+   "definition": "Going shopping to improve your mood and relieve personal stress."
+  },
+  {
+   "phrase": "A rip-off",
+   "level": "B2",
+   "definition": "Something that costs far more money than it is actually worth."
+  },
+  {
+   "phrase": "Splurge on luxury items",
+   "level": "C2",
+   "definition": "Spending a large amount of money on expensive treats."
+  }
+ ],
+ "p1t45": [
+  {
+   "phrase": "Dress comfortably",
+   "level": "B2",
+   "definition": "Wearing relaxed, soft clothes that feel good on your body."
+  },
+  {
+   "phrase": "Keep up with fashion trends",
+   "level": "B2",
+   "definition": "Wearing modern styles that are currently popular."
+  },
+  {
+   "phrase": "Smart-casual dress code",
+   "level": "B2",
+   "definition": "A neat, presentable style of clothing that is not fully formal."
+  },
+  {
+   "phrase": "Mix and match outfits",
+   "level": "B2",
+   "definition": "Combining different shirts and pants to create new looks."
+  },
+  {
+   "phrase": "Dress up for special events",
+   "level": "B2",
+   "definition": "Putting on elegant, formal clothes for parties or weddings."
+  },
+  {
+   "phrase": "Express my personality",
+   "level": "B2",
+   "definition": "Using your clothing choices to show who you are."
+  },
+  {
+   "phrase": "Timeless classic look",
+   "level": "C1",
+   "definition": "A simple, elegant style that never goes out of fashion."
+  },
+  {
+   "phrase": "Dress to the nines",
+   "level": "C2",
+   "definition": "Wearing extremely smart, fashionable, and elegant clothes."
+  },
+  {
+   "phrase": "Sartorial elegance",
+   "level": "C2",
+   "definition": "Sophisticated taste, style, and polish in tailored clothing."
+  },
+  {
+   "phrase": "Fast-fashion waste",
+   "level": "C1",
+   "definition": "The problem of cheap trendy clothes being discarded after a few wears."
+  }
+ ],
+ "p1t46": [
+  {
+   "phrase": "Mind your manners",
+   "level": "B2",
+   "definition": "To remember to be polite, say please and thank you, and show good behavior."
+  },
+  {
+   "phrase": "Show respect to elders",
+   "level": "B2",
+   "definition": "Treating older family members and seniors with courtesy and kindness."
+  },
+  {
+   "phrase": "Common courtesy",
+   "level": "B2",
+   "definition": "Basic everyday politeness, such as holding doors open for others."
+  },
+  {
+   "phrase": "Say please and thank you",
+   "level": "B2",
+   "definition": "Using polite words whenever someone helps you or gives you something."
+  },
+  {
+   "phrase": "Make a good impression",
+   "level": "B2",
+   "definition": "Behaving well so that people form a positive opinion of you."
+  },
+  {
+   "phrase": "A social faux pas",
+   "level": "C1",
+   "definition": "An embarrassing social mistake or bad manner that breaks etiquette."
+  },
+  {
+   "phrase": "Respect personal boundaries",
+   "level": "B2",
+   "definition": "Giving people physical space and avoiding overly personal questions."
+  },
+  {
+   "phrase": "Mind one's P's and Q's",
+   "level": "C1",
+   "definition": "An idiom meaning to be extremely careful to speak and act politely."
+  },
+  {
+   "phrase": "Treat people with dignity",
+   "level": "C1",
+   "definition": "Showing deep respect and value for every individual."
+  },
+  {
+   "phrase": "Unimpeachable decorum",
+   "level": "C2",
+   "definition": "Flawless, dignified, and exemplary polite behavior."
+  }
+ ],
+ "p1t47": [
+  {
+   "phrase": "Keep in good health",
+   "level": "B2",
+   "definition": "Taking care of your body so that you stay fit and avoid illnesses."
+  },
+  {
+   "phrase": "A balanced lifestyle",
+   "level": "B2",
+   "definition": "Living in a way that balances work, good sleep, healthy meals, and exercise."
+  },
+  {
+   "phrase": "Catch a cold",
+   "level": "B2",
+   "definition": "Getting a minor seasonal viral illness with coughing and sneezing."
+  },
+  {
+   "phrase": "Get plenty of sleep",
+   "level": "B2",
+   "definition": "Sleeping eight hours a night so your body can rest and repair."
+  },
+  {
+   "phrase": "Under the weather",
+   "level": "B2",
+   "definition": "Feeling slightly ill, tired, or not at your best physically."
+  },
+  {
+   "phrase": "A clean bill of health",
+   "level": "C1",
+   "definition": "An official confirmation from a doctor that you are completely healthy."
+  },
+  {
+   "phrase": "Recharge my energy",
+   "level": "B2",
+   "definition": "Resting so that you feel physically refreshed and strong again."
+  },
+  {
+   "phrase": "As fit as a fiddle",
+   "level": "C1",
+   "definition": "In exceptionally good physical condition, energetic, and healthy."
+  },
+  {
+   "phrase": "Holistic well-being",
+   "level": "C2",
+   "definition": "Total wellness taking care of the body, mental calm, and emotions together."
+  },
+  {
+   "phrase": "Remedy workplace burnout",
+   "level": "C2",
+   "definition": "Taking active steps to recover from severe exhaustion caused by overwork."
+  }
+ ],
+ "p1t48": [
+  {
+   "phrase": "Favorite subject at school",
+   "level": "B2",
+   "definition": "The academic class you enjoyed studying the most as a student."
+  },
+  {
+   "phrase": "Good at maths/science",
+   "level": "B2",
+   "definition": "Having a natural ability and high marks in quantitative subjects."
+  },
+  {
+   "phrase": "Struggle with a subject",
+   "level": "B2",
+   "definition": "Finding a class difficult and having to work hard to pass it."
+  },
+  {
+   "phrase": "Hands-on science experiments",
+   "level": "B2",
+   "definition": "Doing practical tests in a laboratory rather than just reading books."
+  },
+  {
+   "phrase": "Inspiring teacher",
+   "level": "B2",
+   "definition": "An educator whose passion makes students want to learn and do well."
+  },
+  {
+   "phrase": "Broaden my knowledge base",
+   "level": "C1",
+   "definition": "Expanding the range of academic topics you understand."
+  },
+  {
+   "phrase": "Grasp difficult concepts",
+   "level": "C1",
+   "definition": "To successfully understand and master complex ideas."
+  },
+  {
+   "phrase": "Theoretical knowledge",
+   "level": "B2",
+   "definition": "Understanding the ideas behind a subject rather than practical work."
+  },
+  {
+   "phrase": "Cultivate critical thinking",
+   "level": "C1",
+   "definition": "Learning how to analyze information and question assumptions."
+  },
+  {
+   "phrase": "Bridge the knowledge gap",
+   "level": "C2",
+   "definition": "To study hard to eliminate learning deficits in a subject."
+  }
+ ],
+ "p1t49": [
+  {
+   "phrase": "Pass the driving test",
+   "level": "B2",
+   "definition": "Successfully passing the practical examination to earn a driver’s license."
+  },
+  {
+   "phrase": "Follow traffic rules",
+   "level": "B2",
+   "definition": "Obeying stop signs, speed limits, and traffic lights on the road."
+  },
+  {
+   "phrase": "Buckle up the seatbelt",
+   "level": "B2",
+   "definition": "Fastening your seat safety belt before a car starts moving."
+  },
+  {
+   "phrase": "Heavy traffic on the road",
+   "level": "B2",
+   "definition": "A large number of vehicles causing slow travel times."
+  },
+  {
+   "phrase": "Get behind the wheel",
+   "level": "B2",
+   "definition": "Sitting in the driver’s seat to start operating a car."
+  },
+  {
+   "phrase": "Road rage incident",
+   "level": "C1",
+   "definition": "An angry, aggressive argument or behavior caused by traffic stress."
+  },
+  {
+   "phrase": "Defensive driving habits",
+   "level": "C1",
+   "definition": "Being cautious and alert to avoid accidents caused by other bad drivers."
+  },
+  {
+   "phrase": "Speeding ticket",
+   "level": "B2",
+   "definition": "A fine given by police for driving faster than the legal road limit."
+  },
+  {
+   "phrase": "Check the blind spot",
+   "level": "B2",
+   "definition": "Looking over your shoulder to see cars hidden from the mirrors."
+  },
+  {
+   "phrase": "A reckless driver",
+   "level": "C2",
+   "definition": "A driver who acts dangerously without caring about the safety of others."
+  }
+ ],
+ "p1t50": [
+  {
+   "phrase": "Improve my spoken English",
+   "level": "B2",
+   "definition": "Practicing conversation so you can speak more clearly and smoothly."
+  },
+  {
+   "phrase": "Pick up new vocabulary",
+   "level": "B2",
+   "definition": "Learning and remembering new words naturally from reading or listening."
+  },
+  {
+   "phrase": "Make yourself understood",
+   "level": "B2",
+   "definition": "Communicating clearly enough that other people understand your message."
+  },
+  {
+   "phrase": "Practice on a daily basis",
+   "level": "B2",
+   "definition": "Doing language exercises or speaking every single day."
+  },
+  {
+   "phrase": "Overcome the fear of mistakes",
+   "level": "B2",
+   "definition": "Feeling confident enough to speak even if grammar is not perfect."
+  },
+  {
+   "phrase": "Express my ideas clearly",
+   "level": "B2",
+   "definition": "Putting thoughts into smooth, understandable sentences."
+  },
+  {
+   "phrase": "Expand my vocabulary bank",
+   "level": "C1",
+   "definition": "Increasing the number of useful words and phrases you can use."
+  },
+  {
+   "phrase": "Sound natural when speaking",
+   "level": "C1",
+   "definition": "Using conversational rhythm and phrasal verbs like a native speaker."
+  },
+  {
+   "phrase": "Attain spoken fluency",
+   "level": "C1",
+   "definition": "Achieving the ability to speak smoothly without long language-searching pauses."
+  },
+  {
+   "phrase": "Master idiomatic nuance",
+   "level": "C2",
+   "definition": "Knowing how to use idioms and conversational phrases with subtle accuracy. ------------------------------------------------------------"
+  }
+ ]
+}

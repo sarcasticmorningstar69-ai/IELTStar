@@ -1,0 +1,1562 @@
+{
+ "p2c1": [
+  {
+   "phrase": "Role model",
+   "level": "B2",
+   "definition": "A person whose behavior, attitude, or success is copied or admired by others."
+  },
+  {
+   "phrase": "Look up to",
+   "level": "B2",
+   "definition": "To admire and respect someone deeply."
+  },
+  {
+   "phrase": "Lead by example",
+   "level": "B2",
+   "definition": "To demonstrate high standards of behavior through one's own actions rather than words."
+  },
+  {
+   "phrase": "Overcome adversity",
+   "level": "C1",
+   "definition": "To successfully deal with and triumph over difficult, unfavorable situations."
+  },
+  {
+   "phrase": "Tenacity and grit",
+   "level": "C1",
+   "definition": "Persistent courage, strength of character, and determination in the face of hardship."
+  },
+  {
+   "phrase": "Leave a lasting impression",
+   "level": "C1",
+   "definition": "To produce a memorable, enduring positive effect on someone's mind."
+  },
+  {
+   "phrase": "Selfless dedication",
+   "level": "C1",
+   "definition": "Devoting one's time and energy to a cause or person without seeking personal benefit."
+  },
+  {
+   "phrase": "A beacon of hope",
+   "level": "C2",
+   "definition": "An inspiring person or thing that provides encouragement during difficult times."
+  },
+  {
+   "phrase": "Unwavering determination",
+   "level": "C2",
+   "definition": "Firm, steady, and resolute commitment that never weakens."
+  },
+  {
+   "phrase": "Infectious optimism",
+   "level": "C2",
+   "definition": "A joyful, positive attitude that easily spreads to and influences people around them."
+  }
+ ],
+ "p2c2": [
+  {
+   "phrase": "Full of life",
+   "level": "B2",
+   "definition": "Energetic, enthusiastic, and lively despite their age."
+  },
+  {
+   "phrase": "Lived through a lot",
+   "level": "B2",
+   "definition": "Having experienced many historical events, challenges, and life stages."
+  },
+  {
+   "phrase": "Listen intently",
+   "level": "B2",
+   "definition": "To pay close, undivided attention to what someone is saying."
+  },
+  {
+   "phrase": "Wealth of wisdom",
+   "level": "C1",
+   "definition": "A large amount of valuable life experience, knowledge, and practical advice."
+  },
+  {
+   "phrase": "Bridge the generation gap",
+   "level": "C1",
+   "definition": "To connect and understand each other despite a large difference in age."
+  },
+  {
+   "phrase": "Fountain of knowledge",
+   "level": "C1",
+   "definition": "A person who knows an immense amount about many different topics."
+  },
+  {
+   "phrase": "Golden years",
+   "level": "B2",
+   "definition": "The later, peaceful years of a person's life after retirement."
+  },
+  {
+   "phrase": "Walk down memory lane",
+   "level": "C2",
+   "definition": "To reminisce, talk about, or revisit past happy memories."
+  },
+  {
+   "phrase": "Sharp as a tack",
+   "level": "C2",
+   "definition": "Mentally quick, alert, and intelligent, especially in old age."
+  },
+  {
+   "phrase": "Treasure trove of stories",
+   "level": "C2",
+   "definition": "A rich collection of fascinating personal tales and historical anecdotes."
+  }
+ ],
+ "p2c3": [
+  {
+   "phrase": "Natural leader",
+   "level": "B2",
+   "definition": "Someone who has an instinctive ability to guide and organize people effortlessly."
+  },
+  {
+   "phrase": "Delegate tasks",
+   "level": "B2",
+   "definition": "To divide and assign duties fairly among team members."
+  },
+  {
+   "phrase": "Bring out the best in people",
+   "level": "B2",
+   "definition": "To encourage others to perform at their absolute highest potential."
+  },
+  {
+   "phrase": "Resolve conflicts",
+   "level": "B2",
+   "definition": "To help people find peaceful, fair solutions when disagreements happen."
+  },
+  {
+   "phrase": "Keep a cool head",
+   "level": "C1",
+   "definition": "To remain calm, rational, and collected in stressful emergencies."
+  },
+  {
+   "phrase": "Rally the team",
+   "level": "C1",
+   "definition": "To bring people together and motivate them to work toward a common goal."
+  },
+  {
+   "phrase": "Command respect",
+   "level": "C1",
+   "definition": "To naturally earn the admiration and obedience of others through good character."
+  },
+  {
+   "phrase": "Decisive under pressure",
+   "level": "C1",
+   "definition": "Able to make clear, firm, and smart choices quickly in tough moments."
+  },
+  {
+   "phrase": "Lead from the front",
+   "level": "C2",
+   "definition": "To take active personal responsibility and guide others by doing hard work yourself."
+  },
+  {
+   "phrase": "Charismatic presence",
+   "level": "C2",
+   "definition": "A magnetic, compelling personal charm that inspires loyalty and enthusiasm."
+  }
+ ],
+ "p2c4": [
+  {
+   "phrase": "In the public eye",
+   "level": "B2",
+   "definition": "Constantly seen on television, in news reports, and online by millions of people."
+  },
+  {
+   "phrase": "Household name",
+   "level": "B2",
+   "definition": "A person whose name is well known and recognized by almost everyone."
+  },
+  {
+   "phrase": "Claim to fame",
+   "level": "B2",
+   "definition": "The specific achievement or reason why someone became famous."
+  },
+  {
+   "phrase": "Spark a debate",
+   "level": "B2",
+   "definition": "To cause a lot of lively public discussion and differing opinions in society."
+  },
+  {
+   "phrase": "Rise to prominence",
+   "level": "C1",
+   "definition": "The process of gradually becoming famous, influential, or successful."
+  },
+  {
+   "phrase": "Media sensation",
+   "level": "C1",
+   "definition": "A person or event that causes huge, widespread excitement across news channels."
+  },
+  {
+   "phrase": "Articulate speaker",
+   "level": "C1",
+   "definition": "Someone who expresses complex ideas clearly, smoothly, and persuasively."
+  },
+  {
+   "phrase": "Under intense scrutiny",
+   "level": "C2",
+   "definition": "Being examined, judged, and watched very closely by the press and public."
+  },
+  {
+   "phrase": "Larger than life",
+   "level": "C2",
+   "definition": "Having a personality, lifestyle, or presence that seems much grander than ordinary people."
+  },
+  {
+   "phrase": "Trailblazer in their field",
+   "level": "C2",
+   "definition": "A pioneer who introduces innovative ideas and opens new paths for others."
+  }
+ ],
+ "p2c5": [
+  {
+   "phrase": "Make learning engaging",
+   "level": "B2",
+   "definition": "To present lessons in an active, fun, and interesting way that holds attention."
+  },
+  {
+   "phrase": "Supportive mentor",
+   "level": "B2",
+   "definition": "A kind, experienced teacher who guides and encourages a student’s personal growth."
+  },
+  {
+   "phrase": "Think outside the box",
+   "level": "B2",
+   "definition": "To approach problems with creative, non-traditional thinking."
+  },
+  {
+   "phrase": "Go the extra mile",
+   "level": "B2",
+   "definition": "To make an extra effort beyond what is strictly required to help someone."
+  },
+  {
+   "phrase": "Ignite a passion",
+   "level": "C1",
+   "definition": "To spark a deep, lasting enthusiasm and curiosity for a subject."
+  },
+  {
+   "phrase": "Instill confidence",
+   "level": "C1",
+   "definition": "To gradually build a strong sense of self-belief and assurance in a learner."
+  },
+  {
+   "phrase": "Life-changing advice",
+   "level": "C1",
+   "definition": "Guidance that fundamentally alters how you view your future or make choices."
+  },
+  {
+   "phrase": "Leave an indelible mark",
+   "level": "C2",
+   "definition": "To have a profound, permanent impact on someone that can never be erased."
+  },
+  {
+   "phrase": "Interactive pedagogy",
+   "level": "C2",
+   "definition": "Modern teaching methods centered on discussion, questions, and collaboration."
+  },
+  {
+   "phrase": "Bridge understanding",
+   "level": "C1",
+   "definition": "Helping students connect difficult theoretical points with real-world examples."
+  }
+ ],
+ "p2c6": [
+  {
+   "phrase": "Heart of gold",
+   "level": "B2",
+   "definition": "An idiom meaning someone is exceptionally kind, generous, and caring."
+  },
+  {
+   "phrase": "Lend a helping hand",
+   "level": "B2",
+   "definition": "To readily assist someone with chores, transport, or emergencies."
+  },
+  {
+   "phrase": "Go out of their way",
+   "level": "B2",
+   "definition": "To make a special, inconvenient effort purely to help another person."
+  },
+  {
+   "phrase": "Do good deeds",
+   "level": "B2",
+   "definition": "Performing helpful, noble, and kind acts for people in the community."
+  },
+  {
+   "phrase": "Altruistic nature",
+   "level": "C1",
+   "definition": "A personality characterized by selfless concern for the well-being of others."
+  },
+  {
+   "phrase": "Make a tangible difference",
+   "level": "C1",
+   "definition": "To create a real, noticeable positive change in people's daily lives."
+  },
+  {
+   "phrase": "Community champion",
+   "level": "C1",
+   "definition": "An active local citizen dedicated to solving problems and aiding neighbors."
+  },
+  {
+   "phrase": "Self-effacing",
+   "level": "C2",
+   "definition": "Modest, humble, and not seeking attention or praise for one's good deeds."
+  },
+  {
+   "phrase": "Boundless generosity",
+   "level": "C2",
+   "definition": "An unlimited, continuous willingness to give time, resources, and care."
+  },
+  {
+   "phrase": "A pillar of support",
+   "level": "C1",
+   "definition": "A reliable, strong individual whom others lean on during crisis periods. Domain 2: Architectural Spaces, Geography, and Physical Environments"
+  }
+ ],
+ "p2c7": [
+  {
+   "phrase": "Dream home",
+   "level": "B2",
+   "definition": "The ideal, perfect house that someone has always imagined living in."
+  },
+  {
+   "phrase": "Prime location",
+   "level": "B2",
+   "definition": "An excellent, convenient geographical area close to shops, parks, or transit."
+  },
+  {
+   "phrase": "Flooded with natural light",
+   "level": "B2",
+   "definition": "Having large windows that let in abundant, cheerful sunlight."
+  },
+  {
+   "phrase": "Open-plan living",
+   "level": "B2",
+   "definition": "A home design where the kitchen, dining, and living rooms form one big space."
+  },
+  {
+   "phrase": "Cozy ambiance",
+   "level": "B2",
+   "definition": "A warm, snug, and comfortable feeling inside a room."
+  },
+  {
+   "phrase": "State-of-the-art kitchen",
+   "level": "C1",
+   "definition": "A kitchen equipped with the most modern, advanced appliances."
+  },
+  {
+   "phrase": "Panoramic view",
+   "level": "C1",
+   "definition": "A wide, uninterrupted scenic view of a city skyline, hills, or ocean."
+  },
+  {
+   "phrase": "Tucked away in a quiet neighborhood",
+   "level": "C1",
+   "definition": "Situated in a peaceful spot far from traffic noise."
+  },
+  {
+   "phrase": "Personal haven",
+   "level": "C2",
+   "definition": "A private, safe domestic retreat where one can fully relax and escape outer stress."
+  },
+  {
+   "phrase": "Tasteful interior decor",
+   "level": "C1",
+   "definition": "Stylish, elegant furniture and color schemes chosen with artistic care."
+  }
+ ],
+ "p2c8": [
+  {
+   "phrase": "Historic landmark",
+   "level": "B2",
+   "definition": "A famous, culturally important building or site recognized for its history."
+  },
+  {
+   "phrase": "Rich heritage",
+   "level": "B2",
+   "definition": "Having a long, deep, and valuable cultural and historical tradition."
+  },
+  {
+   "phrase": "Walk through the past",
+   "level": "B2",
+   "definition": "To explore a historic place that makes you feel like you are in ancient times."
+  },
+  {
+   "phrase": "Tourist hotspot",
+   "level": "B2",
+   "definition": "A popular travel destination that attracts large numbers of visitors."
+  },
+  {
+   "phrase": "Architectural wonder",
+   "level": "C1",
+   "definition": "A building or monument built with extraordinary engineering and artistic beauty."
+  },
+  {
+   "phrase": "Well-preserved ruins",
+   "level": "C1",
+   "definition": "Ancient structural remains that are still in remarkably good condition."
+  },
+  {
+   "phrase": "Sense of awe",
+   "level": "C1",
+   "definition": "A strong feeling of wonder, admiration, and respect inspired by something grand."
+  },
+  {
+   "phrase": "Steeped in history",
+   "level": "C2",
+   "definition": "Filled with visible signs, relics, and stories of ancient historical events."
+  },
+  {
+   "phrase": "Stand the test of time",
+   "level": "C2",
+   "definition": "To remain structurally sound, relevant, and admired across centuries."
+  },
+  {
+   "phrase": "A glimpse into bygone eras",
+   "level": "C2",
+   "definition": "A direct look or insight into how people lived in past centuries."
+  }
+ ],
+ "p2c9": [
+  {
+   "phrase": "Peace and quiet",
+   "level": "B2",
+   "definition": "A calm setting completely free from city noise, traffic, and disturbance."
+  },
+  {
+   "phrase": "Get away from it all",
+   "level": "B2",
+   "definition": "Going somewhere quiet to escape daily work stress and responsibilities."
+  },
+  {
+   "phrase": "Soothing atmosphere",
+   "level": "B2",
+   "definition": "A relaxing, gentle environment that makes you feel calm and at ease."
+  },
+  {
+   "phrase": "Scenic beauty",
+   "level": "B2",
+   "definition": "Attractive, picturesque natural views like trees, lakes, and meadows."
+  },
+  {
+   "phrase": "Oasis of calm",
+   "level": "C1",
+   "definition": "A peaceful, quiet place situated in the middle of a noisy, hectic surrounding area."
+  },
+  {
+   "phrase": "Off the beaten track",
+   "level": "C1",
+   "definition": "In a quiet, remote spot far from crowded streets and tourist spots."
+  },
+  {
+   "phrase": "Idyllic setting",
+   "level": "C1",
+   "definition": "An exceptionally pleasant, peaceful, and picture-perfect location."
+  },
+  {
+   "phrase": "Recharge my batteries",
+   "level": "C1",
+   "definition": "Taking time to rest so that your mental and physical energy is fully restored."
+  },
+  {
+   "phrase": "Undisturbed stillness",
+   "level": "C2",
+   "definition": "Complete, tranquil quiet where nature remains totally undisturbed."
+  },
+  {
+   "phrase": "Commune with nature",
+   "level": "C2",
+   "definition": "To spend peaceful, mindful time connecting with outdoor natural surroundings."
+  }
+ ],
+ "p2c10": [
+  {
+   "phrase": "Bustling crowd",
+   "level": "B2",
+   "definition": "A large group of energetic, moving people filling a public venue."
+  },
+  {
+   "phrase": "Shoulder to shoulder",
+   "level": "B2",
+   "definition": "Packed so closely next to others that your shoulders touch."
+  },
+  {
+   "phrase": "A sea of people",
+   "level": "B2",
+   "definition": "An enormous, unbroken crowd of individuals extending across an area."
+  },
+  {
+   "phrase": "Lively atmosphere",
+   "level": "B2",
+   "definition": "An energetic, exciting mood created by crowds of people celebrating or shopping."
+  },
+  {
+   "phrase": "Packed like sardines",
+   "level": "C1",
+   "definition": "Crowded together uncomfortably tightly in a small enclosed area."
+  },
+  {
+   "phrase": "Hustle and bustle",
+   "level": "C1",
+   "definition": "Busy, noisy, and fast-paced activity typical of city squares or markets."
+  },
+  {
+   "phrase": "Claustrophobic feeling",
+   "level": "C1",
+   "definition": "An uncomfortable sensation of feeling trapped or suffocated by crowded spaces."
+  },
+  {
+   "phrase": "Overwhelming noise",
+   "level": "B2",
+   "definition": "Sound that is so loud, chaotic, and intense that it makes thinking difficult."
+  },
+  {
+   "phrase": "Teeming with life",
+   "level": "C2",
+   "definition": "An area overflowing with abundant human movement, energy, and activity."
+  },
+  {
+   "phrase": "Jostle for space",
+   "level": "C2",
+   "definition": "To push, bump, or squeeze past people in an effort to move through a crowd."
+  }
+ ],
+ "p2c11": [
+  {
+   "phrase": "Picture-perfect scenery",
+   "level": "B2",
+   "definition": "Visual sights that look flawlessly beautiful, like a postcard photo."
+  },
+  {
+   "phrase": "Cobblestone streets",
+   "level": "B2",
+   "definition": "Historic city roads paved with rounded natural stones."
+  },
+  {
+   "phrase": "Skyline view",
+   "level": "B2",
+   "definition": "The impressive shape and silhouette of tall city towers against the sky."
+  },
+  {
+   "phrase": "Blend of old and new",
+   "level": "B2",
+   "definition": "A pleasing mix of ancient historic buildings alongside modern architecture."
+  },
+  {
+   "phrase": "Architectural charm",
+   "level": "C1",
+   "definition": "The appealing, attractive character found in unique building designs."
+  },
+  {
+   "phrase": "Vibrant metropolis",
+   "level": "C1",
+   "definition": "A large, energetic capital city bursting with cultural and commercial life."
+  },
+  {
+   "phrase": "Picturesque boulevards",
+   "level": "C1",
+   "definition": "Wide, tree-lined city avenues that are exceptionally attractive to walk down."
+  },
+  {
+   "phrase": "Postcard-worthy",
+   "level": "B2",
+   "definition": "Something so visually appealing that it could be printed on a travel postcard."
+  },
+  {
+   "phrase": "A feast for the eyes",
+   "level": "C2",
+   "definition": "A visual scene that is delightful, impressive, and wonderful to look at."
+  },
+  {
+   "phrase": "Visual splendour",
+   "level": "C2",
+   "definition": "Grand, magnificent beauty that inspires admiration and awe. Domain 3: Material Objects, Technological Artifacts, and Possessions"
+  }
+ ],
+ "p2c12": [
+  {
+   "phrase": "Thoughtful present",
+   "level": "B2",
+   "definition": "A gift chosen with care and consideration for what the recipient truly loves."
+  },
+  {
+   "phrase": "Token of appreciation",
+   "level": "B2",
+   "definition": "A small gift given to express heartfelt gratitude and respect."
+  },
+  {
+   "phrase": "Unwrap the package",
+   "level": "B2",
+   "definition": "Removing wrapping paper from a gift box with excitement."
+  },
+  {
+   "phrase": "Cherish forever",
+   "level": "B2",
+   "definition": "To treasure, value, and look after an item with love for the rest of your life."
+  },
+  {
+   "phrase": "Hold sentimental value",
+   "level": "C1",
+   "definition": "Being emotionally precious because of the memories or person attached to it."
+  },
+  {
+   "phrase": "Treasured keepsake",
+   "level": "C1",
+   "definition": "A special souvenir or small item kept to remember a key moment or person."
+  },
+  {
+   "phrase": "Tailor-made for me",
+   "level": "B2",
+   "definition": "Perfectly suited to someone's exact tastes, size, or personality."
+  },
+  {
+   "phrase": "Deep emotional significance",
+   "level": "C1",
+   "definition": "Having an important, heartfelt personal meaning."
+  },
+  {
+   "phrase": "Touched to the core",
+   "level": "C2",
+   "definition": "Feeling deeply, emotionally moved and grateful because of a generous gesture."
+  },
+  {
+   "phrase": "Priceless heirloom",
+   "level": "C2",
+   "definition": "A valuable family possession passed down through generations that money cannot buy."
+  }
+ ],
+ "p2c13": [
+  {
+   "phrase": "User-friendly interface",
+   "level": "B2",
+   "definition": "A clear, simple screen layout that is easy to navigate without confusion."
+  },
+  {
+   "phrase": "A lifesaver in daily routine",
+   "level": "B2",
+   "definition": "A practical tool or app that solves problems and saves huge effort."
+  },
+  {
+   "phrase": "Navigate easily",
+   "level": "B2",
+   "definition": "Moving smoothly between menus, buttons, and pages on a digital platform."
+  },
+  {
+   "phrase": "Boost productivity",
+   "level": "B2",
+   "definition": "Helping you get more work, study, or tasks completed in less time."
+  },
+  {
+   "phrase": "Streamline tasks",
+   "level": "C1",
+   "definition": "To make complex work faster, simpler, and more efficient."
+  },
+  {
+   "phrase": "Cutting-edge features",
+   "level": "C1",
+   "definition": "The newest, most advanced functions and technical tools available."
+  },
+  {
+   "phrase": "Indispensable tool",
+   "level": "C1",
+   "definition": "Something so practical and useful that you cannot manage without it."
+  },
+  {
+   "phrase": "Glitch-free experience",
+   "level": "B2",
+   "definition": "Smooth digital performance that runs without software bugs or freezes."
+  },
+  {
+   "phrase": "Integrate seamlessly",
+   "level": "C2",
+   "definition": "Combining smoothly with other devices, apps, or calendars without issues."
+  },
+  {
+   "phrase": "A technological boon",
+   "level": "C2",
+   "definition": "An extremely helpful, timely benefit brought by modern digital technology."
+  }
+ ],
+ "p2c14": [
+  {
+   "phrase": "Eye-catching piece",
+   "level": "B2",
+   "definition": "An artwork that immediately grabs your visual attention and interest."
+  },
+  {
+   "phrase": "Oil painting / bronze sculpture",
+   "level": "B2",
+   "definition": "Classic physical art mediums using canvas paints or cast metal."
+  },
+  {
+   "phrase": "Vibrant color scheme",
+   "level": "B2",
+   "definition": "A bold, bright, and lively combination of colors used in an image."
+  },
+  {
+   "phrase": "Abstract representation",
+   "level": "B2",
+   "definition": "Portraying emotions or concepts using shapes rather than literal realism."
+  },
+  {
+   "phrase": "Evoke deep emotions",
+   "level": "C1",
+   "definition": "To trigger strong feelings of wonder, joy, melancholy, or contemplation."
+  },
+  {
+   "phrase": "Thought-provoking concept",
+   "level": "C1",
+   "definition": "An artistic idea that makes viewers reflect and question deeper meanings."
+  },
+  {
+   "phrase": "Convey a subtle message",
+   "level": "C1",
+   "definition": "Communicating an underlying philosophical point in a delicate, understated way."
+  },
+  {
+   "phrase": "Visual harmony",
+   "level": "C1",
+   "definition": "A pleasing, balanced arrangement of balance, form, and tones across a canvas."
+  },
+  {
+   "phrase": "A masterstroke",
+   "level": "C2",
+   "definition": "An exceptionally skillful, brilliant creative technique or achievement."
+  },
+  {
+   "phrase": "Breathtaking artistry",
+   "level": "C2",
+   "definition": "Outstanding craftsmanship that fills the observer with immense admiration."
+  }
+ ],
+ "p2c15": [
+  {
+   "phrase": "Strict dress code",
+   "level": "B2",
+   "definition": "Mandatory rules detailing exactly what garments students or staff must wear."
+  },
+  {
+   "phrase": "Smart and presentable",
+   "level": "B2",
+   "definition": "Clean, neat, and professional in visual appearance."
+  },
+  {
+   "phrase": "Sense of belonging",
+   "level": "B2",
+   "definition": "Feeling connected and part of a unified team or school community."
+  },
+  {
+   "phrase": "Wear with pride",
+   "level": "B2",
+   "definition": "Putting on an official uniform with a feeling of honor and self-respect."
+  },
+  {
+   "phrase": "Foster equality",
+   "level": "C1",
+   "definition": "Reducing socioeconomic differences by making everyone dress identically."
+  },
+  {
+   "phrase": "Standardized appearance",
+   "level": "C1",
+   "definition": "An identical outer look across all members of an institution."
+  },
+  {
+   "phrase": "Instill discipline",
+   "level": "C1",
+   "definition": "To teach orderliness, respect for rules, and routine through strict standards."
+  },
+  {
+   "phrase": "Breathable fabric",
+   "level": "B2",
+   "definition": "Clothing material that allows air through to keep the body cool and comfortable."
+  },
+  {
+   "phrase": "Sartorial conformity",
+   "level": "C2",
+   "definition": "Adhering strictly to uniform clothing rules set by an organization."
+  },
+  {
+   "phrase": "Level the playing field",
+   "level": "C1",
+   "definition": "Creating equal conditions where students are judged on character, not clothes."
+  }
+ ],
+ "p2c16": [
+  {
+   "phrase": "Impulse purchase",
+   "level": "B2",
+   "definition": "Buying an item spontaneously in the store without prior thought or planning."
+  },
+  {
+   "phrase": "Waste of hard-earned money",
+   "level": "B2",
+   "definition": "Spending income on something useless that brings no real benefit."
+  },
+  {
+   "phrase": "High hopes for it",
+   "level": "B2",
+   "definition": "Expecting an item to be very helpful, fun, or life-changing before buying it."
+  },
+  {
+   "phrase": "Barely used",
+   "level": "B2",
+   "definition": "Utilized only once or twice and then forgotten."
+  },
+  {
+   "phrase": "Gather dust on the shelf",
+   "level": "C1",
+   "definition": "Sitting untouched in a closet or shelf for months without being touched."
+  },
+  {
+   "phrase": "Buyer's remorse",
+   "level": "C1",
+   "definition": "A feeling of regret, guilt, and disappointment experienced after purchasing goods."
+  },
+  {
+   "phrase": "Spur of the moment",
+   "level": "C1",
+   "definition": "Doing something on a sudden emotional urge without logical calculation."
+  },
+  {
+   "phrase": "Lack of practical utility",
+   "level": "C1",
+   "definition": "Not having enough realistic everyday usefulness to justify keeping it."
+  },
+  {
+   "phrase": "The novelty wore off",
+   "level": "C2",
+   "definition": "When the exciting newness of an item faded, leaving it dull and boring."
+  },
+  {
+   "phrase": "A white elephant",
+   "level": "C2",
+   "definition": "An expensive, useless possession that is cumbersome to keep and hard to dispose of. Domain 4: Episodic Events, Life Transitions, and Narrative Incidents"
+  }
+ ],
+ "p2c17": [
+  {
+   "phrase": "Travel itinerary",
+   "level": "B2",
+   "definition": "The planned route, schedule, and flight/train connections for a trip."
+  },
+  {
+   "phrase": "Unexpected delay",
+   "level": "B2",
+   "definition": "An unforeseen stoppage or postponement that throws off travel times."
+  },
+  {
+   "phrase": "Miss a connection",
+   "level": "B2",
+   "definition": "Arriving too late to catch a connecting train, bus, or airplane flight."
+  },
+  {
+   "phrase": "Adapt to the situation",
+   "level": "B2",
+   "definition": "Adjusting your plans flexibly when circumstances change unexpectedly."
+  },
+  {
+   "phrase": "Stranded at the station",
+   "level": "C1",
+   "definition": "Left stuck in a transit hub with no way to travel forward."
+  },
+  {
+   "phrase": "Blessing in disguise",
+   "level": "C1",
+   "definition": "A problem that seems bad at first but ultimately leads to a surprisingly good outcome."
+  },
+  {
+   "phrase": "Murphy's law",
+   "level": "C1",
+   "definition": "The humorous rule stating that if anything can go wrong, it definitely will."
+  },
+  {
+   "phrase": "Throw a wrench in the works",
+   "level": "C2",
+   "definition": "An unforeseen problem that completely disrupts a smooth plan."
+  },
+  {
+   "phrase": "Nightmarish ordeal",
+   "level": "C2",
+   "definition": "An extremely stressful, exhausting, and chaotic series of travel troubles."
+  },
+  {
+   "phrase": "Salvage the trip",
+   "level": "C1",
+   "definition": "To successfully rescue a vacation from being a complete disaster."
+  }
+ ],
+ "p2c18": [
+  {
+   "phrase": "Weigh the pros and cons",
+   "level": "B2",
+   "definition": "Carefully comparing advantages and disadvantages before choosing."
+  },
+  {
+   "phrase": "Life-changing choice",
+   "level": "B2",
+   "definition": "A critical decision that permanently transforms your career, home, or relationships."
+  },
+  {
+   "phrase": "Gut feeling",
+   "level": "B2",
+   "definition": "An instinctive intuition or inner sense telling you what decision to make."
+  },
+  {
+   "phrase": "Take a gamble",
+   "level": "B2",
+   "definition": "To choose a risky option in the hope of gaining a great reward."
+  },
+  {
+   "phrase": "Crossroad in life",
+   "level": "C1",
+   "definition": "A crucial turning point where you must choose between completely different paths."
+  },
+  {
+   "phrase": "Leap of faith",
+   "level": "C1",
+   "definition": "Taking a bold, uncertain step while trusting that things will turn out well."
+  },
+  {
+   "phrase": "Pivotal moment",
+   "level": "C1",
+   "definition": "A central turning point that shapes everything that happens afterwards."
+  },
+  {
+   "phrase": "No regrets",
+   "level": "B2",
+   "definition": "Feeling completely satisfied with a choice without wishing you had done otherwise."
+  },
+  {
+   "phrase": "Transformative milestone",
+   "level": "C2",
+   "definition": "A profound life event that redefines your personal identity and maturity."
+  },
+  {
+   "phrase": "Ponder the ramifications",
+   "level": "C2",
+   "definition": "To reflect deeply on the long-term consequences and outcomes of a decision."
+  }
+ ],
+ "p2c19": [
+  {
+   "phrase": "Sense of accomplishment",
+   "level": "B2",
+   "definition": "A warm feeling of personal pride after finishing difficult work."
+  },
+  {
+   "phrase": "Hard work paid off",
+   "level": "B2",
+   "definition": "When sustained effort and practice produce great, successful results."
+  },
+  {
+   "phrase": "Push through obstacles",
+   "level": "B2",
+   "definition": "Continuing to work hard and refusing to give up when difficulties arise."
+  },
+  {
+   "phrase": "Test my limits",
+   "level": "B2",
+   "definition": "Finding out how much stress, work, and focus you are capable of handling."
+  },
+  {
+   "phrase": "Daunting challenge",
+   "level": "C1",
+   "definition": "A task so large and difficult that it feels intimidating at first."
+  },
+  {
+   "phrase": "Burn the midnight oil",
+   "level": "C1",
+   "definition": "To stay up working or studying late into the night to meet a deadline."
+  },
+  {
+   "phrase": "Triumphant outcome",
+   "level": "C1",
+   "definition": "A highly successful, victorious conclusion to a demanding endeavor."
+  },
+  {
+   "phrase": "An uphill battle",
+   "level": "C1",
+   "definition": "A very tough struggle against heavy odds and continuous difficulties."
+  },
+  {
+   "phrase": "Master a complex task",
+   "level": "C2",
+   "definition": "To achieve complete, flawless skill in finishing a complicated job."
+  },
+  {
+   "phrase": "Crown an achievement",
+   "level": "C2",
+   "definition": "To bring a great endeavor to a rewarding, honorable completion."
+  }
+ ],
+ "p2c20": [
+  {
+   "phrase": "Lively gathering",
+   "level": "B2",
+   "definition": "An energetic, cheerful party filled with friends, laughter, and chatter."
+  },
+  {
+   "phrase": "Festive atmosphere",
+   "level": "B2",
+   "definition": "A joyful, celebratory mood with music, food, and decorations."
+  },
+  {
+   "phrase": "Raise a toast",
+   "level": "B2",
+   "definition": "Lifting glasses of drinks together to wish someone health and happiness."
+  },
+  {
+   "phrase": "Dance the night away",
+   "level": "B2",
+   "definition": "Dancing enthusiastically throughout the entire evening until late."
+  },
+  {
+   "phrase": "Cherish the memories",
+   "level": "B2",
+   "definition": "Keeping warm, happy thoughts of a wonderful party in your heart."
+  },
+  {
+   "phrase": "Mark the milestone",
+   "level": "C1",
+   "definition": "Doing something memorable to celebrate an important life anniversary."
+  },
+  {
+   "phrase": "Joyous occasion",
+   "level": "C1",
+   "definition": "A happy event celebrated with heartfelt enthusiasm and excitement."
+  },
+  {
+   "phrase": "Generous hospitality",
+   "level": "C1",
+   "definition": "Welcoming guests warmly with abundant food, drinks, and comfort."
+  },
+  {
+   "phrase": "Paint the town red",
+   "level": "C2",
+   "definition": "Going out for an energetic, thrilling night of celebration in the city."
+  },
+  {
+   "phrase": "An unforgettable soiree",
+   "level": "C2",
+   "definition": "A sophisticated, memorable evening gathering that guests talk about for years."
+  }
+ ],
+ "p2c21": [
+  {
+   "phrase": "Out of the blue",
+   "level": "B2",
+   "definition": "Completely unexpected and surprising, happening without any advance warning."
+  },
+  {
+   "phrase": "Jump for joy",
+   "level": "B2",
+   "definition": "To leap into the air because you are so overwhelmingly excited and happy."
+  },
+  {
+   "phrase": "Sigh of relief",
+   "level": "B2",
+   "definition": "A deep exhale of breath when worrying news turns out to be positive."
+  },
+  {
+   "phrase": "Eagerly awaited",
+   "level": "B2",
+   "definition": "Waiting for news with keen excitement, anticipation, and hope."
+  },
+  {
+   "phrase": "Over the moon",
+   "level": "C1",
+   "definition": "Extremely delighted, joyful, and ecstatic about great news."
+  },
+  {
+   "phrase": "A breath of fresh air",
+   "level": "C1",
+   "definition": "A welcome, uplifting piece of good news during a difficult period."
+  },
+  {
+   "phrase": "Momentous occasion",
+   "level": "C1",
+   "definition": "A highly significant event or announcement with big future consequences."
+  },
+  {
+   "phrase": "Take a while to sink in",
+   "level": "C1",
+   "definition": "Needing time for your mind to fully understand and believe surprising news."
+  },
+  {
+   "phrase": "Bear good tidings",
+   "level": "C2",
+   "definition": "An elegant idiom meaning to deliver joyful, welcome messages."
+  },
+  {
+   "phrase": "A wave of euphoria",
+   "level": "C2",
+   "definition": "A sudden, powerful surge of intense happiness and emotional relief. Domain 5: Behavioral Habits, Skills, Repertoire, and Recreation"
+  }
+ ],
+ "p2c22": [
+  {
+   "phrase": "Stay in shape",
+   "level": "B2",
+   "definition": "Maintaining a healthy, fit, and trim body through regular physical exercise."
+  },
+  {
+   "phrase": "Work up a sweat",
+   "level": "B2",
+   "definition": "Exercising with enough intensity that your skin starts perspiring."
+  },
+  {
+   "phrase": "Core strength",
+   "level": "B2",
+   "definition": "Muscular stability and power in the abdomen, back, and hips."
+  },
+  {
+   "phrase": "Stretch and warm up",
+   "level": "B2",
+   "definition": "Preparing muscles with light movements before heavy exercise to avoid injury."
+  },
+  {
+   "phrase": "Boost stamina",
+   "level": "C1",
+   "definition": "Improving physical endurance so you can exercise longer without getting tired."
+  },
+  {
+   "phrase": "Rigorous workout",
+   "level": "C1",
+   "definition": "A tough, demanding training session that tests physical capabilities."
+  },
+  {
+   "phrase": "Push my endurance",
+   "level": "C1",
+   "definition": "Challenging your heart, lungs, and muscles to go beyond normal limits."
+  },
+  {
+   "phrase": "Physical and mental well-being",
+   "level": "B2",
+   "definition": "Good health uniting bodily vitality and psychological calmness."
+  },
+  {
+   "phrase": "Reap the health benefits",
+   "level": "C2",
+   "definition": "Enjoying substantial, long-term wellness improvements from fitness habits."
+  },
+  {
+   "phrase": "An invigorating routine",
+   "level": "C2",
+   "definition": "An energizing exercise habit that leaves you feeling refreshed and awake."
+  }
+ ],
+ "p2c23": [
+  {
+   "phrase": "Pick up a skill",
+   "level": "B2",
+   "definition": "To learn a new ability naturally through practice and demonstration."
+  },
+  {
+   "phrase": "Practice makes perfect",
+   "level": "B2",
+   "definition": "The principle that repeating an action leads to flawless skill."
+  },
+  {
+   "phrase": "Step-by-step guidance",
+   "level": "B2",
+   "definition": "Clear, sequential instructions that guide a beginner through a process."
+  },
+  {
+   "phrase": "Come in handy",
+   "level": "B2",
+   "definition": "Proving to be very useful and practical in everyday situations."
+  },
+  {
+   "phrase": "Trial and error",
+   "level": "B2",
+   "definition": "Learning from making mistakes until you find the method that works."
+  },
+  {
+   "phrase": "Steep learning curve",
+   "level": "C1",
+   "definition": "A challenging start where a lot of difficult techniques must be learned fast."
+  },
+  {
+   "phrase": "Master the fundamentals",
+   "level": "C1",
+   "definition": "Gaining complete, solid control over the basic building blocks of a skill."
+  },
+  {
+   "phrase": "Hone my abilities",
+   "level": "C1",
+   "definition": "Polishing, sharpening, and refining practical skills through regular use."
+  },
+  {
+   "phrase": "Achieve proficiency",
+   "level": "C1",
+   "definition": "Reaching a high, competent standard of skill and execution."
+  },
+  {
+   "phrase": "Second nature",
+   "level": "C2",
+   "definition": "An acquired skill so practiced that you do it automatically without thinking."
+  }
+ ],
+ "p2c24": [
+  {
+   "phrase": "Wind down",
+   "level": "B2",
+   "definition": "Gradually relaxing your mind and body at the end of a long, busy day."
+  },
+  {
+   "phrase": "Clear my head",
+   "level": "B2",
+   "definition": "Letting go of stressful thoughts to restore mental peace and focus."
+  },
+  {
+   "phrase": "Chill out",
+   "level": "B2",
+   "definition": "A casual expression meaning to rest, take things easy, and avoid stress."
+  },
+  {
+   "phrase": "Stress buster",
+   "level": "B2",
+   "definition": "An enjoyable, relaxing activity that effectively reduces mental tension."
+  },
+  {
+   "phrase": "Wash away the fatigue",
+   "level": "B2",
+   "definition": "Feeling daily tiredness disappear through a soothing bath, run, or walk."
+  },
+  {
+   "phrase": "Blow off steam",
+   "level": "C1",
+   "definition": "Releasing accumulated frustration and physical energy through an active pastime."
+  },
+  {
+   "phrase": "Therapeutic activity",
+   "level": "C1",
+   "definition": "A relaxing routine that feels emotionally healing and peaceful."
+  },
+  {
+   "phrase": "Carve out some me-time",
+   "level": "C1",
+   "definition": "Deliberately setting aside personal free time just for yourself."
+  },
+  {
+   "phrase": "Restore mental clarity",
+   "level": "C2",
+   "definition": "Eliminating cognitive fog and confusion to regain sharp, calm thinking."
+  },
+  {
+   "phrase": "A tranquil evening ritual",
+   "level": "C2",
+   "definition": "A peaceful, unchanging routine practiced to prepare for deep rest."
+  }
+ ],
+ "p2c25": [
+  {
+   "phrase": "Childhood pastime",
+   "level": "B2",
+   "definition": "A favorite recreational game or hobby enjoyed while growing up."
+  },
+  {
+   "phrase": "Simple rules",
+   "level": "B2",
+   "definition": "Easy, clear instructions that everyone understood without confusion."
+  },
+  {
+   "phrase": "Outdoor fun",
+   "level": "B2",
+   "definition": "Active games played in open fields, parks, or neighborhood streets."
+  },
+  {
+   "phrase": "Fair play",
+   "level": "B2",
+   "definition": "Playing honestly, following rules, and treating all competitors with respect."
+  },
+  {
+   "phrase": "Friendly competition",
+   "level": "B2",
+   "definition": "A fun match where winning is secondary to enjoying the game together."
+  },
+  {
+   "phrase": "Lost in the game",
+   "level": "B2",
+   "definition": "So absorbed in playing that you forget about time, dinner, and homework."
+  },
+  {
+   "phrase": "Spark of imagination",
+   "level": "C1",
+   "definition": "Making up creative imaginary scenarios and rules during play."
+  },
+  {
+   "phrase": "Bond with neighborhood kids",
+   "level": "C1",
+   "definition": "Building close friendships with local children through shared games."
+  },
+  {
+   "phrase": "Nostalgic delight",
+   "level": "C2",
+   "definition": "A warm, affectionate, and joyful feeling when remembering youthful play."
+  },
+  {
+   "phrase": "Unbridled enthusiasm",
+   "level": "C2",
+   "definition": "Pure, energetic excitement shown by children playing without restraint."
+  }
+ ],
+ "p2c26": [
+  {
+   "phrase": "Strike up a conversation",
+   "level": "B2",
+   "definition": "To start talking casually with someone in a friendly manner."
+  },
+  {
+   "phrase": "Share common ground",
+   "level": "B2",
+   "definition": "Discovering shared interests, values, and opinions during a talk."
+  },
+  {
+   "phrase": "Exchange ideas",
+   "level": "B2",
+   "definition": "Sharing different viewpoints and facts back and forth in a discussion."
+  },
+  {
+   "phrase": "Engage in deep talk",
+   "level": "B2",
+   "definition": "Having a serious, meaningful conversation about life, goals, or philosophy."
+  },
+  {
+   "phrase": "Eye-opening discussion",
+   "level": "C1",
+   "definition": "A conversation that reveals surprising truths and broadens understanding."
+  },
+  {
+   "phrase": "Food for thought",
+   "level": "C1",
+   "definition": "Ideas or statements that make you reflect seriously for days afterward."
+  },
+  {
+   "phrase": "Shift my perspective",
+   "level": "C1",
+   "definition": "Changing how you view an issue because of compelling points heard."
+  },
+  {
+   "phrase": "Articulate an opinion",
+   "level": "C1",
+   "definition": "Expressing your thoughts clearly, logically, and convincingly."
+  },
+  {
+   "phrase": "An intellectual spark",
+   "level": "C2",
+   "definition": "An exciting, stimulating connection of minds during a debate."
+  },
+  {
+   "phrase": "Resonate profoundly",
+   "level": "C2",
+   "definition": "When words spoken touch deep emotional cords and ring entirely true. Domain 6: Systems, Media, Abstract Phenomena, and Societal Issues"
+  }
+ ],
+ "p2c27": [
+  {
+   "phrase": "Credible source",
+   "level": "B2",
+   "definition": "A reliable, trustworthy publication known for factual, verified data."
+  },
+  {
+   "phrase": "Balanced lifestyle",
+   "level": "B2",
+   "definition": "Living in a way that balances work, nutritious diet, good sleep, and fitness."
+  },
+  {
+   "phrase": "Nutritional awareness",
+   "level": "B2",
+   "definition": "Understanding which foods nourish the body and which cause harm."
+  },
+  {
+   "phrase": "Practical tips",
+   "level": "B2",
+   "definition": "Actionable, simple advice that can be applied immediately in daily life."
+  },
+  {
+   "phrase": "Eye-opening insights",
+   "level": "C1",
+   "definition": "Fascinating, illuminating information that clarifies health topics."
+  },
+  {
+   "phrase": "Scientifically backed",
+   "level": "C1",
+   "definition": "Supported by empirical medical research, clinical trials, and data."
+  },
+  {
+   "phrase": "Actionable advice",
+   "level": "C1",
+   "definition": "Concrete suggestions that a reader can directly implement to improve health."
+  },
+  {
+   "phrase": "Preventative healthcare",
+   "level": "C1",
+   "definition": "Taking proactive steps to stop diseases before they start developing."
+  },
+  {
+   "phrase": "Debunk a myth",
+   "level": "C2",
+   "definition": "To prove that a widespread health belief or diet trend is false and unscientific."
+  },
+  {
+   "phrase": "Holistic well-being",
+   "level": "C2",
+   "definition": "A comprehensive health view combining physical, mental, and emotional care."
+  }
+ ],
+ "p2c28": [
+  {
+   "phrase": "A real page-turner",
+   "level": "B2",
+   "definition": "A thrilling book that is so exciting you read through it without stopping."
+  },
+  {
+   "phrase": "Character development",
+   "level": "B2",
+   "definition": "The gradual growth, change, and depth of protagonists in a story."
+  },
+  {
+   "phrase": "Unexpected plot twist",
+   "level": "B2",
+   "definition": "A surprising turn of events in the story that catches readers off guard."
+  },
+  {
+   "phrase": "Captivating style",
+   "level": "B2",
+   "definition": "A charming, smooth writing style that pulls the reader into the story."
+  },
+  {
+   "phrase": "Gripping plot",
+   "level": "C1",
+   "definition": "A dramatic, powerful storyline that holds total attention from chapter to chapter."
+  },
+  {
+   "phrase": "Vivid imagery",
+   "level": "C1",
+   "definition": "Descriptive, rich writing that creates clear visual pictures in the imagination."
+  },
+  {
+   "phrase": "Thought-provoking themes",
+   "level": "C1",
+   "definition": "Deep societal or philosophical topics explored through the narrative."
+  },
+  {
+   "phrase": "Resonate with the reader",
+   "level": "C1",
+   "definition": "Story situations and emotions that feel personally authentic and moving."
+  },
+  {
+   "phrase": "Literary masterpiece",
+   "level": "C2",
+   "definition": "An outstanding, brilliant book recognized for superior craft and beauty."
+  },
+  {
+   "phrase": "Poignant narrative",
+   "level": "C2",
+   "definition": "A deeply touching, emotionally powerful story that evokes sincere empathy."
+  }
+ ],
+ "p2c29": [
+  {
+   "phrase": "Strict regulations",
+   "level": "B2",
+   "definition": "Rigorous legal rules governing industrial emissions and public waste."
+  },
+  {
+   "phrase": "Raise public awareness",
+   "level": "B2",
+   "definition": "Educating citizens about nature preservation and recycling habits."
+  },
+  {
+   "phrase": "Combat climate change",
+   "level": "B2",
+   "definition": "Taking concrete state actions to reduce emissions and global warming."
+  },
+  {
+   "phrase": "Eco-friendly practices",
+   "level": "B2",
+   "definition": "Industrial and personal habits that do not pollute or harm nature."
+  },
+  {
+   "phrase": "Curb pollution",
+   "level": "C1",
+   "definition": "To limit, control, and reduce harmful waste released into air and rivers."
+  },
+  {
+   "phrase": "Enforce penalties",
+   "level": "C1",
+   "definition": "Issuing heavy legal fines to corporations that breach environmental laws."
+  },
+  {
+   "phrase": "Phased transition",
+   "level": "C1",
+   "definition": "A gradual, structured shift from fossil fuels toward green renewable power."
+  },
+  {
+   "phrase": "Sustainable development",
+   "level": "B2",
+   "definition": "Economic growth achieved without destroying resources needed for the future."
+  },
+  {
+   "phrase": "A legislative milestone",
+   "level": "C2",
+   "definition": "A landmark law that permanently shifts national environmental policy."
+  },
+  {
+   "phrase": "Preserve biodiversity",
+   "level": "C1",
+   "definition": "Protecting native animal species, plants, and natural habitats from destruction."
+  }
+ ],
+ "p2c30": [
+  {
+   "phrase": "Green spaces and parks",
+   "level": "B2",
+   "definition": "Creating open grass, tree, and recreation zones for local families."
+  },
+  {
+   "phrase": "Improve the daily commute",
+   "level": "B2",
+   "definition": "Upgrading roads and transit so travel to work is faster and smoother."
+  },
+  {
+   "phrase": "A breath of fresh air for locals",
+   "level": "B2",
+   "definition": "A welcome, uplifting community change that brightens daily life."
+  },
+  {
+   "phrase": "Community development",
+   "level": "B2",
+   "definition": "Projects aimed at improving social facilities and living standards locally."
+  },
+  {
+   "phrase": "Revamp public spaces",
+   "level": "C1",
+   "definition": "Renovating and modernizing old squares, libraries, and bus stops."
+  },
+  {
+   "phrase": "Pedestrian-friendly zone",
+   "level": "C1",
+   "definition": "Street areas designed exclusively for walkers, outdoor cafes, and cyclists."
+  },
+  {
+   "phrase": "Upgrade infrastructure",
+   "level": "C1",
+   "definition": "Modernizing water pipes, lighting, sidewalks, and internet networks."
+  },
+  {
+   "phrase": "Foster social unity",
+   "level": "C1",
+   "definition": "Bringing neighbors together through community gardens and shared centers."
+  },
+  {
+   "phrase": "A long overdue improvement",
+   "level": "C2",
+   "definition": "A necessary local reform that should have been carried out years ago."
+  },
+  {
+   "phrase": "Civic participation",
+   "level": "C2",
+   "definition": "Active involvement of local citizens in deciding neighborhood policies and projects. ------------------------------------------------------------"
+  }
+ ]
+}

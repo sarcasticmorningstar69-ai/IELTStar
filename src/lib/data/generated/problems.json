@@ -1,0 +1,254 @@
+[
+ {
+  "id": "prob1",
+  "num": 1,
+  "title": "One-word / overly short answers",
+  "difficulty": "Very easy",
+  "note": "Students can learn to immediately add a reason, detail, or example."
+ },
+ {
+  "id": "prob2",
+  "num": 2,
+  "title": "Overusing basic connectors",
+  "difficulty": "Very easy",
+  "note": "Can be improved by practicing a small set of natural alternatives and varied sentence structures."
+ },
+ {
+  "id": "prob3",
+  "num": 3,
+  "title": "Repetitive basic vocabulary",
+  "difficulty": "Very easy",
+  "note": "Replacing a few high-frequency words with precise alternatives produces quick gains."
+ },
+ {
+  "id": "prob4",
+  "num": 4,
+  "title": "Obvious filler words",
+  "difficulty": "Very easy",
+  "note": "Awareness + repeated practice can quickly reduce “um,” “uh,” “basically,” etc."
+ },
+ {
+  "id": "prob5",
+  "num": 5,
+  "title": "Memorized / robotic openings",
+  "difficulty": "Very easy",
+  "note": "Stop using scripts and practice multiple natural openings."
+ },
+ {
+  "id": "prob6",
+  "num": 6,
+  "title": "Overly formal / essay-like language",
+  "difficulty": "Easy",
+  "note": "Students can learn conversational alternatives relatively quickly."
+ },
+ {
+  "id": "prob7",
+  "num": 7,
+  "title": "Too much unnecessary detail",
+  "difficulty": "Easy",
+  "note": "Mostly a matter of learning when to stop and practicing concise responses."
+ },
+ {
+  "id": "prob8",
+  "num": 8,
+  "title": "Simple pronunciation errors",
+  "difficulty": "Easy",
+  "note": "Individual recurring sound errors can often be isolated and practiced directly."
+ },
+ {
+  "id": "prob9",
+  "num": 9,
+  "title": "Weak word stress",
+  "difficulty": "Easy",
+  "note": "Can improve through repeated listening, marking stress, and imitation."
+ },
+ {
+  "id": "prob10",
+  "num": 10,
+  "title": "Poor sentence chunking",
+  "difficulty": "Easy",
+  "note": "Shadowing and chunking exercises can produce noticeable improvement."
+ },
+ {
+  "id": "prob11",
+  "num": 11,
+  "title": "Weak use of basic grammar structures",
+  "difficulty": "Easy–Moderate",
+  "note": "Repeated spoken practice can automate common patterns."
+ },
+ {
+  "id": "prob12",
+  "num": 12,
+  "title": "Weak tense consistency",
+  "difficulty": "Easy–Moderate",
+  "note": "Particularly manageable in familiar narratives such as Part 2."
+ },
+ {
+  "id": "prob13",
+  "num": 13,
+  "title": "Weak collocations",
+  "difficulty": "Moderate",
+  "note": "Students need both knowledge and repeated contextual use."
+ },
+ {
+  "id": "prob14",
+  "num": 14,
+  "title": "Limited topic vocabulary",
+  "difficulty": "Moderate",
+  "note": "A relatively straightforward knowledge problem, but requires substantial exposure."
+ },
+ {
+  "id": "prob15",
+  "num": 15,
+  "title": "Weak paraphrasing",
+  "difficulty": "Moderate",
+  "note": "Requires vocabulary flexibility rather than simply memorizing synonyms."
+ },
+ {
+  "id": "prob16",
+  "num": 16,
+  "title": "Difficulty describing something without the exact word",
+  "difficulty": "Moderate",
+  "note": "Requires developing circumlocution/recovery ability."
+ },
+ {
+  "id": "prob17",
+  "num": 17,
+  "title": "Weak answer organization",
+  "difficulty": "Moderate",
+  "note": "Frameworks like A.R.E. and P.E.E.P. help, but students must learn to use them flexibly."
+ },
+ {
+  "id": "prob18",
+  "num": 18,
+  "title": "Weak Part 2 development",
+  "difficulty": "Moderate",
+  "note": "Requires learning to generate details, events, feelings, and reflection spontaneously."
+ },
+ {
+  "id": "prob19",
+  "num": 19,
+  "title": "Weak Part 3 development",
+  "difficulty": "Moderate–Hard",
+  "note": "Students need to learn explanation, examples, qualification, and opposing perspectives."
+ },
+ {
+  "id": "prob20",
+  "num": 20,
+  "title": "Weak idea generation",
+  "difficulty": "Hard",
+  "note": "The problem isn't necessarily English; students have to learn how to generate content quickly."
+ },
+ {
+  "id": "prob21",
+  "num": 21,
+  "title": "Difficulty discussing unfamiliar topics",
+  "difficulty": "Hard",
+  "note": "Requires flexible thinking and the ability to speculate rather than relying on prepared knowledge."
+ },
+ {
+  "id": "prob22",
+  "num": 22,
+  "title": "Grammar errors while speaking spontaneously",
+  "difficulty": "Hard",
+  "note": "Students may know the grammar but cannot retrieve it accurately under pressure."
+ },
+ {
+  "id": "prob23",
+  "num": 23,
+  "title": "Slow lexical retrieval",
+  "difficulty": "Hard",
+  "note": "Requires substantial repetition before vocabulary becomes automatic."
+ },
+ {
+  "id": "prob24",
+  "num": 24,
+  "title": "Translation from L1 → English",
+  "difficulty": "Hard",
+  "note": "Changing the underlying processing habit takes time."
+ },
+ {
+  "id": "prob25",
+  "num": 25,
+  "title": "Slow processing/formulation",
+  "difficulty": "Hard",
+  "note": "Multiple mental processes have to become faster and more automatic."
+ },
+ {
+  "id": "prob26",
+  "num": 26,
+  "title": "Excessive self-correction",
+  "difficulty": "Hard",
+  "note": "Students must change how they monitor themselves while speaking, not simply learn more English."
+ },
+ {
+  "id": "prob27",
+  "num": 27,
+  "title": "Poor spontaneous flexibility",
+  "difficulty": "Hard",
+  "note": "Requires being able to transform known language/content under changing questions."
+ },
+ {
+  "id": "prob28",
+  "num": 28,
+  "title": "Difficulty handling follow-up questions",
+  "difficulty": "Hard",
+  "note": "Requires real-time listening + thinking + responding + adapting."
+ },
+ {
+  "id": "prob29",
+  "num": 29,
+  "title": "Weak interaction/repair skills",
+  "difficulty": "Hard",
+  "note": "Students have to recover naturally from communication problems rather than simply produce prepared speech."
+ },
+ {
+  "id": "prob30",
+  "num": 30,
+  "title": "Unstable fluency under cognitive pressure",
+  "difficulty": "Hard",
+  "note": "Fluency can collapse when vocabulary, grammar and ideas are simultaneously demanded."
+ },
+ {
+  "id": "prob31",
+  "num": 31,
+  "title": "Part 3 abstract thinking weakness",
+  "difficulty": "Hard",
+  "note": "This involves reasoning, generalization, comparison, qualification and perspective—not just English."
+ },
+ {
+  "id": "prob32",
+  "num": 32,
+  "title": "Severe pronunciation/rhythm problems across connected speech",
+  "difficulty": "Hard",
+  "note": "Requires long-term perceptual and motor adjustment rather than simply memorizing rules."
+ },
+ {
+  "id": "prob33",
+  "num": 33,
+  "title": "Performance collapse under pressure",
+  "difficulty": "Very hard",
+  "note": "The student may know the language but cannot access it reliably in an evaluative environment."
+ },
+ {
+  "id": "prob34",
+  "num": 34,
+  "title": "High speaking anxiety/fear of mistakes",
+  "difficulty": "Very hard",
+  "note": "This can interfere with nearly every other speaking skill at once."
+ },
+ {
+  "id": "prob35",
+  "num": 35,
+  "title": "Deep lack of automaticity",
+  "difficulty": "Very hard",
+  "note": "Knowledge exists, but the student cannot deploy it quickly enough during real-time speech."
+ },
+ {
+  "id": "prob36",
+  "num": 36,
+  "title": "Fundamental low speaking ability",
+  "difficulty": "Very hard",
+  "note": "When vocabulary, grammar, pronunciation, processing, confidence, and exposure are all weak, there is no single quick intervention."
+ }
+]

@@ -1,0 +1,1202 @@
+[
+ {
+  "id": "p3t1",
+  "title": "Primary & Secondary Schooling",
+  "domain": "Education, Learning, and Language",
+  "questions": [
+   {
+    "id": "p3t1-q1",
+    "prompt": "How are education priorities today different from those in the past?"
+   },
+   {
+    "id": "p3t1-q2",
+    "prompt": "Should schools teach both arts and science subjects equally?"
+   },
+   {
+    "id": "p3t1-q3",
+    "prompt": "What improvements does the public school system need in your country?"
+   },
+   {
+    "id": "p3t1-q4",
+    "prompt": "What qualities define a good teacher versus a good student?"
+   }
+  ],
+  "cognitiveFunction": "Historical contrastive analysis; policy evaluation; definitional distinction."
+ },
+ {
+  "id": "p3t2",
+  "title": "Higher Education & University Studies",
+  "domain": "Education, Learning, and Language",
+  "questions": [
+   {
+    "id": "p3t2-q1",
+    "prompt": "Is it difficult for people without a college education to get good jobs where you live?"
+   },
+   {
+    "id": "p3t2-q2",
+    "prompt": "Do you think going to university will become more or less popular in the future?"
+   },
+   {
+    "id": "p3t2-q3",
+    "prompt": "Is there a difference in the number of men and women attending university in your country?"
+   },
+   {
+    "id": "p3t2-q4",
+    "prompt": "Why do some students choose to live away from home during university?"
+   }
+  ],
+  "cognitiveFunction": "Economic causality; predictive forecasting; demographic analysis."
+ },
+ {
+  "id": "p3t3",
+  "title": "Educational Technology & Innovation",
+  "domain": "Education, Learning, and Language",
+  "questions": [
+   {
+    "id": "p3t3-q1",
+    "prompt": "Do you think computers and AI will one day replace human teachers in the classroom?"
+   },
+   {
+    "id": "p3t3-q2",
+    "prompt": "What changes do you think will happen in the classroom in the near future?"
+   },
+   {
+    "id": "p3t3-q3",
+    "prompt": "What are the advantages and disadvantages of using digital tools in early education?"
+   },
+   {
+    "id": "p3t3-q4",
+    "prompt": "How can teachers encourage children to accept innovative learning tools?"
+   }
+  ],
+  "cognitiveFunction": "Speculative projection; risk-benefit analysis; technological impact assessment."
+ },
+ {
+  "id": "p3t4",
+  "title": "Language Acquisition & Linguistics",
+  "domain": "Education, Learning, and Language",
+  "questions": [
+   {
+    "id": "p3t4-q1",
+    "prompt": "What is your opinion on the way foreign languages are currently taught in schools?"
+   },
+   {
+    "id": "p3t4-q2",
+    "prompt": "Why do some people find it easier to learn a new language than others?"
+   },
+   {
+    "id": "p3t4-q3",
+    "prompt": "Is it important to learn the language of a country you are visiting for a holiday?"
+   },
+   {
+    "id": "p3t4-q4",
+    "prompt": "What kinds of dictionaries do people prefer when learning a foreign language?"
+   }
+  ],
+  "cognitiveFunction": "Pedagogical evaluation; individual difference analysis; contextual justification."
+ },
+ {
+  "id": "p3t5",
+  "title": "Mathematics & Curriculum Design",
+  "domain": "Education, Learning, and Language",
+  "questions": [
+   {
+    "id": "p3t5-q1",
+    "prompt": "Can computers help students understand mathematical concepts more effectively?"
+   },
+   {
+    "id": "p3t5-q2",
+    "prompt": "What methods can be applied to make mathematics classes more engaging for children?"
+   },
+   {
+    "id": "p3t5-q3",
+    "prompt": "What are the advantages and disadvantages of using a calculator in primary school?"
+   },
+   {
+    "id": "p3t5-q4",
+    "prompt": "Should high school students be permitted to choose all the subjects they study?"
+   }
+  ],
+  "cognitiveFunction": "Pedagogical intervention; policy critique; curriculum optimization"
+ },
+ {
+  "id": "p3t6",
+  "title": "Artificial Intelligence & Automation",
+  "domain": "Technology, Science, and Digital Media",
+  "questions": [
+   {
+    "id": "p3t6-q1",
+    "prompt": "How do you think artificial intelligence will affect the nature of human work in the future?"
+   },
+   {
+    "id": "p3t6-q2",
+    "prompt": "Will automation lead to widespread job loss or create new employment sectors?"
+   },
+   {
+    "id": "p3t6-q3",
+    "prompt": "How can societies encourage people to accept technological innovations responsibly?"
+   },
+   {
+    "id": "p3t6-q4",
+    "prompt": "What types of tasks should never be outsourced to artificial intelligence systems?"
+   }
+  ],
+  "cognitiveFunction": "Socio-economic forecasting; labor market analysis; ethical boundary setting."
+ },
+ {
+  "id": "p3t7",
+  "title": "The Internet & Digital Information",
+  "domain": "Technology, Science, and Digital Media",
+  "questions": [
+   {
+    "id": "p3t7-q1",
+    "prompt": "Do you believe all information available on the internet is accurate and reliable?"
+   },
+   {
+    "id": "p3t7-q2",
+    "prompt": "How can individuals identify reliable online sources of information?"
+   },
+   {
+    "id": "p3t7-q3",
+    "prompt": "How has the internet fundamentally transformed the way people work and socialise?"
+   },
+   {
+    "id": "p3t7-q4",
+    "prompt": "Do people spend an excessive amount of time on social media platforms today?"
+   }
+  ],
+  "cognitiveFunction": "Epistemological critique; verification strategy; societal impact assessment."
+ },
+ {
+  "id": "p3t8",
+  "title": "Mobile Telecommunications & Devices",
+  "domain": "Technology, Science, and Digital Media",
+  "questions": [
+   {
+    "id": "p3t8-q1",
+    "prompt": "How have mobile phones changed communication norms across different generations?"
+   },
+   {
+    "id": "p3t8-q2",
+    "prompt": "Should governments enact regulations regarding mobile phone usage in public places?"
+   },
+   {
+    "id": "p3t8-q3",
+    "prompt": "What is an appropriate minimum age for a child to own a personal mobile device?"
+   },
+   {
+    "id": "p3t8-q4",
+    "prompt": "What are the main disadvantages of smartphone reliance in daily life?"
+   }
+  ],
+  "cognitiveFunction": "Generational comparative analysis; regulatory critique; developmental evaluation."
+ },
+ {
+  "id": "p3t9",
+  "title": "Inventions, Copyright, & Intellectual Property",
+  "domain": "Technology, Science, and Digital Media",
+  "questions": [
+   {
+    "id": "p3t9-q1",
+    "prompt": "How do major scientific breakthroughs alter the progression of human society?"
+   },
+   {
+    "id": "p3t9-q2",
+    "prompt": "Should intellectual property and copyright laws be strictly enforced globally?"
+   },
+   {
+    "id": "p3t9-q3",
+    "prompt": "What technological invention of the past century has had a negative impact on life?"
+   },
+   {
+    "id": "p3t9-q4",
+    "prompt": "Will mundane household tasks eventually be performed entirely by machines?"
+   }
+  ],
+  "cognitiveFunction": "Historical synthesis; legal-ethical evaluation; cost-benefit analysis."
+ },
+ {
+  "id": "p3t10",
+  "title": "Space Exploration & Scientific Investment",
+  "domain": "Technology, Science, and Digital Media",
+  "questions": [
+   {
+    "id": "p3t10-q1",
+    "prompt": "Is space exploration a justifiable investment of global financial resources?"
+   },
+   {
+    "id": "p3t10-q2",
+    "prompt": "How might space research benefit life on Earth in practical ways?"
+   },
+   {
+    "id": "p3t10-q3",
+    "prompt": "Should national governments prioritize space exploration over domestic welfare programs?"
+   },
+   {
+    "id": "p3t10-q4",
+    "prompt": "Do you think human beings will establish colonies on other planets in the future?"
+   }
+  ],
+  "cognitiveFunction": "Resource allocation evaluation; long-term projection; political prioritization"
+ },
+ {
+  "id": "p3t11",
+  "title": "Environmental Degradation & Pollution",
+  "domain": "Environment, Nature, and Sustainability",
+  "questions": [
+   {
+    "id": "p3t11-q1",
+    "prompt": "What are the primary environmental challenges currently facing your country?"
+   },
+   {
+    "id": "p3t11-q2",
+    "prompt": "What are the principal causes of water and air pollution in modern industrial cities?"
+   },
+   {
+    "id": "p3t11-q3",
+    "prompt": "What effective measures can individual citizens take to protect the local environment?"
+   },
+   {
+    "id": "p3t11-q4",
+    "prompt": "Are young people today more environmentally conscious than older generations?"
+   }
+  ],
+  "cognitiveFunction": "Environmental problem-solving; causal chain analysis; generational comparison"
+ },
+ {
+  "id": "p3t12",
+  "title": "Climate & Extreme Weather",
+  "domain": "Environment, Nature, and Sustainability",
+  "questions": [
+   {
+    "id": "p3t12-q1",
+    "prompt": "Does your country experience extreme weather events, and how do they disrupt life?"
+   },
+   {
+    "id": "p3t12-q2",
+    "prompt": "Why do certain populations prefer living in extreme hot or cold climates?"
+   },
+   {
+    "id": "p3t12-q3",
+    "prompt": "How does climate change directly impact the daily lives of citizens in vulnerable areas?"
+   },
+   {
+    "id": "p3t12-q4",
+    "prompt": "Are weather forecasts becoming more accurate due to modern technological developments?"
+   }
+  ],
+  "cognitiveFunction": "Geographic critique; psychological adaptation analysis; predictive climate modeling"
+ },
+ {
+  "id": "p3t13",
+  "title": "Wildlife Protection & Zoos",
+  "domain": "Environment, Nature, and Sustainability",
+  "questions": [
+   {
+    "id": "p3t13-q1",
+    "prompt": "Should national governments allocate substantial funding to preserve endangered species?"
+   },
+   {
+    "id": "p3t13-q2",
+    "prompt": "What is your perspective on the ethical role of traditional zoos in contemporary society?"
+   },
+   {
+    "id": "p3t13-q3",
+    "prompt": "Why are many animal species currently facing extinction, and what are the effects?"
+   },
+   {
+    "id": "p3t13-q4",
+    "prompt": "Is scientific testing on animals ever morally justified for human advancement?"
+   }
+  ],
+  "cognitiveFunction": "Ethical deliberation; ecological balance evaluation; moral boundary definition"
+ },
+ {
+  "id": "p3t14",
+  "title": "Trees, Forestry, & Green Spaces",
+  "domain": "Environment, Nature, and Sustainability",
+  "questions": [
+   {
+    "id": "p3t14-q1",
+    "prompt": "Why is it essential to preserve trees and establish green parks in dense urban environments?"
+   },
+   {
+    "id": "p3t14-q2",
+    "prompt": "What practical measures can individuals implement to minimize paper consumption?"
+   },
+   {
+    "id": "p3t14-q3",
+    "prompt": "Should natural beauty spots receive state protection from commercial tourism development?"
+   },
+   {
+    "id": "p3t14-q4",
+    "prompt": "Do you think more money should be spent on urban green spaces rather than roads?"
+   }
+  ],
+  "cognitiveFunction": "Urban planning synthesis; conservation strategy; environmental cost analysis"
+ },
+ {
+  "id": "p3t15",
+  "title": "Agriculture, Farming, & Global Food Security",
+  "domain": "Environment, Nature, and Sustainability",
+  "questions": [
+   {
+    "id": "p3t15-q1",
+    "prompt": "How has modern industrial farming altered traditional agricultural practices in your nation?"
+   },
+   {
+    "id": "p3t15-q2",
+    "prompt": "Is there adequate water infrastructure to sustain future global agricultural demands?"
+   },
+   {
+    "id": "p3t15-q3",
+    "prompt": "What natural or man-made disasters present the greatest threat to global food supply?"
+   },
+   {
+    "id": "p3t15-q4",
+    "prompt": "How can governments support sustainable farming practices without raising food prices?"
+   }
+  ],
+  "cognitiveFunction": "Technological transformation analysis; security assessment; risk projection"
+ },
+ {
+  "id": "p3t16",
+  "title": "Urbanization & Rural-Urban Migration",
+  "domain": "Society, Community, and Urbanization",
+  "questions": [
+   {
+    "id": "p3t16-q1",
+    "prompt": "Why do many people choose to migrate from rural areas to major urban centers?"
+   },
+   {
+    "id": "p3t16-q2",
+    "prompt": "What severe challenges do metropolitan infrastructure systems face due to overpopulation?"
+   },
+   {
+    "id": "p3t16-q3",
+    "prompt": "How might rural landscapes and economies evolve over the next few decades?"
+   },
+   {
+    "id": "p3t16-q4",
+    "prompt": "How does quality of life compare between urban and rural environments?"
+   }
+  ],
+  "cognitiveFunction": "Demographic migration modeling; infrastructure critique; quality-of-life assessment"
+ },
+ {
+  "id": "p3t17",
+  "title": "Public Infrastructure & Community Facilities",
+  "domain": "Society, Community, and Urbanization",
+  "questions": [
+   {
+    "id": "p3t17-q1",
+    "prompt": "What are the socio-economic benefits of maintaining accessible public parks and facilities?"
+   },
+   {
+    "id": "p3t17-q2",
+    "prompt": "Should entry to public cultural facilities, such as museums and parks, be entirely free?"
+   },
+   {
+    "id": "p3t17-q3",
+    "prompt": "How can municipal governments improve public infrastructure to serve low-income populations?"
+   },
+   {
+    "id": "p3t17-q4",
+    "prompt": "How well do people in your country maintain and respect public municipal facilities?"
+   }
+  ],
+  "cognitiveFunction": "Socio-economic benefit analysis; state funding critique; municipal policy evaluation"
+ },
+ {
+  "id": "p3t18",
+  "title": "Crime, Justice, & Systemic Rehabilitation",
+  "domain": "Society, Community, and Urbanization",
+  "questions": [
+   {
+    "id": "p3t18-q1",
+    "prompt": "What is the fundamental distinction between minor legal offenses and major crimes?"
+   },
+   {
+    "id": "p3t18-q2",
+    "prompt": "Do you believe incarceration is the most effective deterrent for criminal behavior?"
+   },
+   {
+    "id": "p3t18-q3",
+    "prompt": "What primary social factors contribute to escalating crime rates in major urban areas?"
+   },
+   {
+    "id": "p3t18-q4",
+    "prompt": "Should prisons focus primarily on punishment or rehabilitation of offenders?"
+   }
+  ],
+  "cognitiveFunction": "Legal distinction; policy efficacy evaluation; sociological root-cause analysis"
+ },
+ {
+  "id": "p3t19",
+  "title": "Wealth Distribution, Poverty, & Taxation",
+  "domain": "Society, Community, and Urbanization",
+  "questions": [
+   {
+    "id": "p3t19-q1",
+    "prompt": "Why do individuals often desire greater wealth regardless of their financial status?"
+   },
+   {
+    "id": "p3t19-q2",
+    "prompt": "What structural economic strategies can governments deploy to alleviate systemic poverty?"
+   },
+   {
+    "id": "p3t19-q3",
+    "prompt": "Are income taxation levels in your country appropriate or counterproductive?"
+   },
+   {
+    "id": "p3t19-q4",
+    "prompt": "Can excessive personal wealth exert a detrimental influence on an individual's character?"
+   }
+  ],
+  "cognitiveFunction": "Economic psychology; fiscal policy critique; moral evaluation of wealth"
+ },
+ {
+  "id": "p3t20",
+  "title": "Civic Hygiene, Waste, & Environmental Responsibility",
+  "domain": "Society, Community, and Urbanization",
+  "questions": [
+   {
+    "id": "p3t20-q1",
+    "prompt": "Why do some citizens persist in littering despite clear public prohibition laws?"
+   },
+   {
+    "id": "p3t20-q2",
+    "prompt": "What actionable measures can local governments implement to eliminate public littering?"
+   },
+   {
+    "id": "p3t20-q3",
+    "prompt": "What are the broader environmental consequences of improper urban waste disposal?"
+   },
+   {
+    "id": "p3t20-q4",
+    "prompt": "What steps has your government taken to make citizens pick up after themselves?"
+   }
+  ],
+  "cognitiveFunction": "Psychological motive analysis; civic policy design; environmental threat assessment"
+ },
+ {
+  "id": "p3t21",
+  "title": "Entrepreneurship & Small Business",
+  "domain": "Economics, Business, and Employment",
+  "questions": [
+   {
+    "id": "p3t21-q1",
+    "prompt": "Which types of small businesses are most crucial for driving local economic growth?"
+   },
+   {
+    "id": "p3t21-q2",
+    "prompt": "Why are an increasing number of professionals leaving regular jobs to start businesses?"
+   },
+   {
+    "id": "p3t21-q3",
+    "prompt": "What are the primary financial and operational obstacles faced by small businesses?"
+   },
+   {
+    "id": "p3t21-q4",
+    "prompt": "What are the key differences in economic impact between small businesses and corporations?"
+   }
+  ],
+  "cognitiveFunction": "Business ecosystem analysis; career transition motivation; risk identification"
+ },
+ {
+  "id": "p3t22",
+  "title": "Leadership & Corporate Management",
+  "domain": "Economics, Business, and Employment",
+  "questions": [
+   {
+    "id": "p3t22-q1",
+    "prompt": "What essential interpersonal traits characterize an exceptional organizational leader?"
+   },
+   {
+    "id": "p3t22-q2",
+    "prompt": "How do effective managers motivate their employees beyond offering financial incentives?"
+   },
+   {
+    "id": "p3t22-q3",
+    "prompt": "Should leadership and management skills be formally integrated into school curricula?"
+   },
+   {
+    "id": "p3t22-q4",
+    "prompt": "Do you believe corporate leaders should be physically attractive or articulate listeners?"
+   }
+  ],
+  "cognitiveFunction": "Profile synthesis; motivation strategy analysis; educational integration judgment"
+ },
+ {
+  "id": "p3t23",
+  "title": "Employment, Careers, & Work-Life Balance",
+  "domain": "Economics, Business, and Employment",
+  "questions": [
+   {
+    "id": "p3t23-q1",
+    "prompt": "Is financial compensation the single most critical factor when selecting a job?"
+   },
+   {
+    "id": "p3t23-q2",
+    "prompt": "Do modern working environments impose excessive demands, leading to widespread stress?"
+   },
+   {
+    "id": "p3t23-q3",
+    "prompt": "How will remote work models shape global employment patterns in the coming years?"
+   },
+   {
+    "id": "p3t23-q4",
+    "prompt": "Should young adults be encouraged to work abroad early in their careers?"
+   }
+  ],
+  "cognitiveFunction": "Value prioritization; labor market diagnosis; policy intervention evaluation"
+ },
+ {
+  "id": "p3t24",
+  "title": "Consumer Behavior & Retail Trends",
+  "domain": "Economics, Business, and Employment",
+  "questions": [
+   {
+    "id": "p3t24-q1",
+    "prompt": "How have consumer purchasing habits shifted from physical retail to e-commerce?"
+   },
+   {
+    "id": "p3t24-q2",
+    "prompt": "Do contemporary consumers place higher value on material goods or experiences?"
+   },
+   {
+    "id": "p3t24-q3",
+    "prompt": "To what extent does modern advertising influence subconscious consumer decisions?"
+   },
+   {
+    "id": "p3t24-q4",
+    "prompt": "Will brick-and-mortar retail shops eventually become completely obsolete?"
+   }
+  ],
+  "cognitiveFunction": "Market transition analysis; consumer psychology; retail sector forecasting"
+ },
+ {
+  "id": "p3t25",
+  "title": "Customer Service & Consumer Rights",
+  "domain": "Economics, Business, and Employment",
+  "questions": [
+   {
+    "id": "p3t25-q1",
+    "prompt": "Why do many dissatisfied customers refrain from lodging complaints regarding bad service?"
+   },
+   {
+    "id": "p3t25-q2",
+    "prompt": "How can commercial organizations turn a negative customer service experience into a positive one?"
+   },
+   {
+    "id": "p3t25-q3",
+    "prompt": "What actions should consumers take when a corporate entity delivers substandard service?"
+   },
+   {
+    "id": "p3t25-q4",
+    "prompt": "What organizations in your country are most famous for providing poor service?"
+   }
+  ],
+  "cognitiveFunction": "Behavioral non-action explanation; service recovery evaluation; legal remedy critique"
+ },
+ {
+  "id": "p3t26",
+  "title": "Public Healthcare & State Policy",
+  "domain": "Health, Lifestyle, and Human Well-being",
+  "questions": [
+   {
+    "id": "p3t26-q1",
+    "prompt": "Should governments prioritize expenditure on public health over general education?"
+   },
+   {
+    "id": "p3t26-q2",
+    "prompt": "Should basic healthcare access be entirely free at the point of delivery for all citizens?"
+   },
+   {
+    "id": "p3t26-q3",
+    "prompt": "What proactive initiatives can governments implement to promote healthy lifestyle options?"
+   },
+   {
+    "id": "p3t26-q4",
+    "prompt": "What core professional competencies distinguish an exceptional medical doctor?"
+   }
+  ],
+  "cognitiveFunction": "Fiscal priority assessment; universal rights evaluation; preventive policy design."
+ },
+ {
+  "id": "p3t27",
+  "title": "Diet, Nutrition, & Food Culture",
+  "domain": "Health, Lifestyle, and Human Well-being",
+  "questions": [
+   {
+    "id": "p3t27-q1",
+    "prompt": "How have national dietary patterns altered over the past few decades, and with what effects?"
+   },
+   {
+    "id": "p3t27-q2",
+    "prompt": "Is a strict vegetarian diet superior to an omnivorous diet for long-term health?"
+   },
+   {
+    "id": "p3t27-q3",
+    "prompt": "Should fast foods, soda, and sweets be banned from school cafeterias entirely?"
+   },
+   {
+    "id": "p3t27-q4",
+    "prompt": "How does traditional cuisine serve as a defining expression of national culture?"
+   }
+  ],
+  "cognitiveFunction": "Epidemiological analysis; nutritional evaluation; regulatory intervention; cultural analysis."
+ },
+ {
+  "id": "p3t28",
+  "title": "Physical Fitness, Exercise, & Aging",
+  "domain": "Health, Lifestyle, and Human Well-being",
+  "questions": [
+   {
+    "id": "p3t28-q1",
+    "prompt": "What non-sporting daily activities can individuals incorporate to maintain baseline fitness?"
+   },
+   {
+    "id": "p3t28-q2",
+    "prompt": "Do senior citizens in your country engage in adequate levels of routine physical exercise?"
+   },
+   {
+    "id": "p3t28-q3",
+    "prompt": "Is it fundamentally more challenging to maintain a healthy lifestyle in modern cities today?"
+   },
+   {
+    "id": "p3t28-q4",
+    "prompt": "Do you think most people worry more about their health as they get older?"
+   }
+  ],
+  "cognitiveFunction": "Physical activity evaluation; demographic fitness profiling; environmental impediment analysis."
+ },
+ {
+  "id": "p3t29",
+  "title": "Mental Health, Stress, & Modern Living",
+  "domain": "Health, Lifestyle, and Human Well-being",
+  "questions": [
+   {
+    "id": "p3t29-q1",
+    "prompt": "Is physical health inherently more vital to human well-being than psychological health?"
+   },
+   {
+    "id": "p3t29-q2",
+    "prompt": "What underlying societal pressures account for elevated stress levels in modern life?"
+   },
+   {
+    "id": "p3t29-q3",
+    "prompt": "What institutional changes can workplaces enact to bolster the mental health of staff?"
+   },
+   {
+    "id": "p3t29-q4",
+    "prompt": "Does modern life give people enough time for adequate leisure and relaxation?"
+   }
+  ],
+  "cognitiveFunction": "Comparative holistic health analysis; psychological strain synthesis; workplace reform design."
+ },
+ {
+  "id": "p3t30",
+  "title": "Pandemics & Disease Control",
+  "domain": "Health, Lifestyle, and Human Well-being",
+  "questions": [
+   {
+    "id": "p3t30-q1",
+    "prompt": "What systemic frameworks can organizations establish to prevent global health crises?"
+   },
+   {
+    "id": "p3t30-q2",
+    "prompt": "How can modern technology be effectively leveraged to track and contain disease outbreaks?"
+   },
+   {
+    "id": "p3t30-q3",
+    "prompt": "Do you believe all human illnesses can eventually be prevented through medical science?"
+   },
+   {
+    "id": "p3t30-q4",
+    "prompt": "Will there be significantly less illness globally in the future than there is today?"
+   }
+  ],
+  "cognitiveFunction": "Global risk mitigation; technological application analysis; medical projection."
+ },
+ {
+  "id": "p3t31",
+  "title": "Visual Arts & Painting",
+  "domain": "Arts, Culture, and Media",
+  "questions": [
+   {
+    "id": "p3t31-q1",
+    "prompt": "What criteria determine whether a painting or artwork possesses genuine aesthetic value?"
+   },
+   {
+    "id": "p3t31-q2",
+    "prompt": "How has visual art evolved in terms of mediums and themes over recent decades?"
+   },
+   {
+    "id": "p3t31-q3",
+    "prompt": "Should state education funds subsidize visual arts education alongside STEM subjects?"
+   },
+   {
+    "id": "p3t31-q4",
+    "prompt": "What general purpose does art serve in contemporary human society?"
+   }
+  ],
+  "cognitiveFunction": "Aesthetic evaluation; historical art analysis; educational budget prioritization"
+ },
+ {
+  "id": "p3t32",
+  "title": "Literature, Reading, & Libraries",
+  "domain": "Arts, Culture, and Media",
+  "questions": [
+   {
+    "id": "p3t32-q1",
+    "prompt": "Will physical paper books eventually disappear entirely due to the expansion of e-books?"
+   },
+   {
+    "id": "p3t32-q2",
+    "prompt": "Do traditional public libraries retain operational value in modern digitized cities?"
+   },
+   {
+    "id": "p3t32-q3",
+    "prompt": "Why do a significant number of mature adults enjoy reading children's literature?"
+   },
+   {
+    "id": "p3t32-q4",
+    "prompt": "How can governments effectively encourage citizens to read more books?"
+   }
+  ],
+  "cognitiveFunction": "Media transition forecasting; municipal asset evaluation; literary psychology"
+ },
+ {
+  "id": "p3t33",
+  "title": "Cinema, Film, & Censorship",
+  "domain": "Arts, Culture, and Media",
+  "questions": [
+   {
+    "id": "p3t33-q1",
+    "prompt": "Should governments retain legal powers to censor films, or should viewing be free?"
+   },
+   {
+    "id": "p3t33-q2",
+    "prompt": "Why has traditional cinema attendance experienced shifts in popularity in recent years?"
+   },
+   {
+    "id": "p3t33-q3",
+    "prompt": "Should young children under specified age thresholds be restricted from horror movies?"
+   },
+   {
+    "id": "p3t33-q4",
+    "prompt": "What common courtesies should audience members apply when watching a movie in a theatre?"
+   }
+  ],
+  "cognitiveFunction": "Democratic censorship critique; industry trend analysis; child protection evaluation"
+ },
+ {
+  "id": "p3t34",
+  "title": "Television & Mass Broadcasting",
+  "domain": "Arts, Culture, and Media",
+  "questions": [
+   {
+    "id": "p3t34-q1",
+    "prompt": "Is state-funded public television broadcasting superior in quality to commercial networks?"
+   },
+   {
+    "id": "p3t34-q2",
+    "prompt": "What negative developmental effects can excessive television consumption exert on children?"
+   },
+   {
+    "id": "p3t34-q3",
+    "prompt": "Will conventional television sets become obsolete in the future due to streaming digital media?"
+   },
+   {
+    "id": "p3t34-q4",
+    "prompt": "How significantly does television broadcasting influence public opinion and thinking?"
+   }
+  ],
+  "cognitiveFunction": "Institutional quality comparison; developmental impact critique; medium evolution forecasting"
+ },
+ {
+  "id": "p3t35",
+  "title": "Photography & Visual Memory",
+  "domain": "Arts, Culture, and Media",
+  "questions": [
+   {
+    "id": "p3t35-q1",
+    "prompt": "Why do human beings exhibit a strong emotional attachment to preserving life moments in photos?"
+   },
+   {
+    "id": "p3t35-q2",
+    "prompt": "How does a physical, printed photograph differ in value and experience from a digital file?"
+   },
+   {
+    "id": "p3t35-q3",
+    "prompt": "Is it ethical for individuals to upload photos of strangers online without permission?"
+   },
+   {
+    "id": "p3t35-q4",
+    "prompt": "Can a photograph convey objective truth, or can visual imagery distort reality?"
+   }
+  ],
+  "cognitiveFunction": "Visual psychological analysis; material vs digital valuation; photo ethics"
+ },
+ {
+  "id": "p3t36",
+  "title": "Journalism & Mass Media",
+  "domain": "Arts, Culture, and Media",
+  "questions": [
+   {
+    "id": "p3t36-q1",
+    "prompt": "Do you believe news reporting in contemporary newspapers and television is objective?"
+   },
+   {
+    "id": "p3t36-q2",
+    "prompt": "How has consumer shift toward social media platforms altered news consumption?"
+   },
+   {
+    "id": "p3t36-q3",
+    "prompt": "Is it essential for citizens of a country to consume foreign news alongside local news?"
+   },
+   {
+    "id": "p3t36-q4",
+    "prompt": "How do you think people will obtain news updates in the distant future?"
+   }
+  ],
+  "cognitiveFunction": "Media bias critique; platform disruption analysis; civic obligation judgment"
+ },
+ {
+  "id": "p3t37",
+  "title": "Family Structures & Generational Dynamics",
+  "domain": "Family, Social Life, and Human Dynamics",
+  "questions": [
+   {
+    "id": "p3t37-q1",
+    "prompt": "What are the primary advantages and disadvantages of multi-generational households?"
+   },
+   {
+    "id": "p3t37-q2",
+    "prompt": "How have family structures and roles shifted in your culture over recent decades?"
+   },
+   {
+    "id": "p3t37-q3",
+    "prompt": "Will the fundamental concept of the nuclear family undergo further changes in the future?"
+   },
+   {
+    "id": "p3t37-q4",
+    "prompt": "Are daycare centers and nannies acting as a third parent in modern families?"
+   }
+  ],
+  "cognitiveFunction": "Socio-familial structural analysis; historical shift contrast; future projections."
+ },
+ {
+  "id": "p3t38",
+  "title": "Youth, Teenagers, & Role Models",
+  "domain": "Family, Social Life, and Human Dynamics",
+  "questions": [
+   {
+    "id": "p3t38-q1",
+    "prompt": "Is the general behavior of teenagers today better or worse than that of past generations?"
+   },
+   {
+    "id": "p3t38-q2",
+    "prompt": "At what age should teenagers be expected to assume full personal responsibility?"
+   },
+   {
+    "id": "p3t38-q3",
+    "prompt": "Why is it vital for young people to have positive societal role models during development?"
+   },
+   {
+    "id": "p3t38-q4",
+    "prompt": "What major socio-economic challenges uniquely confront young adults entering the workforce?"
+   }
+  ],
+  "cognitiveFunction": "Generational behavior comparison; milestone determination; socio-developmental synthesis."
+ },
+ {
+  "id": "p3t39",
+  "title": "Elderly Care & Aging Demographics",
+  "domain": "Family, Social Life, and Human Dynamics",
+  "questions": [
+   {
+    "id": "p3t39-q1",
+    "prompt": "Who should hold primary responsibility for elderly care: nuclear families or the state?"
+   },
+   {
+    "id": "p3t39-q2",
+    "prompt": "How does an aging national demographic profile impact a country's health systems?"
+   },
+   {
+    "id": "p3t39-q3",
+    "prompt": "Do elderly people in your country maintain active roles in community social structures?"
+   },
+   {
+    "id": "p3t39-q4",
+    "prompt": "Are senior citizens treated with the same respect today as they were in past eras?"
+   }
+  ],
+  "cognitiveFunction": "Institutional responsibility allocation; macroeconomic demographic critique; cultural respect evaluation."
+ },
+ {
+  "id": "p3t40",
+  "title": "Socializing & Digital Interpersonal Relations",
+  "domain": "Family, Social Life, and Human Dynamics",
+  "questions": [
+   {
+    "id": "p3t40-q1",
+    "prompt": "How have methods of forming new friendships evolved with the rise of digital networking?"
+   },
+   {
+    "id": "p3t40-q2",
+    "prompt": "Is it safe and advisable for young children to establish social friendships online?"
+   },
+   {
+    "id": "p3t40-q3",
+    "prompt": "Do friends in your country spend as much time socializing in person as in past decades?"
+   },
+   {
+    "id": "p3t40-q4",
+    "prompt": "Do people maintain strong socializing relationships with immediate neighbors today?"
+   }
+  ],
+  "cognitiveFunction": "Sociological interaction transition; child safety critique; community analysis."
+ },
+ {
+  "id": "p3t41",
+  "title": "Celebrity Culture & Public Life",
+  "domain": "Family, Social Life, and Human Dynamics",
+  "questions": [
+   {
+    "id": "p3t41-q1",
+    "prompt": "Do modern high-profile celebrities exert a positive or negative impact on society?"
+   },
+   {
+    "id": "p3t41-q2",
+    "prompt": "Do famous individuals forfeit their right to personal privacy upon achieving public fame?"
+   },
+   {
+    "id": "p3t41-q3",
+    "prompt": "How do modern internet celebrities differ from traditional celebrities of past decades?"
+   },
+   {
+    "id": "p3t41-q4",
+    "prompt": "Why are modern audiences so fascinated by the personal lives of famous people?"
+   }
+  ],
+  "cognitiveFunction": "Cultural influence evaluation; privacy rights debate; historical celebrity typology."
+ },
+ {
+  "id": "p3t42",
+  "title": "Social Etiquette & Interpersonal Dynamics",
+  "domain": "Family, Social Life, and Human Dynamics",
+  "questions": [
+   {
+    "id": "p3t42-q1",
+    "prompt": "Under what circumstances is it socially or morally imperative for an individual to apologize?"
+   },
+   {
+    "id": "p3t42-q2",
+    "prompt": "What factors account for variations in dining table manners across different cultures?"
+   },
+   {
+    "id": "p3t42-q3",
+    "prompt": "Why do certain individuals find it difficult to admit wrongdoings and express remorse?"
+   },
+   {
+    "id": "p3t42-q4",
+    "prompt": "What do you think about people who frequently change their minds after decisions?"
+   }
+  ],
+  "cognitiveFunction": "Ethical obligation synthesis; cross-cultural comparative analysis; psychological barrier diagno"
+ },
+ {
+  "id": "p3t43",
+  "title": "Public & Long-Distance Transport",
+  "domain": "Transport, Travel, and Tourism",
+  "questions": [
+   {
+    "id": "p3t43-q1",
+    "prompt": "What main infrastructure obstacles do municipal authorities encounter when upgrading transport?"
+   },
+   {
+    "id": "p3t43-q2",
+    "prompt": "Would traffic congestion be significantly reduced if urban public transport were entirely free?"
+   },
+   {
+    "id": "p3t43-q3",
+    "prompt": "What are the environmental pros and cons of low-cost air travel expansion?"
+   },
+   {
+    "id": "p3t43-q4",
+    "prompt": "How do you envision global passenger transport operating half a century from now?"
+   }
+  ],
+  "cognitiveFunction": "Municipal planning critique; economic elasticity modeling; cost-benefit synthesis; future projection"
+ },
+ {
+  "id": "p3t44",
+  "title": "Tourism & Ecological Externalities",
+  "domain": "Transport, Travel, and Tourism",
+  "questions": [
+   {
+    "id": "p3t44-q1",
+    "prompt": "What core characteristics determine whether a destination becomes a successful tourist attraction?"
+   },
+   {
+    "id": "p3t44-q2",
+    "prompt": "Does environmental damage caused by international tourism outweigh its economic benefits?"
+   },
+   {
+    "id": "p3t44-q3",
+    "prompt": "How do travel preferences differ between young tourists and older adult tourists?"
+   },
+   {
+    "id": "p3t44-q4",
+    "prompt": "What preparations should individuals make before traveling abroad to a new culture?"
+   }
+  ],
+  "cognitiveFunction": "Tourism economics; environmental impact assessment; tourist demographic typology"
+ },
+ {
+  "id": "p3t45",
+  "title": "Holidays, Celebrations, & Cultural Tourism",
+  "domain": "Transport, Travel, and Tourism",
+  "questions": [
+   {
+    "id": "p3t45-q1",
+    "prompt": "Why do many people prefer spending holidays at home rather than traveling abroad?"
+   },
+   {
+    "id": "p3t45-q2",
+    "prompt": "What are the developmental advantages for young adults taking a gap year before university?"
+   },
+   {
+    "id": "p3t45-q3",
+    "prompt": "How does holiday tourism alter the local cultural and economic landscape of a country?"
+   },
+   {
+    "id": "p3t45-q4",
+    "prompt": "Have national holiday celebrations lost their cultural significance over the years?"
+   }
+  ],
+  "cognitiveFunction": "Anthropological rationale; cultural critique; educational trajectory analysis"
+ },
+ {
+  "id": "p3t46",
+  "title": "International Events & Cross-Border Diplomacy",
+  "domain": "Transport, Travel, and Tourism",
+  "questions": [
+   {
+    "id": "p3t46-q1",
+    "prompt": "Do global international events foster global unity or heighten national divisions?"
+   },
+   {
+    "id": "p3t46-q2",
+    "prompt": "What long-term financial consequences do host cities face after major international events conclude?"
+   },
+   {
+    "id": "p3t46-q3",
+    "prompt": "Why are certain cultural celebrations celebrated across national geographic borders?"
+   },
+   {
+    "id": "p3t46-q4",
+    "prompt": "What types of international events does your country routinely host?"
+   }
+  ],
+  "cognitiveFunction": "Geopolitical synthesis; economic post-mortem analysis; cross-cultural convergence evaluation"
+ },
+ {
+  "id": "p3t47",
+  "title": "Sports & Athletic Competitions",
+  "domain": "Personal Pursuits, Recreation, and Daily Life",
+  "questions": [
+   {
+    "id": "p3t47-q1",
+    "prompt": "How can international sporting competitions serve to bridge geopolitical divides between nations?"
+   },
+   {
+    "id": "p3t47-q2",
+    "prompt": "Should governments direct public tax funding toward elite sports or grassroots facilities?"
+   },
+   {
+    "id": "p3t47-q3",
+    "prompt": "Do you anticipate that the popularity of traditional sports will change in the future?"
+   },
+   {
+    "id": "p3t47-q4",
+    "prompt": "What physical and psychological benefits do individuals derive from playing sports?"
+   }
+  ],
+  "cognitiveFunction": "Soft-power diplomatic evaluation; public expenditure critique; market trend forecasting"
+ },
+ {
+  "id": "p3t48",
+  "title": "Toys & Childhood Play Dynamics",
+  "domain": "Personal Pursuits, Recreation, and Daily Life",
+  "questions": [
+   {
+    "id": "p3t48-q1",
+    "prompt": "How have physical toys for children transformed over recent decades in complexity and purpose?"
+   },
+   {
+    "id": "p3t48-q2",
+    "prompt": "Do modern electronic toys foster cognitive development more effectively than traditional toys?"
+   },
+   {
+    "id": "p3t48-q3",
+    "prompt": "Should marketing commercial toys directly to young children be subject to strict legal limits?"
+   },
+   {
+    "id": "p3t48-q4",
+    "prompt": "What types of toys are currently most popular among children in your country?"
+   }
+  ],
+  "cognitiveFunction": "Historical product analysis; developmental cognitive comparison; legal regulation critique"
+ },
+ {
+  "id": "p3t49",
+  "title": "Punctuality, Schedules, & Time Management",
+  "domain": "Personal Pursuits, Recreation, and Daily Life",
+  "questions": [
+   {
+    "id": "p3t49-q1",
+    "prompt": "Is strict adherence to time schedules more critical in modern society than in past eras?"
+   },
+   {
+    "id": "p3t49-q2",
+    "prompt": "Why are certain individuals chronically punctual while others are frequently late?"
+   },
+   {
+    "id": "p3t49-q3",
+    "prompt": "What primary factors cause working professionals to run out of time in daily schedules?"
+   },
+   {
+    "id": "p3t49-q4",
+    "prompt": "How can an individual effectively balance work obligations and personal life?"
+   }
+  ],
+  "cognitiveFunction": "Behavioral variance analysis; temporal sociological comparison; time-management strategy"
+ },
+ {
+  "id": "p3t50",
+  "title": "Noise, Urban Atmosphere, & Domestic Housework",
+  "domain": "Personal Pursuits, Recreation, and Daily Life",
+  "questions": [
+   {
+    "id": "p3t50-q1",
+    "prompt": "Why do older individuals often express a preference for quiet living environments over noisy cities?"
+   },
+   {
+    "id": "p3t50-q2",
+    "prompt": "What are the primary causes of noise pollution in modern urban centers, and how can it be reduced?"
+   },
+   {
+    "id": "p3t50-q3",
+    "prompt": "What are the practical psychological benefits of maintaining a clean and tidy home environment?"
+   },
+   {
+    "id": "p3t50-q4",
+    "prompt": "Do you believe mundane household chores will eventually be performed entirely by machines?"
+   }
+  ],
+  "cognitiveFunction": "Environmental acoustics critique; psychological well-being synthesis; household automation projection"
+ }
+]
