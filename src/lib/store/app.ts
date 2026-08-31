@@ -17,7 +17,7 @@ export type View =
   | { name: "mock-check"; mockId: string }
   | { name: "mock-run"; mockId: string }
   | { name: "mock-review"; mockId: string }
-  | { name: "learn"; tab?: "problems" | "techniques" | "tips" }
+  | { name: "learn"; tab?: "problems" | "techniques" | "tips" | "vocab" }
   | { name: "problem"; problemId: string }
   | { name: "technique"; groupId: string }
   | { name: "tips" }
@@ -28,6 +28,8 @@ export type View =
   | { name: "practice-again" }
   | { name: "notes" }
   | { name: "settings" };
+
+export type NavCategory = "home" | "speak" | "study" | "watch" | "review" | "settings";
 
 interface AppState {
   view: View;
@@ -41,6 +43,38 @@ interface AppState {
 }
 
 export const FOCUS_VIEWS = new Set(["session", "mock-run", "mock-check"]);
+
+export function navCategory(view: View): NavCategory {
+  switch (view.name) {
+    case "dashboard":
+      return "home";
+    case "practice":
+    case "part1":
+    case "part2":
+    case "part3":
+    case "session":
+    case "mock-config":
+    case "mock-check":
+    case "mock-run":
+    case "mock-review":
+      return "speak";
+    case "learn":
+    case "problem":
+    case "technique":
+    case "tips":
+      return "study";
+    case "videos":
+    case "video":
+      return "watch";
+    case "review":
+    case "recordings":
+    case "practice-again":
+    case "notes":
+      return "review";
+    case "settings":
+      return "settings";
+  }
+}
 
 export const useApp = create<AppState>((set, get) => ({
   view: { name: "dashboard" },
@@ -71,7 +105,7 @@ export const useApp = create<AppState>((set, get) => ({
 export const viewTitle = (view: View): string => {
   switch (view.name) {
     case "dashboard": return "Your Speaking Progress";
-    case "practice": return "Practice";
+    case "practice": return "Speak";
     case "part1": return "Part 1 — Everyday Conversation";
     case "part2": return "Part 2 — Long Turn";
     case "part3": return "Part 3 — Discussion";
@@ -80,11 +114,18 @@ export const viewTitle = (view: View): string => {
     case "mock-check": return "Microphone Check";
     case "mock-run": return "Full Speaking Mock";
     case "mock-review": return "Mock Review";
-    case "learn": return "Learn";
+    case "learn":
+      return view.tab === "vocab"
+        ? "Vocabulary"
+        : view.tab === "techniques"
+          ? "Techniques"
+          : view.tab === "tips"
+            ? "Tips"
+            : "Study";
     case "problem": return "Problem & Solution";
     case "technique": return "Technique";
     case "tips": return "Tips";
-    case "videos": return "YouTube Mock Library";
+    case "videos": return "Watch Mocks";
     case "video": return "Watch & Practice";
     case "review": return "Recent Practice";
     case "recordings": return "My Recordings";
