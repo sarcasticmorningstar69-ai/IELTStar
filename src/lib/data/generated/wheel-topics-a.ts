@@ -1,6 +1,4 @@
-import type { WheelTopic } from "../topic-wheel";
-
-export const WHEEL_TOPICS_A: WheelTopic[] = [
+export const WHEEL_TOPICS_A: { id: string; category: string; prompt: string }[] = [
   { id: "tw-001", category: "Technology & AI", prompt: "Could small AI models running directly on smartphones replace large cloud-based systems?" },
   { id: "tw-002", category: "Technology & AI", prompt: "Could artificial intelligence change how software developers write and test code?" },
   { id: "tw-003", category: "Technology & AI", prompt: "Why are tech companies investing heavily in satellite internet constellations like Starlink?" },

@@ -1,6 +1,8 @@
 import { WHEEL_TOPICS_A } from "./generated/wheel-topics-a";
 import { WHEEL_TOPICS_B } from "./generated/wheel-topics-b";
 import { WHEEL_TOPICS_C } from "./generated/wheel-topics-c";
+import { WHEEL_TOPICS_D } from "./generated/wheel-topics-d";
+import { WHEEL_TOPICS_E } from "./generated/wheel-topics-e";
 
 export interface WheelTopic {
   id: string;
@@ -12,6 +14,8 @@ export const WHEEL_TOPICS: WheelTopic[] = [
   ...WHEEL_TOPICS_A,
   ...WHEEL_TOPICS_B,
   ...WHEEL_TOPICS_C,
+  ...WHEEL_TOPICS_D,
+  ...WHEEL_TOPICS_E,
 ];
 
 export const WHEEL_TOPIC_COUNT = WHEEL_TOPICS.length;
