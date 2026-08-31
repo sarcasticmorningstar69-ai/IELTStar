@@ -2,10 +2,9 @@
 
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
-import { PageHeader, SectionCard } from "@/components/shared/page-kit";
+import { PageHeader } from "@/components/shared/page-kit";
 import { StarMark } from "@/components/shared/brand";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { CONTENT_STATS } from "@/lib/data/content";
 import { Mic, MessageCircle, Presentation, MessagesSquare, ClipboardCheck, ChevronRight } from "lucide-react";
 
@@ -44,9 +43,9 @@ export function PracticeHubView() {
   return (
     <div className="fade-up space-y-6">
       <PageHeader
-        eyebrow="Practice"
+        eyebrow="Speak"
         title="Choose how you want to speak today."
-        subtitle="Every part keeps your recordings on this device, ready to replay."
+        subtitle="Part practice or a full mock — every recording stays on this device."
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -76,7 +75,6 @@ export function PracticeHubView() {
         })}
       </div>
 
-      {/* Full Speaking Mock — visually distinct hero card (div, not button, to avoid nested buttons) */}
       <div
         role="button"
         tabIndex={0}
@@ -123,33 +121,6 @@ export function PracticeHubView() {
           </div>
         </div>
       </div>
-
-      <SectionCard title="Also here">
-        <div className="grid gap-2 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={() => navigate({ name: "videos" })}
-            className={cn(
-              "flex items-center justify-between rounded-xl border border-border px-4 py-3.5 text-left text-sm font-medium transition-colors",
-              "hover:border-brand-bright/35 hover:bg-muted/40"
-            )}
-          >
-            YouTube Mock Library
-            <ChevronRight className="h-4 w-4 text-muted-foreground/60" />
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate({ name: "practice-again" })}
-            className={cn(
-              "flex items-center justify-between rounded-xl border border-border px-4 py-3.5 text-left text-sm font-medium transition-colors",
-              "hover:border-brand-bright/35 hover:bg-muted/40"
-            )}
-          >
-            Practice Again
-            <ChevronRight className="h-4 w-4 text-muted-foreground/60" />
-          </button>
-        </div>
-      </SectionCard>
     </div>
   );
 }

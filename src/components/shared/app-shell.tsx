@@ -1,41 +1,44 @@
 "use client";
 
 import * as React from "react";
-import { useApp, FOCUS_VIEWS, type View } from "@/lib/store/app";
+import { useApp, FOCUS_VIEWS, navCategory, type View } from "@/lib/store/app";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { BrandLockup, StarMark } from "@/components/shared/brand";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import {
-  Home, Mic, BookOpen, ClipboardList, History,
+  Home, Mic, BookOpen, History,
   Sun, Moon, Menu as MenuIcon, Video, SlidersHorizontal,
   NotebookPen, Repeat2, ChevronLeft,
 } from "lucide-react";
 
 interface NavItem {
+  key: "home" | "speak" | "study" | "watch" | "review" | "settings";
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   view: View;
 }
 
 const NAV_PRIMARY: NavItem[] = [
-  { label: "Home", icon: Home, view: { name: "dashboard" } },
-  { label: "Practice", icon: Mic, view: { name: "practice" } },
-  { label: "Learn", icon: BookOpen, view: { name: "learn", tab: "problems" } },
-  { label: "Mocks", icon: ClipboardList, view: { name: "mock-config" } },
-  { label: "Review", icon: History, view: { name: "review" } },
+  { key: "home", label: "Home", icon: Home, view: { name: "dashboard" } },
+  { key: "speak", label: "Speak", icon: Mic, view: { name: "practice" } },
+  { key: "study", label: "Study", icon: BookOpen, view: { name: "learn", tab: "problems" } },
+  { key: "watch", label: "Watch", icon: Video, view: { name: "videos" } },
+  { key: "review", label: "Review", icon: History, view: { name: "review" } },
 ];
 
 const NAV_SECONDARY: NavItem[] = [
-  { label: "YouTube Mocks", icon: Video, view: { name: "videos" } },
-  { label: "Practice Again", icon: Repeat2, view: { name: "practice-again" } },
-  { label: "Notes", icon: NotebookPen, view: { name: "notes" } },
-  { label: "Settings", icon: SlidersHorizontal, view: { name: "settings" } },
+  { key: "settings", label: "Settings", icon: SlidersHorizontal, view: { name: "settings" } },
 ];
 
-function viewMatches(current: View, target: View): boolean {
-  return current.name === target.name;
+const MENU_EXTRAS: { label: string; icon: React.ComponentType<{ className?: string }>; view: View }[] = [
+  { label: "Practice Again", icon: Repeat2, view: { name: "practice-again" } },
+  { label: "Notes", icon: NotebookPen, view: { name: "notes" } },
+];
+
+function isActive(current: View, item: NavItem): boolean {
+  return navCategory(current) === item.key;
 }
 
 /**
@@ -65,9 +68,7 @@ function ThemeToggle() {
   };
 
   const toggle = () => {
-    if (switchingRef.current) return; // ignore rapid double-clicks mid-animation
-    // derive the current theme from the DOM so a mid-animation click still
-    // lands on the correct next value
+    if (switchingRef.current) return;
     const current = document.documentElement.classList.contains("dark")
       ? "dark"
       : ("light" as const);
@@ -81,15 +82,12 @@ function ThemeToggle() {
       switchingRef.current = true;
       try {
         const transition = doc.startViewTransition(() => {
-          // pure DOM change — no React work inside the transition callback
           setDomTheme(next);
         });
         transition.finished
           .catch(() => {})
           .finally(() => {
             switchingRef.current = false;
-            // sync React/next-themes state after the animation and re-assert
-            // the class so the final state is always deterministic
             setDomTheme(next);
             setTheme(next);
           });
@@ -99,7 +97,6 @@ function ThemeToggle() {
         setTheme(next);
       }
     } else if (!reduce) {
-      // cross-fade fallback for browsers without the View Transitions API
       doc.classList.add("theme-fading");
       setDomTheme(next);
       setTheme(next);
@@ -153,10 +150,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   const sidebarNav = [...NAV_PRIMARY, ...NAV_SECONDARY];
+  const category = navCategory(view);
+  const menuActive = category === "review" || category === "settings";
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Desktop icon rail — quiet, fixed width, no hover expansion */}
       <aside className="sticky top-0 z-30 hidden h-screen w-[72px] shrink-0 flex-col items-center border-r border-border bg-sidebar py-5 lg:flex">
         <button
           type="button"
@@ -169,7 +167,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <nav className="flex flex-1 flex-col items-center gap-1.5 overflow-y-auto scrollbar-thin py-1" aria-label="Main">
           {sidebarNav.map((item, i) => {
-            const active = viewMatches(view, item.view);
+            const active = isActive(view, item);
             const Icon = item.icon;
             const isSecondary = i >= NAV_PRIMARY.length;
             return (
@@ -208,9 +206,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Mobile top bar */}
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-md lg:hidden">
           <div className="flex items-center gap-2">
             <BackButton />
@@ -242,8 +238,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <BrandLockup />
                   </div>
                   <nav className="flex-1 space-y-1 overflow-y-auto scrollbar-thin p-3" aria-label="Menu">
-                    {[...NAV_PRIMARY, ...NAV_SECONDARY].map((item) => {
-                      const active = viewMatches(view, item.view);
+                    {[...NAV_PRIMARY, ...MENU_EXTRAS, ...NAV_SECONDARY].map((item) => {
+                      const active =
+                        "key" in item
+                          ? isActive(view, item as NavItem)
+                          : view.name === item.view.name;
                       const Icon = item.icon;
                       return (
                         <button
@@ -277,7 +276,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Desktop header strip */}
         <header className="sticky top-0 z-40 hidden h-16 items-center border-b border-border bg-background/90 px-8 backdrop-blur-md lg:flex">
           <BackButton />
         </header>
@@ -291,19 +289,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
 
-      {/* Mobile bottom nav */}
       <nav
         aria-label="Primary"
         className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
       >
         <div className="mx-auto grid max-w-md grid-cols-5">
-          {[
-            { label: "Home", icon: Home, view: { name: "dashboard" } as View },
-            { label: "Practice", icon: Mic, view: { name: "practice" } as View },
-            { label: "Learn", icon: BookOpen, view: { name: "learn", tab: "problems" } as View },
-            { label: "Review", icon: History, view: { name: "review" } as View },
-          ].map((item) => {
-            const active = view.name === item.view.name;
+          {NAV_PRIMARY.slice(0, 4).map((item) => {
+            const active = isActive(view, item);
             const Icon = item.icon;
             return (
               <button
@@ -335,21 +327,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 aria-label="Open menu"
                 className={cn(
                   "tap-anim flex min-h-[56px] flex-col items-center justify-center gap-1 py-2 transition-colors",
-                  ["videos", "notes", "settings", "practice-again"].includes(view.name)
-                    ? "text-brand-bright"
-                    : "text-muted-foreground hover:text-foreground"
+                  menuActive ? "text-brand-bright" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span
                   className={cn(
                     "flex h-7 w-11 items-center justify-center rounded-full transition-all duration-200",
-                    ["videos", "notes", "settings", "practice-again"].includes(view.name) &&
-                      "scale-110 bg-brand-soft"
+                    menuActive && "scale-110 bg-brand-soft"
                   )}
                 >
                   <MenuIcon className="h-[21px] w-[21px]" />
                 </span>
-                <span className="text-[10px] font-medium tracking-wide">Menu</span>
+                <span className="text-[10px] font-medium tracking-wide">More</span>
               </button>
             </SheetTrigger>
           </Sheet>
