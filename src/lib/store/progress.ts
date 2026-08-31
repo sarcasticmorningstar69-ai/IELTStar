@@ -9,10 +9,6 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { putAudio, deleteAudio, deleteAudioMany, clearAllAudio } from "@/lib/storage/audio-db";
 import type { Symptom, Cause } from "@/lib/data/content";
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 export type PartNum = 1 | 2 | 3;
 export type SessionType = "part1" | "part2" | "part3" | "full-mock";
 export type MockStatus =
@@ -141,25 +137,18 @@ export interface ProgressState {
   streak: { current: number; lastPracticeDay: string | null };
   dailyPractice: Record<string, number>;
   lastBackupReminderAt: number | null;
+  excludedTopicWheelIds: string[];
 
-  // Actions
   completeOnboarding: (focus: string | null) => void;
   setFocus: (focus: string | null) => void;
   startSession: (type: SessionType, title: string, topicIds: string[], totalQuestions: number) => SessionMeta;
   finishSession: (id: string, status: "completed" | "interrupted") => void;
   addSeconds: (sessionId: string, seconds: number) => void;
-  saveRecording: (
-    meta: Omit<RecordingMeta, "id">,
-    blob: Blob
-  ) => Promise<RecordingMeta>;
+  saveRecording: (meta: Omit<RecordingMeta, "id">, blob: Blob) => Promise<RecordingMeta>;
   deleteRecording: (id: string) => Promise<void>;
   deleteRecordings: (ids: string[]) => Promise<void>;
   clearAllRecordings: () => Promise<void>;
-  saveDiagnosis: (
-    recordingId: string,
-    diagnosis: NonNullable<RecordingMeta["diagnosis"]>,
-    problemIds: string[]
-  ) => void;
+  saveDiagnosis: (recordingId: string, diagnosis: NonNullable<RecordingMeta["diagnosis"]>, problemIds: string[]) => void;
   createMock: (structure: MockMeta["structure"], segments: MockSegment[]) => string;
   updateMock: (id: string, patch: Partial<MockMeta>) => void;
   setMockNotes: (id: string, notes: string) => void;
@@ -173,11 +162,9 @@ export interface ProgressState {
   exportData: () => string;
   importData: (json: string) => boolean;
   resetAll: () => void;
+  excludeTopicWheel: (id: string) => void;
+  includeTopicWheel: (id: string) => void;
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 const uid = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -196,10 +183,6 @@ const yesterdayKey = () => {
 const MAX_SESSIONS = 300;
 const MAX_RECORDINGS = 600;
 
-// ---------------------------------------------------------------------------
-// Store
-// ---------------------------------------------------------------------------
-
 export const useProgress = create<ProgressState>()(
   persist(
     (set, get) => ({
@@ -217,6 +200,7 @@ export const useProgress = create<ProgressState>()(
       streak: { current: 0, lastPracticeDay: null },
       dailyPractice: {},
       lastBackupReminderAt: null,
+      excludedTopicWheelIds: [],
 
       completeOnboarding: (focus) => set({ onboardingDone: true, focus }),
       setFocus: (focus) => set({ focus }),
@@ -239,9 +223,7 @@ export const useProgress = create<ProgressState>()(
 
       finishSession: (id, status) =>
         set((s) => ({
-          sessions: s.sessions.map((x) =>
-            x.id === id ? { ...x, status, endedAt: Date.now() } : x
-          ),
+          sessions: s.sessions.map((x) => (x.id === id ? { ...x, status, endedAt: Date.now() } : x)),
         })),
 
       addSeconds: (sessionId, seconds) =>
@@ -257,25 +239,16 @@ export const useProgress = create<ProgressState>()(
         await putAudio(id, blob, meta.mimeType);
         const now = Date.now();
         const day = dayKey(now);
-
         set((s) => {
-          // streak logic (real activity only)
           let streak = s.streak;
           if (s.streak.lastPracticeDay !== day) {
-            const current =
-              s.streak.lastPracticeDay === yesterdayKey() ? s.streak.current + 1 : 1;
+            const current = s.streak.lastPracticeDay === yesterdayKey() ? s.streak.current + 1 : 1;
             streak = { current, lastPracticeDay: day };
           }
-
-          // topic progress: only genuine recordings count
           const topics = { ...s.topics };
           if (meta.topicId && meta.questionId) {
-            const prev =
-              topics[meta.topicId] ||
-              ({ status: "not-started", attempted: [] } as TopicProgress);
-            const attempted = prev.attempted.includes(meta.questionId)
-              ? prev.attempted
-              : [...prev.attempted, meta.questionId];
+            const prev = topics[meta.topicId] || ({ status: "not-started", attempted: [] } as TopicProgress);
+            const attempted = prev.attempted.includes(meta.questionId) ? prev.attempted : [...prev.attempted, meta.questionId];
             topics[meta.topicId] = {
               ...prev,
               attempted,
@@ -283,26 +256,17 @@ export const useProgress = create<ProgressState>()(
               status: prev.status === "completed" ? "completed" : "in-progress",
             };
           }
-
           const sessions = s.sessions.map((x) =>
             x.id === meta.sessionId
-              ? {
-                  ...x,
-                  answered: x.answered + 1,
-                  practiceSeconds: x.practiceSeconds + meta.duration,
-                }
+              ? { ...x, answered: x.answered + 1, practiceSeconds: x.practiceSeconds + meta.duration }
               : x
           );
-
           return {
             recordings: [full, ...s.recordings].slice(0, MAX_RECORDINGS),
             topics,
             sessions,
             streak,
-            dailyPractice: {
-              ...s.dailyPractice,
-              [day]: (s.dailyPractice[day] || 0) + meta.duration,
-            },
+            dailyPractice: { ...s.dailyPractice, [day]: (s.dailyPractice[day] || 0) + meta.duration },
           };
         });
         return full;
@@ -321,10 +285,7 @@ export const useProgress = create<ProgressState>()(
 
       clearAllRecordings: async () => {
         await clearAllAudio();
-        set((s) => ({
-          recordings: [],
-          mocks: s.mocks.map((m) => ({ ...m, fullRecordingId: undefined })),
-        }));
+        set((s) => ({ recordings: [], mocks: s.mocks.map((m) => ({ ...m, fullRecordingId: undefined })) }));
       },
 
       saveDiagnosis: (recordingId, diagnosis, problemIds) =>
@@ -332,24 +293,19 @@ export const useProgress = create<ProgressState>()(
           const problems = { ...s.problems };
           const now = Date.now();
           for (const pid of problemIds) {
-            const prev =
-              problems[pid] || { problemId: pid, status: "new", occurrences: 0 };
+            const prev = problems[pid] || { problemId: pid, status: "new" as const, occurrences: 0 };
             const occurrences = prev.occurrences + 1;
-            // gentle internal scheduling: resurface after ~3 days
-            const nextReviewAt = now + 3 * 24 * 60 * 60 * 1000;
             problems[pid] = {
               ...prev,
               occurrences,
               status: occurrences >= 3 ? "ready-to-check" : "practicing",
               identifiedAt: prev.identifiedAt || now,
-              nextReviewAt,
+              nextReviewAt: now + 3 * 24 * 60 * 60 * 1000,
             };
           }
           return {
             recordings: s.recordings.map((r) =>
-              r.id === recordingId
-                ? { ...r, diagnosis: { ...diagnosis, problems: problemIds, createdAt: now } }
-                : r
+              r.id === recordingId ? { ...r, diagnosis: { ...diagnosis, problems: problemIds, createdAt: now } } : r
             ),
             problems,
           };
@@ -357,27 +313,13 @@ export const useProgress = create<ProgressState>()(
 
       createMock: (structure, segments) => {
         const id = uid("mock");
-        const mock: MockMeta = {
-          id,
-          status: "microphone_check",
-          startedAt: Date.now(),
-          structure,
-          segments,
-          currentSegment: 0,
-        };
+        const mock: MockMeta = { id, status: "microphone_check", startedAt: Date.now(), structure, segments, currentSegment: 0 };
         set((s) => ({ mocks: [mock, ...s.mocks].slice(0, 60) }));
         return id;
       },
 
-      updateMock: (id, patch) =>
-        set((s) => ({
-          mocks: s.mocks.map((m) => (m.id === id ? { ...m, ...patch } : m)),
-        })),
-
-      setMockNotes: (id, notes) =>
-        set((s) => ({
-          mocks: s.mocks.map((m) => (m.id === id ? { ...m, part2Notes: notes } : m)),
-        })),
+      updateMock: (id, patch) => set((s) => ({ mocks: s.mocks.map((m) => (m.id === id ? { ...m, ...patch } : m)) })),
+      setMockNotes: (id, notes) => set((s) => ({ mocks: s.mocks.map((m) => (m.id === id ? { ...m, part2Notes: notes } : m)) })),
 
       addNote: (note) => {
         const now = Date.now();
@@ -385,20 +327,12 @@ export const useProgress = create<ProgressState>()(
         set((s) => ({ notes: [full, ...s.notes] }));
         return full;
       },
-
-      updateNote: (id, patch) =>
-        set((s) => ({
-          notes: s.notes.map((n) =>
-            n.id === id ? { ...n, ...patch, updatedAt: Date.now() } : n
-          ),
-        })),
-
+      updateNote: (id, patch) => set((s) => ({ notes: s.notes.map((n) => (n.id === id ? { ...n, ...patch, updatedAt: Date.now() } : n)) })),
       deleteNote: (id) => set((s) => ({ notes: s.notes.filter((n) => n.id !== id) })),
 
       markProblemPracticed: (problemId) =>
         set((s) => {
-          const prev =
-            s.problems[problemId] || { problemId, status: "new", occurrences: 0 };
+          const prev = s.problems[problemId] || { problemId, status: "new" as const, occurrences: 0 };
           const now = Date.now();
           return {
             problems: {
@@ -450,9 +384,16 @@ export const useProgress = create<ProgressState>()(
       updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
       markBackupReminder: () => set({ lastBackupReminderAt: Date.now() }),
 
+      excludeTopicWheel: (id) =>
+        set((s) => ({
+          excludedTopicWheelIds: s.excludedTopicWheelIds.includes(id) ? s.excludedTopicWheelIds : [...s.excludedTopicWheelIds, id],
+        })),
+      includeTopicWheel: (id) =>
+        set((s) => ({ excludedTopicWheelIds: s.excludedTopicWheelIds.filter((x) => x !== id) })),
+
       exportData: () => {
         const s = get();
-        const payload = {
+        return JSON.stringify({
           app: "ieltstar-speaking-lab",
           version: 1,
           exportedAt: new Date().toISOString(),
@@ -469,9 +410,9 @@ export const useProgress = create<ProgressState>()(
             settings: s.settings,
             streak: s.streak,
             dailyPractice: s.dailyPractice,
+            excludedTopicWheelIds: s.excludedTopicWheelIds,
           },
-        };
-        return JSON.stringify(payload, null, 2);
+        }, null, 2);
       },
 
       importData: (json) => {
@@ -492,6 +433,7 @@ export const useProgress = create<ProgressState>()(
             settings: p.settings || get().settings,
             streak: p.streak || { current: 0, lastPracticeDay: null },
             dailyPractice: p.dailyPractice || {},
+            excludedTopicWheelIds: p.excludedTopicWheelIds || [],
           });
           return true;
         } catch {
@@ -514,19 +456,20 @@ export const useProgress = create<ProgressState>()(
           streak: { current: 0, lastPracticeDay: null },
           dailyPractice: {},
           lastBackupReminderAt: null,
+          excludedTopicWheelIds: [],
         }),
     }),
     {
       name: "ieltstar-progress",
       storage: createJSONStorage(() => localStorage),
       version: 1,
+      merge: (persistedState, currentState) => {
+        const persisted = (persistedState as Partial<ProgressState> | undefined) ?? {};
+        return { ...currentState, ...persisted, excludedTopicWheelIds: persisted.excludedTopicWheelIds ?? [] };
+      },
     }
   )
 );
-
-// ---------------------------------------------------------------------------
-// Derived selectors
-// ---------------------------------------------------------------------------
 
 export function selectStats(s: ProgressState) {
   const questionsPracticed = s.recordings.length;
@@ -536,13 +479,10 @@ export function selectStats(s: ProgressState) {
   return { questionsPracticed, practiceSeconds, fullMocks, problemsIdentified };
 }
 
-/** training-area activity derived from actual diagnosis data */
 export function selectTrainingAreas(s: ProgressState) {
   const areas: Record<string, number> = {};
   for (const r of s.recordings) {
-    if (r.diagnosis?.quick) {
-      areas[r.diagnosis.quick] = (areas[r.diagnosis.quick] || 0) + 1;
-    }
+    if (r.diagnosis?.quick) areas[r.diagnosis.quick] = (areas[r.diagnosis.quick] || 0) + 1;
   }
   return areas;
 }
