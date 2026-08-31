@@ -27,7 +27,8 @@ export type View =
   | { name: "recordings" }
   | { name: "practice-again" }
   | { name: "notes" }
-  | { name: "settings" };
+  | { name: "settings" }
+  | { name: "topic-wheel" };
 
 interface AppState {
   view: View;
@@ -91,5 +92,6 @@ export const viewTitle = (view: View): string => {
     case "practice-again": return "Practice Again";
     case "notes": return "Notes";
     case "settings": return "Settings";
+    case "topic-wheel": return "Topic Wheel";
   }
 };

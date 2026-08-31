@@ -37,6 +37,7 @@ const RecordingsView = dynamic(() => import("@/components/views/review/recording
 const PracticeAgainView = dynamic(() => import("@/components/views/review/practice-again").then((m) => m.PracticeAgainView), { loading: Loading });
 const NotesView = dynamic(() => import("@/components/views/review/notes").then((m) => m.NotesView), { loading: Loading });
 const SettingsView = dynamic(() => import("@/components/views/settings").then((m) => m.SettingsView), { loading: Loading });
+const TopicWheelView = dynamic(() => import("@/components/views/topic-wheel").then((m) => m.TopicWheelView), { loading: Loading });
 
 function CurrentView() {
   const view = useApp((s) => s.view);
@@ -81,6 +82,8 @@ function CurrentView() {
       return <NotesView />;
     case "settings":
       return <SettingsView />;
+    case "topic-wheel":
+      return <TopicWheelView />;
     default:
       return <DashboardView />;
   }
