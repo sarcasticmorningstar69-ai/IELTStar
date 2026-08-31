@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   Mic, Clock, ClipboardCheck, Flame, TrendingUp, ChevronRight, Sparkles, Check,
+  BookOpen, Video, MessageCircle, Presentation, MessagesSquare,
 } from "lucide-react";
 
 const QUICK_CATEGORY_LABEL: Record<string, string> = {
@@ -22,6 +23,15 @@ const QUICK_CATEGORY_LABEL: Record<string, string> = {
   OTHER: "Other",
 };
 
+const LAUNCH = [
+  { label: "Part 1", tag: "Interview questions", view: { name: "part1" as const }, icon: MessageCircle },
+  { label: "Part 2", tag: "Cue card long turn", view: { name: "part2" as const }, icon: Presentation },
+  { label: "Part 3", tag: "Discussion", view: { name: "part3" as const }, icon: MessagesSquare },
+  { label: "Full Mock", tag: "Complete test", view: { name: "mock-config" as const }, icon: ClipboardCheck },
+  { label: "Study", tag: "Problems, techniques, tips", view: { name: "learn" as const, tab: "problems" as const }, icon: BookOpen },
+  { label: "Watch", tag: "YouTube mock library", view: { name: "videos" as const }, icon: Video },
+];
+
 function FocusPicker() {
   const focus = useProgress((s) => s.focus);
   const completeOnboarding = useProgress((s) => s.completeOnboarding);
@@ -30,7 +40,6 @@ function FocusPicker() {
   const [selected, setSelected] = React.useState<string | null>(focus);
 
   if (onboardingDone && focus === null) {
-    // user chose "I'm not sure"
     return (
       <SectionCard title="Current focus">
         <p className="text-sm leading-relaxed text-muted-foreground">
@@ -158,7 +167,6 @@ function PracticeChart() {
           .map((d) => `${d.fullLabel} ${Math.round(d.seconds)} seconds`)
           .join(", ")}`}
       >
-        {/* baseline */}
         <span
           className="pointer-events-none absolute right-0 bottom-[22px] left-0 h-px bg-border"
           aria-hidden
@@ -168,14 +176,12 @@ function PracticeChart() {
           const pct = d.seconds > 0 ? Math.max(8, (d.seconds / maxSeconds) * 100) : 0;
           return (
             <div key={d.key} className="chart-col group relative flex min-w-0 flex-1 flex-col">
-              {/* hover value */}
               <span
                 className="pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2 rounded-md border border-border bg-elevated px-2 py-1 text-[10px] font-semibold whitespace-nowrap text-foreground opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100"
                 role="tooltip"
               >
                 {formatChartValue(d.seconds)}
               </span>
-              {/* bar track — columns stretch so bars anchor to the baseline */}
               <div className="flex w-full flex-1 items-end overflow-hidden rounded-t-md bg-muted-foreground/[0.06]">
                 <div
                   className={cn(
@@ -316,9 +322,6 @@ function RecentPractice() {
 }
 
 export function DashboardView() {
-  // useShallow keeps the selector result referentially stable — required by
-  // zustand v5 + React 19 useSyncExternalStore (object-returning selectors
-  // otherwise trigger an infinite getSnapshot loop and crash the app).
   const stats = useProgress(useShallow(selectStats));
   const trainingAreas = useProgress(useShallow(selectTrainingAreas));
   const streak = useProgress((s) => s.streak);
@@ -346,6 +349,28 @@ export function DashboardView() {
           </Button>
         }
       />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {LAUNCH.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => navigate(item.view)}
+              className="card-lift group flex items-start gap-3 rounded-2xl border border-border bg-card p-4 text-left"
+            >
+              <span className="chip-anim flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand-bright">
+                <Icon className="h-5 w-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[15px] font-semibold tracking-tight">{item.label}</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">{item.tag}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
