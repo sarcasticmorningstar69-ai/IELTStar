@@ -11,11 +11,12 @@ import {
   type AiRequestMetadata,
   type AiSurface,
 } from "@/lib/ai/types";
+import { STELLA_STATUS_TEXT, type StellaState } from "@/lib/ai/stella-media";
+import { StellaAvatar } from "@/components/ai/stella-avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   AudioLines,
-  Bot,
   Check,
   FileText,
   LoaderCircle,
@@ -109,6 +110,7 @@ export function AiAssistant() {
   const [answer, setAnswer] = React.useState("");
   const [preview, setPreview] = React.useState(false);
   const [speaking, setSpeaking] = React.useState(false);
+  const [stellaState, setStellaState] = React.useState<StellaState>("idle");
 
   const surface = surfaceForView(view);
   const title = viewTitle(view);
@@ -149,6 +151,29 @@ export function AiAssistant() {
       }
     };
   }, []);
+
+  // Stella's animation follows what is actually happening. "finished" is a
+  // one-shot beat, so it settles back to idle on its own.
+  React.useEffect(() => {
+    if (speaking) {
+      setStellaState("speaking");
+      return;
+    }
+    if (loading) {
+      setStellaState(tab === "feedback" ? "transcribing" : "thinking");
+      return;
+    }
+    if (message) {
+      setStellaState("error");
+      return;
+    }
+    if (answer) {
+      setStellaState("finished");
+      const timer = window.setTimeout(() => setStellaState("idle"), 1100);
+      return () => window.clearTimeout(timer);
+    }
+    setStellaState("idle");
+  }, [speaking, loading, message, answer, tab]);
 
   const toggleRecording = (id: string) => {
     setSelectedIds((previous) => {
@@ -192,10 +217,10 @@ export function AiAssistant() {
         body: JSON.stringify(metadata),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "AI assistance is not available yet.");
+      if (!response.ok) throw new Error(data.message || "Stella is not available yet.");
       setAnswer(data.answer || data.message || "Response received.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "AI assistance is not available yet.");
+      setMessage(error instanceof Error ? error.message : "Stella is not available yet.");
     } finally {
       setLoading(false);
     }
@@ -231,10 +256,10 @@ export function AiAssistant() {
 
       const response = await fetch("/api/ai/evaluate", { method: "POST", body: form });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "AI feedback is not available yet.");
+      if (!response.ok) throw new Error(data.message || "Stella cannot give feedback yet.");
       setAnswer(data.answer || data.message || "Feedback received.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "AI feedback is not available yet.");
+      setMessage(error instanceof Error ? error.message : "Stella cannot give feedback yet.");
     } finally {
       setLoading(false);
     }
@@ -245,11 +270,11 @@ export function AiAssistant() {
       <button
         type="button"
         onClick={openAssistant}
-        className="fixed right-4 bottom-4 z-40 flex h-12 items-center gap-2 rounded-full border border-brand-bright/35 bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl sm:right-6 sm:bottom-6"
-        aria-label="Open contextual AI assistant"
+        className="fixed right-4 bottom-4 z-40 flex h-12 items-center gap-2 rounded-full border border-brand-bright/35 bg-primary pr-4 pl-2 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl sm:right-6 sm:bottom-6"
+        aria-label="Ask Stella, your IELTS speaking coach"
       >
-        <Sparkles className="h-4 w-4" />
-        AI
+        <StellaAvatar state="idle" size={34} frame={false} quiet />
+        Ask Stella
       </button>
 
       {open && (
@@ -257,25 +282,25 @@ export function AiAssistant() {
           <section
             role="dialog"
             aria-modal="true"
-            aria-label="IELTStar AI assistant"
+            aria-label="Stella, your IELTS speaking coach"
             className="absolute inset-x-0 bottom-0 flex max-h-[92vh] flex-col rounded-t-3xl border border-border bg-card shadow-2xl sm:inset-y-3 sm:right-3 sm:left-auto sm:w-[430px] sm:rounded-3xl"
           >
             <header className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] text-brand-bright uppercase">
-                  <Bot className="h-4 w-4" />
-                  Contextual AI
+              <div className="flex min-w-0 items-center gap-3">
+                <StellaAvatar state={stellaState} size={54} />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">Stella</p>
+                  <p className="text-[11px] text-muted-foreground">IELTS speaking coach</p>
+                  <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    Reading: {title}
+                  </p>
                 </div>
-                <p className="mt-1 truncate text-sm font-medium">{title}</p>
-                <p className="mt-0.5 text-[11px] text-muted-foreground">
-                  This screen is already attached as context.
-                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-                aria-label="Close AI assistant"
+                aria-label="Close Stella"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -340,11 +365,11 @@ export function AiAssistant() {
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="ai-question" className="text-xs font-semibold">
-                      Ask naturally
+                      Ask Stella naturally
                     </label>
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                      You can say “How do I use this?” — the assistant already knows which
-                      technique, tip, problem, or practice screen is open.
+                      You can say “How do I use this?” — Stella already knows which technique,
+                      tip, problem, or practice screen is open.
                     </p>
                     <textarea
                       id="ai-question"
@@ -378,7 +403,7 @@ export function AiAssistant() {
                     ) : (
                       <Send className="h-4 w-4" />
                     )}
-                    Ask with this page attached
+                    Ask Stella about this page
                   </Button>
                 </div>
               ) : (
@@ -388,7 +413,7 @@ export function AiAssistant() {
                       <div>
                         <h3 className="text-sm font-semibold">Choose recordings</h3>
                         <p className="mt-0.5 text-xs text-muted-foreground">
-                          Only selected audio will be uploaded after you press Analyse.
+                          Only selected audio is sent to Stella after you press the button.
                         </p>
                       </div>
                       <AudioLines className="h-5 w-5 shrink-0 text-brand-bright" />
@@ -480,30 +505,43 @@ export function AiAssistant() {
                     ) : (
                       <Sparkles className="h-4 w-4" />
                     )}
-                    Analyse selected recordings
+                    Get feedback from Stella
                   </Button>
 
                   <div className="flex gap-2.5 text-[11px] leading-relaxed text-muted-foreground">
                     <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
                     <p>
-                      Deepgram will create the transcript. GLM will receive the transcript,
+                      Deepgram will create the transcript. Stella will receive the transcript,
                       timings, question context, and rubric — never your secret API keys.
                     </p>
                   </div>
                 </div>
               )}
 
+              {loading && (
+                <div className="mt-5 flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-6 text-center">
+                  <StellaAvatar state={stellaState} size={132} />
+                  <p className="text-xs text-muted-foreground">
+                    {STELLA_STATUS_TEXT[stellaState]}
+                  </p>
+                </div>
+              )}
+
               {message && (
-                <div role="status" className="mt-4 rounded-xl border border-border bg-muted/35 p-3 text-xs leading-relaxed text-muted-foreground">
-                  {message}
+                <div role="status" className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-muted/35 p-3 text-xs leading-relaxed text-muted-foreground">
+                  <StellaAvatar state="error" size={40} />
+                  <p className="pt-1">{message}</p>
                 </div>
               )}
 
               {answer && (
                 <div className="mt-4 rounded-2xl border border-brand-bright/35 bg-brand-soft p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="text-[10px] font-semibold tracking-[0.14em] text-brand-bright uppercase">
-                      AI response
+                    <div className="flex items-center gap-2">
+                      <StellaAvatar state={stellaState} size={30} frame={false} quiet />
+                      <span className="text-[10px] font-semibold tracking-[0.14em] text-brand-bright uppercase">
+                        Stella
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -511,7 +549,7 @@ export function AiAssistant() {
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
                     >
                       {speaking ? <Square className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-                      {speaking ? "Stop" : "Read aloud"}
+                      {speaking ? "Stop" : "Listen to Stella"}
                     </button>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">{answer}</p>
