@@ -16,6 +16,7 @@ import { estimateAudioUsage } from "@/lib/storage/audio-db";
 import { QUICK_CATEGORIES, problemById } from "@/lib/data/content";
 import { PageHeader, EmptyState, StatusPill } from "@/components/shared/page-kit";
 import { AudioPlayer, formatTime } from "@/components/audio/audio-ui";
+import { AnalyseAnswerLink } from "@/components/ai/send-to-stella";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -38,6 +39,7 @@ import {
   HardDrive,
   Stethoscope,
   Settings2,
+  Sparkles,
 } from "lucide-react";
 import { groupByDay, formatBytes, formatStamp, formatDuration, PartBadge, recordingDisplay } from "./shared";
 
@@ -194,10 +196,19 @@ function RecordingRow({
         <div className="space-y-3 border-t border-border px-3 py-3 sm:px-4 sm:py-4">
           <AudioPlayer recordingId={rec.id} title={disp.playerTitle} compact />
           {diag && <DiagnosisDetails diag={diag} />}
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-[11px] text-muted-foreground">
-              Recorded {formatStamp(rec.startedAt)} · {formatDuration(rec.duration)}
-            </span>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="min-w-0">
+              <span className="block text-[11px] text-muted-foreground">
+                Recorded {formatStamp(rec.startedAt)} · {formatDuration(rec.duration)}
+              </span>
+              <span className="mt-1.5 block">
+                <AnalyseAnswerLink
+                  recordingId={rec.id}
+                  mockId={rec.mockId}
+                  sessionId={rec.sessionId}
+                />
+              </span>
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -339,6 +350,18 @@ export function RecordingsView() {
     });
   };
 
+  /** Send a whole session or mock to Stella from its group header. */
+  const analyseCluster = (cluster: SessionCluster) => {
+    const isMock = cluster.session?.type === "full-mock";
+    navigate({
+      name: "analysis",
+      recordingIds: cluster.items.map((r) => r.id),
+      sessionId: cluster.session?.id,
+      mockId: cluster.items.find((r) => r.mockId)?.mockId,
+      heading: isMock ? "Send this mock to Stella" : "Get this session evaluated",
+    });
+  };
+
   return (
     <div className="fade-up space-y-6">
       <PageHeader
@@ -429,12 +452,22 @@ export function RecordingsView() {
                   {day.clusters.map((cluster) => (
                     <React.Fragment key={cluster.key}>
                       {cluster.session && cluster.items.length > 1 && (
-                        <div className="px-0.5 pt-1 text-[11px] font-medium tracking-wide text-muted-foreground">
-                          {cluster.session.type === "full-mock"
-                            ? "Full Speaking Mock"
-                            : `Part ${cluster.session.type === "part1" ? 1 : cluster.session.type === "part2" ? 2 : 3} session`}
-                          {" · "}
-                          {cluster.items.length} answers
+                        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-0.5 pt-1">
+                          <div className="text-[11px] font-medium tracking-wide text-muted-foreground">
+                            {cluster.session.type === "full-mock"
+                              ? "Full Speaking Mock"
+                              : `Part ${cluster.session.type === "part1" ? 1 : cluster.session.type === "part2" ? 2 : 3} session`}
+                            {" · "}
+                            {cluster.items.length} answers
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => analyseCluster(cluster)}
+                            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-brand-bright underline-offset-4 hover:underline"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                            Analyse all {cluster.items.length}
+                          </button>
                         </div>
                       )}
                       {cluster.items.map((r) => (

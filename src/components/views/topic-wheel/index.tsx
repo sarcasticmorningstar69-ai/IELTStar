@@ -10,10 +10,12 @@ import {
   randomEligibleWheelTopic,
   wheelTopicIndex,
 } from "@/lib/data/topic-wheel";
+import { useApp } from "@/lib/store/app";
 import { useProgress } from "@/lib/store/progress";
 import { micManager } from "@/lib/audio/microphone";
 import { SegmentRecorder } from "@/lib/audio/recorder";
 import { AudioPlayer, formatTime } from "@/components/audio/audio-ui";
+import { AnalyseAnswerLink } from "@/components/ai/send-to-stella";
 import { TIP_CATEGORIES, TECHNIQUE_GROUPS } from "@/lib/data/content";
 import { cn } from "@/lib/utils";
 import { Sparkles, ChevronDown } from "lucide-react";
@@ -113,6 +115,7 @@ const btnQuiet =
   "border border-border bg-transparent text-foreground/80 hover:border-brand-bright/40 hover:text-foreground hover:-translate-y-px";
 
 export function TopicWheelView() {
+  const navigate = useApp((s) => s.navigate);
   const excluded = useProgress((s) => s.excludedTopicWheelIds ?? []);
   const excludeTopic = useProgress((s) => s.excludeTopicWheel);
   const includeTopic = useProgress((s) => s.includeTopicWheel);
@@ -287,6 +290,24 @@ export function TopicWheelView() {
     setRecordingId(null);
   };
 
+  /**
+   * The AI control is only ever one step from a real analysis: if there is a
+   * recording it opens the workspace with it, otherwise it explains what is
+   * missing and offers to start recording.
+   */
+  const openStella = () => {
+    if (recordingId) {
+      navigate({
+        name: "analysis",
+        recordingIds: [recordingId],
+        sessionId: sessionId ?? undefined,
+        heading: "Your Topic Wheel answer",
+      });
+      return;
+    }
+    setAiOpen(true);
+  };
+
   const tip = React.useMemo(() => {
     const cat = hashPick(topic.id, TIP_CATEGORIES);
     const item = hashPick(topic.id + "t", cat.tips);
@@ -359,11 +380,11 @@ export function TopicWheelView() {
             </button>
             <button
               type="button"
-              onClick={() => setAiOpen(true)}
-              className={cn(btnBase, btnQuiet, "h-10 px-4")}
+              onClick={openStella}
+              className={cn(btnBase, recordingId ? btnPrimary : btnQuiet, "h-10 px-4")}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              AI
+              {recordingId ? "Analyse" : "AI"}
             </button>
           </div>
 
@@ -475,6 +496,11 @@ export function TopicWheelView() {
                   compact
                   className="lg:!rounded-none lg:!border-0 lg:!bg-transparent lg:!p-0 lg:!shadow-none lg:[&_[role=slider]]:!gap-px lg:[&_[role=slider]>div]:min-w-px"
                 />
+                {/* Evaluation sits with the recording, not behind a corner button. */}
+                <AnalyseAnswerLink
+                  recordingId={recordingId}
+                  sessionId={sessionId ?? undefined}
+                />
                 <button
                   type="button"
                   onClick={discardRecording}
@@ -526,20 +552,34 @@ export function TopicWheelView() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/60 p-4 backdrop-blur-sm sm:items-center">
           <div className="w-full max-w-sm rounded-lg border border-border bg-card p-5 shadow-lg">
             <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
-              AI
+              Stella
             </div>
-            <p className="mt-2 text-base font-medium tracking-tight">Coming soon</p>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Automatic feedback will connect here later. For now, record yourself and
-              listen back.
+            <p className="mt-2 text-base font-medium tracking-tight">
+              Record an answer first
             </p>
-            <button
-              type="button"
-              onClick={() => setAiOpen(false)}
-              className={cn(btnBase, btnQuiet, "mt-5 h-9 px-4")}
-            >
-              Close
-            </button>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Stella needs something to listen to. Speak on this topic, then press
+              Analyse — she&apos;ll open with your answer ready to go.
+            </p>
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setAiOpen(false);
+                  void toggleRecord();
+                }}
+                className={cn(btnBase, btnPrimary, "h-9 px-4")}
+              >
+                Record now
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiOpen(false)}
+                className={cn(btnBase, btnQuiet, "h-9 px-4")}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
