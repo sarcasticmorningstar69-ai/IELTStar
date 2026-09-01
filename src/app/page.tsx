@@ -64,8 +64,14 @@ function CurrentView() {
       return <MockRunView mockId={view.mockId} />;
     case "mock-review":
       return <MockReviewView mockId={view.mockId} />;
-    case "mock-analysis":
-      return <StellaWorkspaceView mockId={view.mockId} recordingIds={view.recordingIds} />;
+    case "analysis":
+      return (
+        <StellaWorkspaceView
+          recordingIds={view.recordingIds}
+          mockId={view.mockId}
+          sessionId={view.sessionId}
+        />
+      );
     case "learn":
       return <LearnView tab={view.tab} />;
     case "problem":
@@ -95,9 +101,9 @@ function CurrentView() {
 
 export default function Home() {
   const view = useApp((s) => s.view);
-  // The analysis workspace is the whole screen; the floating assistant would
-  // just sit on top of Stella talking to herself.
-  const hideAssistant = view.name === "mock-analysis";
+  // The analysis workspace is already a full Stella screen; a floating button
+  // there would just be Stella talking to herself.
+  const hideAssistant = view.name === "analysis";
   return (
     <AppShell>
       <CurrentView />

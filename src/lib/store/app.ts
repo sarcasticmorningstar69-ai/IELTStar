@@ -18,7 +18,17 @@ export type View =
   | { name: "mock-check"; mockId: string }
   | { name: "mock-run"; mockId: string }
   | { name: "mock-review"; mockId: string }
-  | { name: "mock-analysis"; mockId: string; recordingIds: string[] }
+  /**
+   * Stella's analysis workspace. Works for any set of recordings, whether they
+   * came from a full mock, a practice session or the recordings library.
+   */
+  | {
+      name: "analysis";
+      recordingIds: string[];
+      mockId?: string;
+      sessionId?: string;
+      heading?: string;
+    }
   | { name: "learn"; tab?: "problems" | "techniques" | "tips" }
   | { name: "problem"; problemId: string }
   | { name: "technique"; groupId: string }
@@ -43,7 +53,7 @@ interface AppState {
   setSidebar: (collapsed: boolean) => void;
 }
 
-export const FOCUS_VIEWS = new Set(["session", "mock-run", "mock-check", "mock-analysis"]);
+export const FOCUS_VIEWS = new Set(["session", "mock-run", "mock-check", "analysis"]);
 
 export const useApp = create<AppState>((set, get) => ({
   view: { name: "dashboard" },
@@ -83,7 +93,7 @@ export const viewTitle = (view: View): string => {
     case "mock-check": return "Microphone Check";
     case "mock-run": return "Full Speaking Mock";
     case "mock-review": return "Mock Review";
-    case "mock-analysis": return "Analysis with Stella";
+    case "analysis": return "Analysis with Stella";
     case "learn": return "Learn";
     case "problem": return "Problem & Solution";
     case "technique": return "Technique";
