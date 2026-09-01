@@ -2,7 +2,8 @@
 
 /**
  * Client-side view routing for the single-route app.
- * Full Mock and active practice sessions run in focus mode (navigation hidden).
+ * Full Mock, active practice sessions and the Stella analysis workspace run in
+ * focus mode (navigation hidden).
  */
 import { create } from "zustand";
 
@@ -17,6 +18,7 @@ export type View =
   | { name: "mock-check"; mockId: string }
   | { name: "mock-run"; mockId: string }
   | { name: "mock-review"; mockId: string }
+  | { name: "mock-analysis"; mockId: string; recordingIds: string[] }
   | { name: "learn"; tab?: "problems" | "techniques" | "tips" }
   | { name: "problem"; problemId: string }
   | { name: "technique"; groupId: string }
@@ -41,7 +43,7 @@ interface AppState {
   setSidebar: (collapsed: boolean) => void;
 }
 
-export const FOCUS_VIEWS = new Set(["session", "mock-run", "mock-check"]);
+export const FOCUS_VIEWS = new Set(["session", "mock-run", "mock-check", "mock-analysis"]);
 
 export const useApp = create<AppState>((set, get) => ({
   view: { name: "dashboard" },
@@ -81,6 +83,7 @@ export const viewTitle = (view: View): string => {
     case "mock-check": return "Microphone Check";
     case "mock-run": return "Full Speaking Mock";
     case "mock-review": return "Mock Review";
+    case "mock-analysis": return "Analysis with Stella";
     case "learn": return "Learn";
     case "problem": return "Problem & Solution";
     case "technique": return "Technique";

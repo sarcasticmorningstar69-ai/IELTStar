@@ -28,6 +28,7 @@ const MockConfigView = dynamic(() => import("@/components/views/mock-config").th
 const MockCheckView = dynamic(() => import("@/components/views/mock-run").then((m) => m.MockCheckView), { loading: Loading });
 const MockRunView = dynamic(() => import("@/components/views/mock-run").then((m) => m.MockRunView), { loading: () => <div className="pt-16 text-center text-sm text-muted-foreground">Starting your mock…</div> });
 const MockReviewView = dynamic(() => import("@/components/views/mock-review").then((m) => m.MockReviewView), { loading: Loading });
+const StellaWorkspaceView = dynamic(() => import("@/components/ai/stella-workspace").then((m) => m.StellaWorkspaceView), { loading: () => <div className="pt-16 text-center text-sm text-muted-foreground">Opening your analysis…</div> });
 const LearnView = dynamic(() => import("@/components/views/learn/learn-hub").then((m) => m.LearnView), { loading: Loading });
 const ProblemDetailView = dynamic(() => import("@/components/views/learn/problem-detail").then((m) => m.ProblemDetailView), { loading: Loading });
 const TechniqueDetailView = dynamic(() => import("@/components/views/learn/technique-detail").then((m) => m.TechniqueDetailView), { loading: Loading });
@@ -63,6 +64,8 @@ function CurrentView() {
       return <MockRunView mockId={view.mockId} />;
     case "mock-review":
       return <MockReviewView mockId={view.mockId} />;
+    case "mock-analysis":
+      return <StellaWorkspaceView mockId={view.mockId} recordingIds={view.recordingIds} />;
     case "learn":
       return <LearnView tab={view.tab} />;
     case "problem":
@@ -91,10 +94,14 @@ function CurrentView() {
 }
 
 export default function Home() {
+  const view = useApp((s) => s.view);
+  // The analysis workspace is the whole screen; the floating assistant would
+  // just sit on top of Stella talking to herself.
+  const hideAssistant = view.name === "mock-analysis";
   return (
     <AppShell>
       <CurrentView />
-      <AiAssistant />
+      {!hideAssistant && <AiAssistant />}
     </AppShell>
   );
 }
