@@ -35,13 +35,26 @@ export type StellaMedia =
 export const STELLA_NAME = "Stella";
 
 /**
- * Stella's canonical artwork. One asset for both themes on purpose — the
- * theme-aware circular frame is drawn in CSS, so Stella keeps a single
- * consistent identity in light and dark mode.
+ * Stella's canonical artwork. One asset for both themes on purpose — the star
+ * keeps a single consistent identity in light and dark mode.
  *
- * Swap this to "/stella-star.png" once the cleaned transparent star is ready.
+ * REQUIREMENTS FOR THIS FILE:
+ *   - PNG with a TRANSPARENT background (not white). The avatar is now
+ *     full-bleed with no frame behind it, so a white background would show as
+ *     a white block in dark mode.
+ *   - Square canvas.
  */
-export const STELLA_ARTWORK = "/ielstar-star.png";
+export const STELLA_ARTWORK = "/stella-star.png";
+
+/**
+ * How far to zoom into STELLA_ARTWORK so the star reaches the edges of the
+ * avatar instead of floating in the middle of its own padding.
+ *
+ * The source star occupies roughly 72% of its canvas height, so 1.3 removes
+ * that empty margin. If you re-export the PNG cropped tight to the star,
+ * set this to 1.
+ */
+export const STELLA_TRIM = 1.3;
 
 export const STELLA_MEDIA: Record<StellaState, StellaMedia> = {
 	idle: { kind: "coded" },

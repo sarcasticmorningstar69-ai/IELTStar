@@ -6,6 +6,7 @@ import {
 	STELLA_ARTWORK,
 	STELLA_LABELS,
 	STELLA_MEDIA,
+	STELLA_TRIM,
 	type StellaState,
 } from "@/lib/ai/stella-media";
 import "./stella.css";
@@ -17,7 +18,13 @@ type StellaAvatarProps = {
 	size?: number;
 	/** Live microphone level, 0-1. Only affects the listening state. */
 	level?: number;
-	/** Draw the theme-aware circular frame. Turn off when placing Stella on a coloured surface. */
+	/**
+	 * Draw the circular "observatory window" behind Stella.
+	 *
+	 * Off by default: the avatar is the artwork itself, edge to edge, with no
+	 * surrounding chrome. Turn it on only when Stella sits on a busy or
+	 * coloured surface and needs separating from it.
+	 */
 	frame?: boolean;
 	/** Slow the idle choreography down for small, always-visible placements. */
 	quiet?: boolean;
@@ -37,7 +44,7 @@ export function StellaAvatar({
 	state = "idle",
 	size = 88,
 	level = 0,
-	frame = true,
+	frame = false,
 	quiet = false,
 	className,
 	label,
@@ -62,6 +69,7 @@ export function StellaAvatar({
 				{
 					"--stella-size": `${size}px`,
 					"--stella-level": clampedLevel,
+					"--stella-trim": STELLA_TRIM,
 				} as React.CSSProperties
 			}
 		>
