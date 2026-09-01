@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
-  Search, Shuffle, Play, BookOpen, Check, Circle, CheckCircle2, ChevronRight,
+  Search, Shuffle, Play, BookOpen, Check, Circle, CheckCircle2, X,
 } from "lucide-react";
 
 interface TopicEntry {
@@ -96,8 +96,13 @@ export function TopicBrowserView({ part }: { part: 1 | 3 }) {
     ? (part === 1 ? PART1_VOCAB[vocabTopic] : PART3_VOCAB[vocabTopic]) || []
     : [];
 
+  const questionTotal = selected.reduce(
+    (sum, id) => sum + (topics.find((t) => t.id === id)?.questionCount ?? 0),
+    0
+  );
+
   return (
-    <div className="fade-up pb-28 lg:pb-6">
+    <div className="fade-up pb-10">
       <PageHeader
         eyebrow={`Part ${part}`}
         title={part === 1 ? "Everyday Conversation" : "Discussion"}
@@ -107,6 +112,62 @@ export function TopicBrowserView({ part }: { part: 1 | 3 }) {
             : "Choose one or more discussion topics. You can practice up to three at a time."
         }
       />
+
+      {/*
+        Pinned to the top of the scroll area. This used to sit below every topic
+        card, which meant scrolling the whole list to start a session.
+      */}
+      <div className="sticky top-0 z-30 mb-4 rounded-2xl border border-border bg-card/95 p-3 shadow-sm backdrop-blur-md sm:px-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            {selected.length === 0 ? (
+              <>
+                <p className="text-sm font-medium">Pick your topics below</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Tap any card to add it. You can combine several into one session.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="truncate text-sm font-medium">
+                  {selected.map((id) => topicTitle(id)).join(" · ")}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {selected.length} {selected.length === 1 ? "topic" : "topics"} ·{" "}
+                  {questionTotal} {questionTotal === 1 ? "question" : "questions"}
+                  <button
+                    type="button"
+                    onClick={() => setSelected([])}
+                    className="ml-2 inline-flex items-center gap-0.5 underline-offset-2 hover:underline"
+                  >
+                    <X className="h-3 w-3" />
+                    clear
+                  </button>
+                </p>
+              </>
+            )}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            {selected.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => setVocabTopic(selected[0])}
+              >
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Useful Language</span>
+                <span className="sm:hidden">Words</span>
+              </Button>
+            )}
+            <Button onClick={startSession} disabled={!selected.length} className="gap-1.5">
+              <Play className="h-4 w-4" />
+              Start
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
@@ -200,46 +261,6 @@ export function TopicBrowserView({ part }: { part: 1 | 3 }) {
         )}
       </div>
 
-      {/* Sticky action bar */}
-      <div className="fixed inset-x-0 bottom-[68px] z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-md lg:static lg:mt-8 lg:rounded-2xl lg:border lg:bg-card lg:px-5 lg:py-4">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
-          <div className="text-sm text-muted-foreground">
-            {selected.length === 0
-              ? "Select a topic to begin"
-              : selected.length === 1
-                ? `${topicTitle(selected[0])} selected`
-                : `Selected ${selected.length} topics`}
-            {selected.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setSelected([])}
-                className="ml-2 text-xs text-muted-foreground/80 underline-offset-2 hover:underline"
-              >
-                clear
-              </button>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {selected.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                onClick={() => setVocabTopic(selected[0])}
-              >
-                <BookOpen className="h-4 w-4" />
-                <span className="hidden sm:inline">Useful Language</span>
-                <span className="sm:hidden">Words</span>
-              </Button>
-            )}
-            <Button size="sm" onClick={startSession} disabled={!selected.length} className="gap-1.5">
-              <Play className="h-4 w-4" />
-              Start{selected.length > 1 ? ` ${selected.length} Topics` : ""}
-            </Button>
-          </div>
-        </div>
-      </div>
-
       <VocabSheet
         open={!!vocabTopic}
         onOpenChange={(o) => !o && setVocabTopic(null)}
@@ -286,12 +307,49 @@ export function Part2BrowserView() {
   };
 
   return (
-    <div className="fade-up pb-28 lg:pb-6">
+    <div className="fade-up pb-10">
       <PageHeader
         eyebrow="Part 2"
         title="Long Turn"
         subtitle="Pick a cue card, or go random. You'll get one minute to prepare keywords and two minutes to speak — your notes stay visible the whole time."
       />
+
+      {/* Pinned selection panel — previously at the bottom of the card list. */}
+      {previewCard && (
+        <div className="sticky top-0 z-30 mb-4 rounded-2xl border border-brand-bright/35 bg-card/95 p-4 shadow-sm backdrop-blur-md sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
+                Selected cue card
+              </div>
+              <h3 className="mt-1 text-lg font-semibold tracking-tight">{previewCard.title}</h3>
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{previewCard.prompt}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPreview(null)}
+              className="shrink-0 rounded-full p-1.5 text-muted-foreground hover:bg-muted"
+              aria-label="Clear selected cue card"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Button onClick={() => navigate({ name: "session", kind: "part2", topicIds: [previewCard.id] })} className="gap-2">
+              <Play className="h-4 w-4" />
+              Prepare &amp; Speak
+            </Button>
+            <Button variant="outline" onClick={() => setVocabCard(previewCard.id)} className="gap-2">
+              <BookOpen className="h-4 w-4" />
+              Useful Language
+            </Button>
+            <Button variant="ghost" onClick={randomCard} className="gap-2 text-muted-foreground">
+              <Shuffle className="h-4 w-4" />
+              Another
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
@@ -359,45 +417,6 @@ export function Part2BrowserView() {
           </section>
         ))}
       </div>
-
-      {/* Cue card preview panel */}
-      {previewCard && (
-        <div className="fixed inset-x-0 bottom-[68px] z-40 border-t border-brand-bright/30 bg-background/97 px-4 py-4 shadow-[0_-8px_30px_rgb(0_0_0_/_0.25)] backdrop-blur-md lg:static lg:mt-8 lg:rounded-2xl lg:border lg:border-brand-bright/35 lg:bg-card lg:px-6 lg:py-6 lg:shadow-none">
-          <div className="mx-auto max-w-3xl">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
-                  Selected cue card
-                </div>
-                <h3 className="mt-1 text-lg font-semibold tracking-tight">{previewCard.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{previewCard.prompt}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setPreview(null)}
-                className="shrink-0 rounded-full p-1.5 text-muted-foreground hover:bg-muted"
-                aria-label="Close preview"
-              >
-                ×
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Button onClick={() => navigate({ name: "session", kind: "part2", topicIds: [previewCard.id] })} className="gap-2">
-                <Play className="h-4 w-4" />
-                Prepare &amp; Speak
-              </Button>
-              <Button variant="outline" onClick={() => setVocabCard(previewCard.id)} className="gap-2">
-                <BookOpen className="h-4 w-4" />
-                Useful Language
-              </Button>
-              <Button variant="ghost" onClick={randomCard} className="gap-2 text-muted-foreground">
-                <Shuffle className="h-4 w-4" />
-                Another
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <VocabSheet
         open={!!vocabCard}

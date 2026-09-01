@@ -11,11 +11,11 @@
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
 import {
-  useProgress, type SessionMeta, type RecordingMeta,
+  useProgress, type SessionMeta,
 } from "@/lib/store/progress";
 import {
   part1TopicById, part3TopicById, part2CardById, vocabForTopic, topicTitle,
-  questionSupport, diagnoseProblem, problemById,
+  questionSupport, diagnoseProblem,
   type Symptom, type Cause, SYMPTOMS, CAUSES,
 } from "@/lib/data/content";
 import { micManager } from "@/lib/audio/microphone";
@@ -26,6 +26,7 @@ import {
 import { MicTestPanel } from "@/components/views/mic-gate";
 import { VocabSheet } from "@/components/views/vocab-sheet";
 import { StarMark } from "@/components/shared/brand";
+import { SendToStella, AnalyseAnswerLink } from "@/components/ai/send-to-stella";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -861,24 +862,60 @@ export function SessionView({
   if (!session) return null;
 
   if (done) {
-    const sessionRecordings = recordings.filter((r) => r.sessionId === session.id);
+    const sessionRecordings = recordings
+      .filter((r) => r.sessionId === session.id)
+      .slice()
+      .sort((a, b) => a.startedAt - b.startedAt);
     const totalSeconds = sessionRecordings.reduce((a, r) => a + r.duration, 0);
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center justify-center px-6 py-12 text-center">
-        <div className="star-burst">
-          <StarMark size={72} />
+      <div className="fade-up mx-auto w-full max-w-2xl px-4 py-10 sm:py-14">
+        <div className="text-center">
+          <div className="star-burst mx-auto w-fit">
+            <StarMark size={64} />
+          </div>
+          <h1 className="mt-5 text-2xl font-semibold tracking-tight sm:text-3xl">
+            Session complete
+          </h1>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            {sessionRecordings.length}{" "}
+            {sessionRecordings.length === 1 ? "answer" : "answers"} recorded ·{" "}
+            {formatTime(totalSeconds)} of speaking.
+          </p>
         </div>
-        <h1 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">
-          Session complete
-        </h1>
-        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          You&apos;re getting more comfortable with this. {sessionRecordings.length}{" "}
-          {sessionRecordings.length === 1 ? "answer" : "answers"} recorded ·{" "}
-          {formatTime(totalSeconds)} of speaking.
-        </p>
-        <div className="mt-8 flex flex-col gap-2 sm:flex-row">
-          <Button onClick={() => navigate({ name: "recordings" })} className="gap-2">
-            Listen to your answers
+
+        {sessionRecordings.length > 0 && (
+          <>
+            {/* Evaluation lives here, with the recordings — not behind a corner button. */}
+            <div className="mt-8">
+              <SendToStella
+                recordings={sessionRecordings}
+                sessionId={session.id}
+                heading="Get this session evaluated"
+              />
+            </div>
+
+            <div className="mt-6 space-y-3">
+              <h2 className="px-1 text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                Your answers
+              </h2>
+              {sessionRecordings.map((r, index) => (
+                <div key={r.id} className="rounded-2xl border border-border bg-card p-4">
+                  <div className="mb-1.5 truncate text-xs text-muted-foreground">
+                    {index + 1}. {r.label}
+                  </div>
+                  <AudioPlayer recordingId={r.id} compact />
+                  <div className="mt-2">
+                    <AnalyseAnswerLink recordingId={r.id} sessionId={session.id} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
+          <Button variant="outline" onClick={() => navigate({ name: "recordings" })}>
+            All recordings
           </Button>
           <Button variant="outline" onClick={() => navigate({ name: "practice" })} className="gap-2">
             <RotateCcw className="h-4 w-4" />
