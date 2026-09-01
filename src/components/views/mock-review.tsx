@@ -10,13 +10,13 @@ import * as React from "react";
 import { useApp } from "@/lib/store/app";
 import { useProgress, type MockMeta } from "@/lib/store/progress";
 import { getAudioURL, computePeaks } from "@/lib/storage/audio-db";
-import { topicTitle, SYMPTOMS, CAUSES, diagnoseProblem, problemById, areaOfProblem, type Symptom, type Cause } from "@/lib/data/content";
+import { topicTitle, SYMPTOMS, CAUSES, diagnoseProblem, type Symptom, type Cause } from "@/lib/data/content";
 import { AudioPlayer, formatTime, StaticWaveform } from "@/components/audio/audio-ui";
 import { StarMark } from "@/components/shared/brand";
-import { StellaAvatar } from "@/components/ai/stella-avatar";
+import { SendToStella, AnalyseAnswerLink } from "@/components/ai/send-to-stella";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Play, Pause, Gauge, NotebookPen, ChevronDown, ChevronRight, Check, Sparkles } from "lucide-react";
+import { Play, Pause, Gauge, NotebookPen, ChevronDown, ChevronRight } from "lucide-react";
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
 
@@ -110,7 +110,7 @@ function MockPlayer({ mock }: { mock: MockMeta }) {
   const completed = mock.segments.filter((s) => s.completed);
 
   return (
-    <div className="rounded-2xl border border-brand-bright/30 bg-card p-5 shadow-sm sm:p-6">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
       <audio
         ref={audioRef}
         src={url || undefined}
@@ -196,173 +196,6 @@ function MockPlayer({ mock }: { mock: MockMeta }) {
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-/**
- * Hands the finished mock over to Stella.
- *
- * Both routes the student asked for are here: send everything, or pick exactly
- * which answers to send. Only the per-answer segment recordings are offered —
- * the master full-mock recording contains the same speech end to end, so
- * sending both would transcribe every word twice for no extra insight.
- */
-function StellaHandoff({ mock }: { mock: MockMeta }) {
-  const navigate = useApp((s) => s.navigate);
-  const recordings = useProgress((s) => s.recordings);
-
-  const answers = React.useMemo(
-    () =>
-      recordings
-        .filter(
-          (r) =>
-            r.mockId === mock.id &&
-            r.id !== mock.fullRecordingId &&
-            !r.label.includes("complete session")
-        )
-        .slice()
-        .sort((a, b) => a.startedAt - b.startedAt),
-    [recordings, mock.id, mock.fullRecordingId]
-  );
-
-  const [picking, setPicking] = React.useState(false);
-  const [selected, setSelected] = React.useState<Set<string>>(() => new Set());
-
-  const open = (ids: string[]) => {
-    if (!ids.length) return;
-    navigate({ name: "mock-analysis", mockId: mock.id, recordingIds: ids });
-  };
-
-  const toggle = (id: string) =>
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-
-  const totalSeconds = answers.reduce((a, r) => a + r.duration, 0);
-  const parts = [1, 2, 3] as const;
-
-  if (!answers.length) return null;
-
-  return (
-    <div className="rounded-2xl border border-brand-bright/30 bg-card p-5 sm:p-6">
-      <div className="flex items-start gap-4">
-        <StellaAvatar state="idle" size={56} />
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold tracking-tight">Send this mock to Stella</h3>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {answers.length} answers · {formatTime(totalSeconds)} of speaking. A whole
-            mock gives a far more dependable estimate than a single answer.
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button onClick={() => open(answers.map((a) => a.id))} className="gap-2">
-          <Sparkles className="h-4 w-4" />
-          Analyse entire mock
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => setPicking((v) => !v)}
-          aria-expanded={picking}
-          className="gap-2"
-        >
-          Choose answers to analyse
-          <ChevronDown
-            className={cn("h-4 w-4 transition-transform", picking && "rotate-180")}
-          />
-        </Button>
-      </div>
-
-      {picking && (
-        <div className="mt-4 border-t border-border pt-4">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-              Quick select
-            </span>
-            <button
-              type="button"
-              onClick={() => setSelected(new Set(answers.map((a) => a.id)))}
-              className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground"
-            >
-              All
-            </button>
-            {parts.map((p) => {
-              const ids = answers.filter((a) => a.part === p).map((a) => a.id);
-              if (!ids.length) return null;
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setSelected(new Set(ids))}
-                  className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground"
-                >
-                  Part {p}
-                </button>
-              );
-            })}
-            <button
-              type="button"
-              onClick={() => setSelected(new Set())}
-              className="rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground"
-            >
-              None
-            </button>
-          </div>
-
-          <div className="scrollbar-thin mt-3 max-h-64 space-y-2 overflow-y-auto pr-1">
-            {answers.map((r) => {
-              const isSelected = selected.has(r.id);
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => toggle(r.id)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors",
-                    isSelected
-                      ? "border-brand-bright/50 bg-brand-soft"
-                      : "border-border bg-surface hover:border-brand-bright/30"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border",
-                      isSelected
-                        ? "border-brand-bright bg-primary text-primary-foreground"
-                        : "border-border"
-                    )}
-                  >
-                    {isSelected && <Check className="h-3 w-3" />}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-medium">{r.label}</span>
-                    <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                      Part {r.part} · {formatTime(r.duration)}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <Button
-            onClick={() => open([...selected])}
-            disabled={!selected.size}
-            className="mt-3 w-full gap-2"
-          >
-            <Sparkles className="h-4 w-4" />
-            {selected.size
-              ? `Analyse ${selected.size} ${selected.size === 1 ? "answer" : "answers"}`
-              : "Select at least one answer"}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
@@ -483,7 +316,15 @@ export function MockReviewView({ mockId }: { mockId: string }) {
   const recordings = useProgress((s) => s.recordings);
   if (!mock) return null;
 
-  const segRecordings = recordings.filter((r) => r.mockId === mockId && !r.label.includes("complete session"));
+  const segRecordings = recordings.filter(
+    (r) => r.mockId === mockId && !r.label.includes("complete session")
+  );
+  /**
+   * Only the per-answer segments go to Stella. The master full-mock recording
+   * contains the same speech end to end, so sending both would transcribe
+   * every word twice for no extra insight.
+   */
+  const answersForStella = segRecordings.filter((r) => r.id !== mock.fullRecordingId);
   const fullDuration = recordings.find((r) => r.id === mock.fullRecordingId)?.duration || 0;
   const interrupted = mock.status === "interrupted";
   const parts = [1, 2, 3] as const;
@@ -509,7 +350,11 @@ export function MockReviewView({ mockId }: { mockId: string }) {
 
       <MockPlayer mock={mock} />
 
-      <StellaHandoff mock={mock} />
+      <SendToStella
+        recordings={answersForStella}
+        mockId={mockId}
+        heading="Get this mock evaluated"
+      />
 
       {/* Part 2 preparation notes */}
       {mock.part2Notes && (
@@ -564,16 +409,9 @@ export function MockReviewView({ mockId }: { mockId: string }) {
                       {r.questionId && p !== 2 ? r.label.split("—")[1] || "" : r.label}
                     </div>
                     <AudioPlayer recordingId={r.id} compact />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate({ name: "mock-analysis", mockId, recordingIds: [r.id] })
-                      }
-                      className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-medium text-brand-bright underline-offset-4 hover:underline"
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      Analyse this answer with Stella
-                    </button>
+                    <div className="mt-1.5">
+                      <AnalyseAnswerLink recordingId={r.id} mockId={mockId} />
+                    </div>
                   </div>
                 ))}
               </div>

@@ -3,6 +3,9 @@
 /**
  * Stella's full-screen analysis workspace.
  *
+ * Works for any set of recordings — a whole mock, a practice session, or a
+ * single answer from the library.
+ *
  * Left  — the question, the student's own audio with speed control, and a
  *         transcript that highlights in time with playback.
  * Right — Stella working, then her rubric feedback. Every piece of evidence is
@@ -23,6 +26,7 @@ import {
   type AiAnalysisRequest,
   type AiAnalysisResult,
   type AiReliability,
+  type AiSurface,
   type AiTimestampEvent,
 } from "@/lib/ai/types";
 import { Button } from "@/components/ui/button";
@@ -64,16 +68,23 @@ function ReliabilityChip({ value }: { value: AiReliability }) {
 }
 
 export function StellaWorkspaceView({
-  mockId,
   recordingIds,
+  mockId,
+  sessionId,
 }: {
-  mockId: string;
   recordingIds: string[];
+  mockId?: string;
+  sessionId?: string;
 }) {
   const navigate = useApp((s) => s.navigate);
   const back = useApp((s) => s.back);
-  const mock = useProgress((s) => s.mocks.find((m) => m.id === mockId));
+  const mocks = useProgress((s) => s.mocks);
   const recordings = useProgress((s) => s.recordings);
+
+  const mock = React.useMemo(
+    () => (mockId ? mocks.find((m) => m.id === mockId) : undefined),
+    [mocks, mockId]
+  );
 
   const answers = React.useMemo(() => {
     const byId = new Map(recordings.map((r) => [r.id, r]));
@@ -86,6 +97,9 @@ export function StellaWorkspaceView({
   const [mobileTab, setMobileTab] = React.useState<"answer" | "stella">("answer");
 
   const active = answers[Math.min(activeIndex, Math.max(0, answers.length - 1))];
+
+  /** A whole mock is genuinely stronger evidence than a handful of answers. */
+  const isFullMock = Boolean(mockId) && answers.length > 1;
 
   // ---- playback ---------------------------------------------------------
   const audioRef = React.useRef<HTMLAudioElement>(null);
@@ -190,11 +204,18 @@ export function StellaWorkspaceView({
     setNotice("");
     setResult(null);
 
+    const surface: AiSurface = mockId
+      ? "full-mock"
+      : answers.every((r) => r.part === answers[0].part)
+        ? (`part${answers[0].part}` as AiSurface)
+        : "recordings";
+
     const request: AiAnalysisRequest = {
       mode: "mock-analysis",
-      surface: "full-mock",
+      surface,
       mockId,
-      scope: answers.length === 1 ? "selected-answers" : "entire-mock",
+      sessionId,
+      scope: isFullMock ? "entire-mock" : "selected-answers",
       answers: answers.map((r) => {
         const seg = mock?.segments.find(
           (s) => (r.questionId && s.questionId === r.questionId) || s.label === r.label
@@ -239,7 +260,7 @@ export function StellaWorkspaceView({
     } finally {
       setRunning(false);
     }
-  }, [answers, mock, mockId]);
+  }, [answers, mock, mockId, sessionId, isFullMock]);
 
   React.useEffect(() => {
     if (startedRef.current || !answers.length) return;
@@ -279,14 +300,20 @@ export function StellaWorkspaceView({
         <p className="mt-5 text-sm text-muted-foreground">
           These recordings are no longer available on this device.
         </p>
-        <Button className="mt-5" onClick={() => navigate({ name: "mock-review", mockId })}>
-          Back to the mock
+        <Button
+          className="mt-5"
+          onClick={() =>
+            mockId ? navigate({ name: "mock-review", mockId }) : navigate({ name: "recordings" })
+          }
+        >
+          {mockId ? "Back to the mock" : "All recordings"}
         </Button>
       </div>
     );
   }
 
   const progress = duration && current ? current / duration : 0;
+  const estimateLabel = isFullMock ? "Full mock estimate" : "Practice estimate";
 
   return (
     <div className="fade-up flex min-h-[100dvh] flex-col">
@@ -314,7 +341,7 @@ export function StellaWorkspaceView({
             <p className="truncate text-[11px] text-muted-foreground">
               {answers.length === 1
                 ? "1 answer · practice estimate"
-                : `${answers.length} answers · full mock estimate`}
+                : `${answers.length} answers · ${estimateLabel.toLowerCase()}`}
             </p>
           </div>
         </div>
@@ -513,7 +540,7 @@ export function StellaWorkspaceView({
             {running && (
               <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
                 {answers.length > 1
-                  ? `Working through ${answers.length} answers together, not one at a time — a whole mock is much stronger evidence.`
+                  ? `Working through ${answers.length} answers together, not one at a time — more speech means a steadier estimate.`
                   : "Listening closely to this one answer."}
               </p>
             )}
@@ -543,7 +570,7 @@ export function StellaWorkspaceView({
           <div>
             <div className="mb-2 flex items-center justify-between">
               <div className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-                {answers.length === 1 ? "Practice estimate" : "Full mock estimate"}
+                {estimateLabel}
               </div>
               {result?.reliability && <ReliabilityChip value={result.reliability} />}
             </div>
