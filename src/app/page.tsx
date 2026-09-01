@@ -4,6 +4,7 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 import { useApp } from "@/lib/store/app";
 import { AppShell } from "@/components/shared/app-shell";
+import { AiAssistant } from "@/components/ai/ai-assistant";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Loading = () => (
@@ -93,6 +94,7 @@ export default function Home() {
   return (
     <AppShell>
       <CurrentView />
+      <AiAssistant />
     </AppShell>
   );
 }
