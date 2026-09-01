@@ -4,12 +4,20 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import {
 	STELLA_ARTWORK,
+	STELLA_ARTWORK_FALLBACK,
+	STELLA_FALLBACK_TRIM,
 	STELLA_LABELS,
 	STELLA_MEDIA,
 	STELLA_TRIM,
 	type StellaState,
 } from "@/lib/ai/stella-media";
 import "./stella.css";
+
+/**
+ * Remembered across every avatar on the page: once we know the preferred
+ * artwork 404s there is no point letting each instance fail separately.
+ */
+const missingArtwork = new Set<string>();
 
 type StellaAvatarProps = {
 	/** Which of Stella's states to play. */
@@ -54,6 +62,26 @@ export function StellaAvatar({
 	const showOrbit = state === "transcribing" || state === "thinking";
 	const showRing = state === "listening";
 
+	const preferred = media.kind === "image" ? media.src : STELLA_ARTWORK;
+
+	// Re-render once if the preferred artwork turns out to be missing.
+	const [, forceRender] = React.useReducer((n: number) => n + 1, 0);
+	const usingFallback =
+		missingArtwork.has(preferred) && preferred !== STELLA_ARTWORK_FALLBACK;
+	const src = usingFallback ? STELLA_ARTWORK_FALLBACK : preferred;
+
+	const handleError = React.useCallback(() => {
+		if (missingArtwork.has(preferred)) return;
+		missingArtwork.add(preferred);
+		if (process.env.NODE_ENV !== "production") {
+			console.warn(
+				`[Stella] Could not load "${preferred}". Falling back to "${STELLA_ARTWORK_FALLBACK}". ` +
+					`Save the artwork at public${preferred} to use it.`
+			);
+		}
+		forceRender();
+	}, [preferred]);
+
 	return (
 		<span
 			role="img"
@@ -69,7 +97,7 @@ export function StellaAvatar({
 				{
 					"--stella-size": `${size}px`,
 					"--stella-level": clampedLevel,
-					"--stella-trim": STELLA_TRIM,
+					"--stella-trim": usingFallback ? STELLA_FALLBACK_TRIM : STELLA_TRIM,
 				} as React.CSSProperties
 			}
 		>
@@ -91,11 +119,12 @@ export function StellaAvatar({
 				) : (
 					/* eslint-disable-next-line @next/next/no-img-element */
 					<img
-						key={state}
+						key={`${state}-${src}`}
 						className="stella-body"
-						src={media.kind === "image" ? media.src : STELLA_ARTWORK}
+						src={src}
 						alt=""
 						draggable={false}
+						onError={handleError}
 					/>
 				)}
 			</span>

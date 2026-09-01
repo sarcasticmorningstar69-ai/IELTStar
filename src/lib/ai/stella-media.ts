@@ -39,22 +39,32 @@ export const STELLA_NAME = "Stella";
  * keeps a single consistent identity in light and dark mode.
  *
  * REQUIREMENTS FOR THIS FILE:
- *   - PNG with a TRANSPARENT background (not white). The avatar is now
- *     full-bleed with no frame behind it, so a white background would show as
- *     a white block in dark mode.
+ *   - Save it at public/stella-star.png (exactly this name, all lowercase).
+ *   - PNG with a TRANSPARENT background, not white. The avatar is full-bleed
+ *     with nothing drawn behind it, so a white background shows as a white
+ *     block in dark mode.
  *   - Square canvas.
+ *
+ * If this file is missing, the avatar quietly falls back to
+ * STELLA_ARTWORK_FALLBACK rather than rendering a broken image.
  */
 export const STELLA_ARTWORK = "/stella-star.png";
 
+/** Shipped asset used when STELLA_ARTWORK cannot be loaded. */
+export const STELLA_ARTWORK_FALLBACK = "/ielstar-star.png";
+
 /**
- * How far to zoom into STELLA_ARTWORK so the star reaches the edges of the
- * avatar instead of floating in the middle of its own padding.
+ * How far to zoom into the artwork so the star reaches the edges of the avatar
+ * instead of floating in the middle of its own padding.
  *
- * The source star occupies roughly 72% of its canvas height, so 1.3 removes
- * that empty margin. If you re-export the PNG cropped tight to the star,
- * set this to 1.
+ * The intended star occupies roughly 72% of its canvas height, so 1.3 removes
+ * that empty margin. If you re-export the PNG cropped tight to the star, set
+ * this to 1.
  */
 export const STELLA_TRIM = 1.3;
+
+/** The shipped fallback is framed more tightly, so it needs less zoom. */
+export const STELLA_FALLBACK_TRIM = 1.12;
 
 export const STELLA_MEDIA: Record<StellaState, StellaMedia> = {
 	idle: { kind: "coded" },
