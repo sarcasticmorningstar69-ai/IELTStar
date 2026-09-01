@@ -1,0 +1,260 @@
+/* =========================================================================
+   STELLA — code-driven character animation
+
+   Stella is a rigid handmade star, so she never deforms. Every state is built
+   from `transform` and `opacity` only, which keeps the whole thing on the
+   compositor: no layout, no paint, no dropped frames, no video files.
+
+   Structure:
+     .stella            sizing + state class + CSS variables
+       .stella-frame    theme-aware circular "observatory window"
+       .stella-ring     listening ring, reacts to mic level
+       .stella-orbit    travelling dot for transcribing / thinking
+       .stella-stage    16% inset safe area so points never clip
+         .stella-body   Stella herself (the animated element)
+   ========================================================================= */
+
+.stella {
+	--stella-size: 88px;
+	--stella-level: 0;
+	position: relative;
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+	width: var(--stella-size);
+	height: var(--stella-size);
+	isolation: isolate;
+}
+
+/* Theme-aware frame. Because this is drawn in CSS, Stella's own artwork stays
+   identical in light and dark mode — only her surroundings change. */
+.stella-frame {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: radial-gradient(
+		circle at 50% 30%,
+		color-mix(in oklab, var(--brand-bright) 8%, var(--elevated)) 0%,
+		var(--surface) 74%
+	);
+	border: 1px solid color-mix(in oklab, var(--brand-bright) 20%, var(--border));
+	box-shadow:
+		inset 0 1px 0 color-mix(in oklab, #ffffff 40%, transparent),
+		inset 0 -10px 20px -14px color-mix(in oklab, var(--brand) 45%, transparent);
+}
+
+.stella-frameless .stella-frame {
+	display: none;
+}
+
+/* Motion-safe area. Stella never leaves this inset, so her sharp points are
+   never clipped by the circular frame at any point in the animation. */
+.stella-stage {
+	position: absolute;
+	inset: 16%;
+	display: grid;
+	place-items: center;
+}
+
+.stella-body {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	transform-origin: 50% 55%;
+	will-change: transform;
+	pointer-events: none;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+/* Supplied videos animate themselves — never double-animate them. */
+.stella-media {
+	animation: none !important;
+}
+
+/* -------------------------------------------------------------------------
+   IDLE — a bored, curious little star entertaining herself.
+   Distinct beats, not a metronome tilt: rest, lazy look around, hesitate,
+   lean in, anticipate, hop with overshoot, slow tumble, wobble down, settle.
+   ------------------------------------------------------------------------- */
+@keyframes stella-idle {
+	0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+	9% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+	23% { transform: translate3d(1%, -5%, 0) rotate(-15deg) scale(1.006); }
+	31% { transform: translate3d(1%, -4%, 0) rotate(-10deg) scale(1.004); }
+	37% { transform: translate3d(0, -2%, 0) rotate(8deg) scale(1.012); }
+	42% { transform: translate3d(0, 3%, 0) rotate(6deg) scale(0.982); }
+	49% { transform: translate3d(-1%, -10%, 0) rotate(-5deg) scale(1.022); }
+	56% { transform: translate3d(-1%, -6%, 0) rotate(-2deg) scale(1.004); }
+	70% { transform: translate3d(3%, -3%, 0) rotate(26deg) scale(1); }
+	82% { transform: translate3d(-2%, -1%, 0) rotate(-13deg) scale(1); }
+	90% { transform: translate3d(0, 0, 0) rotate(7deg) scale(1); }
+	95% { transform: translate3d(0, 0, 0) rotate(-3deg) scale(1); }
+	100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+}
+
+.stella-state-idle .stella-body {
+	animation: stella-idle 7s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+/* Small placements (the floating button) get the same choreography, slower,
+   so it reads as calm rather than fidgety. */
+.stella-quiet .stella-body {
+	animation-duration: 11s;
+}
+
+/* -------------------------------------------------------------------------
+   LISTENING — leans toward the student, breathing with the voice.
+   ------------------------------------------------------------------------- */
+@keyframes stella-listening {
+	0% { transform: translate3d(0, 0, 0) rotate(6deg); }
+	25% { transform: translate3d(0, -3%, 0) rotate(10deg); }
+	50% { transform: translate3d(0, -1%, 0) rotate(5deg); }
+	75% { transform: translate3d(0, -4%, 0) rotate(9deg); }
+	100% { transform: translate3d(0, 0, 0) rotate(6deg); }
+}
+
+.stella-state-listening .stella-body {
+	animation: stella-listening 2.4s ease-in-out infinite;
+	/* Individual transform properties compose with `transform`, so live mic
+	   level scales Stella without fighting the keyframes. */
+	scale: calc(1 + (var(--stella-level) * 0.07));
+}
+
+.stella-ring {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	pointer-events: none;
+	border: 1px solid color-mix(in oklab, var(--brand-bright) 60%, transparent);
+	opacity: calc(0.12 + (var(--stella-level) * 0.55));
+	scale: calc(1 + (var(--stella-level) * 0.06));
+	transition: opacity 120ms linear, scale 120ms linear;
+}
+
+/* -------------------------------------------------------------------------
+   TRANSCRIBING — deliberate quarter turns with a pause on each landing.
+   Reads as "organising", not as a loading spinner.
+   ------------------------------------------------------------------------- */
+@keyframes stella-transcribing {
+	0% { transform: rotate(0deg) translate3d(0, 0, 0); }
+	20% { transform: rotate(88deg) translate3d(0, -2%, 0); }
+	25% { transform: rotate(90deg) translate3d(0, 0, 0); }
+	45% { transform: rotate(178deg) translate3d(0, -2%, 0); }
+	50% { transform: rotate(180deg) translate3d(0, 0, 0); }
+	70% { transform: rotate(268deg) translate3d(0, -2%, 0); }
+	75% { transform: rotate(270deg) translate3d(0, 0, 0); }
+	95% { transform: rotate(358deg) translate3d(0, -2%, 0); }
+	100% { transform: rotate(360deg) translate3d(0, 0, 0); }
+}
+
+.stella-state-transcribing .stella-body {
+	animation: stella-transcribing 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* -------------------------------------------------------------------------
+   THINKING — slow changes of direction with real hesitation. Deliberately
+   not a full rotation, so it never resembles a spinner or a roulette wheel.
+   ------------------------------------------------------------------------- */
+@keyframes stella-thinking {
+	0% { transform: rotate(-8deg) translate3d(0, 0, 0); }
+	18% { transform: rotate(-17deg) translate3d(-2%, -3%, 0); }
+	27% { transform: rotate(-15deg) translate3d(-2%, -3%, 0); }
+	49% { transform: rotate(13deg) translate3d(3%, -5%, 0); }
+	59% { transform: rotate(11deg) translate3d(3%, -4%, 0); }
+	79% { transform: rotate(-4deg) translate3d(-1%, -1%, 0); }
+	100% { transform: rotate(-8deg) translate3d(0, 0, 0); }
+}
+
+.stella-state-thinking .stella-body {
+	animation: stella-thinking 3.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Travelling point around the frame during transcribing / thinking. */
+.stella-orbit {
+	position: absolute;
+	inset: -2px;
+	border-radius: 50%;
+	pointer-events: none;
+	animation: stella-orbit-spin 2.9s linear infinite;
+}
+
+.stella-orbit::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 5px;
+	height: 5px;
+	margin-top: -2.5px;
+	margin-left: -2.5px;
+	border-radius: 50%;
+	background: var(--brand-bright);
+	opacity: 0.8;
+}
+
+@keyframes stella-orbit-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* -------------------------------------------------------------------------
+   SPEAKING — rises and settles with the rhythm of the sentence.
+   ------------------------------------------------------------------------- */
+@keyframes stella-speaking {
+	0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+	15% { transform: translate3d(0, -4%, 0) rotate(-3deg); }
+	30% { transform: translate3d(0, -1%, 0) rotate(3deg); }
+	45% { transform: translate3d(0, -5%, 0) rotate(-2deg); }
+	60% { transform: translate3d(0, -2%, 0) rotate(3deg); }
+	80% { transform: translate3d(0, -3%, 0) rotate(-1deg); }
+	100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+.stella-state-speaking .stella-body {
+	animation: stella-speaking 1.9s ease-in-out infinite;
+}
+
+/* -------------------------------------------------------------------------
+   FINISHED — one short, satisfying move, then rest. Plays once.
+   ------------------------------------------------------------------------- */
+@keyframes stella-finished {
+	0% { transform: translate3d(0, 3%, 0) rotate(0deg) scale(0.955); }
+	35% { transform: translate3d(0, -12%, 0) rotate(-19deg) scale(1.075); }
+	60% { transform: translate3d(0, -2%, 0) rotate(9deg) scale(1); }
+	80% { transform: translate3d(0, -4%, 0) rotate(-4deg) scale(1.012); }
+	100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+}
+
+.stella-state-finished .stella-body {
+	animation: stella-finished 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* -------------------------------------------------------------------------
+   ERROR — she simply stops and dips. No flashing, no alarm.
+   ------------------------------------------------------------------------- */
+@keyframes stella-error {
+	0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+	45% { transform: translate3d(0, 4%, 0) rotate(-10deg); }
+	100% { transform: translate3d(0, 3%, 0) rotate(-7deg); }
+}
+
+.stella-state-error .stella-body {
+	animation: stella-error 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* -------------------------------------------------------------------------
+   REDUCED MOTION — Stella holds a still, characterful pose.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	.stella-body,
+	.stella-orbit {
+		animation: none !important;
+	}
+	.stella-body {
+		transform: rotate(-4deg);
+	}
+	.stella-ring {
+		transition: none !important;
+		scale: 1;
+	}
+}
