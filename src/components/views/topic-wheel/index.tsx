@@ -80,24 +80,27 @@ function AmbientEnergy({ active }: { active: boolean }) {
   const last = bars.length - 1;
   return (
     <div
-      className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center gap-[2px] px-2"
+      className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center lg:opacity-60 lg:[mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
       aria-hidden
     >
-      {bars.map((v, i) => {
-        const mid = last / 2;
-        const envelope = 0.35 + 0.65 * (1 - Math.abs(i - mid) / mid);
-        const h = active ? Math.max(2, v * envelope * 190) : 1.5;
-        return (
-          <span
-            key={i}
-            className="flex-1 rounded-full bg-brand-bright transition-[height] duration-75 ease-out"
-            style={{
-              height: `${h}px`,
-              opacity: active ? 0.1 + v * 0.4 : 0.06,
-            }}
-          />
-        );
-      })}
+      <span className="absolute inset-x-[8%] top-1/2 hidden h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-brand-bright/20 to-transparent lg:block" />
+      <div className="flex w-full items-center justify-center gap-[2px] px-2 lg:w-[84%] lg:max-w-[46rem] lg:justify-between lg:gap-0 lg:px-0">
+        {bars.map((v, i) => {
+          const mid = last / 2;
+          const envelope = 0.35 + 0.65 * (1 - Math.abs(i - mid) / mid);
+          const h = active ? Math.max(2, v * envelope * 190) : 1.5;
+          return (
+            <span
+              key={i}
+              className="flex-1 rounded-full bg-brand-bright transition-[height] duration-75 ease-out lg:w-px lg:max-w-px lg:flex-none lg:rounded-none lg:max-h-[118px]"
+              style={{
+                height: `${h}px`,
+                opacity: active ? 0.1 + v * 0.4 : 0.06,
+              }}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -317,7 +320,7 @@ export function TopicWheelView() {
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-10">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14 lg:pt-[10vh]">
         {/* ---------------- wheel + controls ---------------- */}
         <div className="min-w-0">
           <div className="relative" style={{ minHeight: ITEM_H * VISIBLE }}>
@@ -402,8 +405,8 @@ export function TopicWheelView() {
         </div>
 
         {/* ---------------- persistent rail ---------------- */}
-        <aside className="lg:sticky lg:top-20 lg:self-start">
-          <div className="space-y-3 rounded-lg border border-border/70 bg-card/40 p-4">
+        <aside className="lg:sticky lg:top-28 lg:self-start">
+          <div className="space-y-3 rounded-lg border border-border/70 bg-card/40 p-4 lg:space-y-4 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
             <ol className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.12em] uppercase">
               {phases.map(([key, label], i) => {
                 const active = phase === key;
@@ -466,7 +469,12 @@ export function TopicWheelView() {
 
             {recordingId && (
               <div className="space-y-2 border-t border-border/60 pt-3">
-                <AudioPlayer recordingId={recordingId} title={topic.prompt} compact />
+                <AudioPlayer
+                  recordingId={recordingId}
+                  title={topic.prompt}
+                  compact
+                  className="lg:!rounded-none lg:!border-0 lg:!bg-transparent lg:!p-0 lg:!shadow-none lg:[&_[role=slider]]:!gap-px lg:[&_[role=slider]>div]:min-w-px"
+                />
                 <button
                   type="button"
                   onClick={discardRecording}
