@@ -57,3 +57,7 @@ db/custom.db
 # cloudflare / opennext build output
 /.open-next/
 .wrangler
+
+# agent / ide scratch
+.agents/
+skills-lock.json

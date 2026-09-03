@@ -92,12 +92,19 @@ export function AuthModal() {
         if (password.length < 6) {
           throw new Error("Password must be at least 6 characters.");
         }
-        const { error } = await signUpWithEmail(
+        const { error, needsEmailVerification } = await signUpWithEmail(
           email.trim(),
           password,
           { name: name.trim() || undefined, targetBand: 7.5 }
         );
         if (error) throw error;
+
+        if (needsEmailVerification) {
+          setSuccessMsg(
+            "Account created! Please check your email to verify your address before signing in."
+          );
+          return;
+        }
 
         // Transition immediately to the interactive Rotary Target Band step
         setTab("target-band");
