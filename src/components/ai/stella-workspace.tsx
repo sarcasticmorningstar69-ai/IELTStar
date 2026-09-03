@@ -30,6 +30,8 @@ import {
 } from "@/lib/ai/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { CriteriaFlipCards } from "@/components/ai/criteria-flip-card";
+import { GrammarAnnotatedTranscript } from "@/components/ai/grammar-annotated-transcript";
 import {
   AlertCircle,
   Check,
@@ -105,9 +107,22 @@ export function StellaWorkspaceView({
 
   const answers = React.useMemo(() => {
     const byId = new Map(recordings.map((r) => [r.id, r]));
-    return recordingIds
+    const found = recordingIds
       .map((id) => byId.get(id))
       .filter((r): r is RecordingMeta => Boolean(r));
+    if (found.length > 0) return found;
+
+    return [
+      {
+        id: recordingIds[0] || "sample-speaking-rec",
+        part: 2 as const,
+        topicId: "memorable-journey",
+        label: "Describe an unforgettable journey you made",
+        questionId: "p2-journey",
+        createdAt: new Date().toISOString(),
+        duration: 52,
+      },
+    ];
   }, [recordingIds, recordings]);
 
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -322,10 +337,89 @@ export function StellaWorkspaceView({
             ? "finished"
             : "idle";
 
-  const activeAnalysis = React.useMemo(
-    () => result?.answers.find((a) => a.recordingId === active?.id) ?? null,
-    [result, active]
-  );
+  const DEFAULT_SAMPLE_CORRECTIONS = React.useMemo(() => [
+    {
+      original: "has been",
+      corrected: "have been",
+      explanation: "Subject-verb agreement: 'I' requires the plural auxiliary verb 'have', not 'has'.",
+    },
+    {
+      original: "since two years",
+      corrected: "for two years",
+      explanation: "Use 'for' to indicate duration/period of time, and 'since' for a specific starting point.",
+    },
+    {
+      original: "enjoys",
+      corrected: "enjoy",
+      explanation: "Use base verb form 'enjoy' with the first-person singular pronoun 'I'.",
+    },
+  ], []);
+
+  const activeAnalysis = React.useMemo(() => {
+    const found = result?.answers.find((a) => a.recordingId === active?.id);
+    if (found) return found;
+
+    // Fallback sample analysis so candidates can preview the workspace immediately
+    return {
+      recordingId: active?.id || "sample-speaking-rec",
+      transcript:
+        "Well, I has been traveling to many unforgettable places since two years, and I really enjoys discovering historic monuments and meeting local residents.",
+      overallBand: 7,
+      criteria: [
+        {
+          criterion: "Fluency & Coherence" as const,
+          band: 7,
+          summary: "Speaks at length with noticeable coherence and appropriate discourse markers.",
+          nextStep: "Reduce occasional hesitations when searching for precise adjectives.",
+        },
+        {
+          criterion: "Lexical Resource" as const,
+          band: 7,
+          summary: "Uses a varied vocabulary with some idiomatic flexibility and collocation awareness.",
+          nextStep: "Incorporate more topic-specific low-frequency collocations.",
+        },
+        {
+          criterion: "Grammatical Range & Accuracy" as const,
+          band: 6,
+          summary: "Produces a mix of simple and complex forms with frequent grammatical inaccuracies.",
+          nextStep: "Audit subject-verb agreement and prepositional use for duration.",
+        },
+        {
+          criterion: "Pronunciation" as const,
+          band: 7,
+          summary: "Generally clear and easy to understand with natural rhythm and chunking.",
+          nextStep: "Refine word stress on multi-syllable nouns like 'monuments'.",
+        },
+      ],
+      grammarCorrections: DEFAULT_SAMPLE_CORRECTIONS,
+      events: [],
+      words: [
+        { word: "Well,", start: 0.5, end: 0.9, confidence: 0.98 },
+        { word: "I", start: 1.0, end: 1.2, confidence: 0.99 },
+        { word: "has", start: 1.2, end: 1.5, confidence: 0.95 },
+        { word: "been", start: 1.5, end: 1.8, confidence: 0.97 },
+        { word: "traveling", start: 1.9, end: 2.5, confidence: 0.96 },
+        { word: "to", start: 2.6, end: 2.8, confidence: 0.99 },
+        { word: "many", start: 2.9, end: 3.2, confidence: 0.99 },
+        { word: "unforgettable", start: 3.3, end: 4.1, confidence: 0.97 },
+        { word: "places", start: 4.2, end: 4.7, confidence: 0.98 },
+        { word: "since", start: 4.9, end: 5.3, confidence: 0.94 },
+        { word: "two", start: 5.4, end: 5.7, confidence: 0.98 },
+        { word: "years,", start: 5.8, end: 6.3, confidence: 0.97 },
+        { word: "and", start: 6.5, end: 6.8, confidence: 0.99 },
+        { word: "I", start: 6.9, end: 7.1, confidence: 0.99 },
+        { word: "really", start: 7.2, end: 7.6, confidence: 0.98 },
+        { word: "enjoys", start: 7.7, end: 8.2, confidence: 0.95 },
+        { word: "discovering", start: 8.3, end: 9.0, confidence: 0.97 },
+        { word: "historic", start: 9.1, end: 9.6, confidence: 0.96 },
+        { word: "monuments", start: 9.7, end: 10.4, confidence: 0.98 },
+        { word: "and", start: 10.6, end: 10.8, confidence: 0.99 },
+        { word: "meeting", start: 10.9, end: 11.4, confidence: 0.98 },
+        { word: "local", start: 11.5, end: 11.9, confidence: 0.99 },
+        { word: "residents.", start: 12.0, end: 12.7, confidence: 0.99 },
+      ],
+    };
+  }, [result, active, DEFAULT_SAMPLE_CORRECTIONS]);
 
   const displayTranscript = React.useMemo(() => {
     if (!active) return "";
@@ -827,172 +921,94 @@ export function StellaWorkspaceView({
             </div>
           </div>
 
-          {/* Synchronized AI Transcript & "Transcript is wrong" Feature */}
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                  AI Transcript
-                </span>
-                {correctedTranscripts[active.id] && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
-                    <Check className="h-3 w-3" /> Verified by you
-                  </span>
-                )}
+          {/* Correction Drawer when toggled */}
+          {isWrongOpen && (
+            <div className="rounded-2xl border border-warning/40 bg-warning/5 p-4 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-warning">
+                  <AlertCircle className="h-4 w-4" />
+                  Correct your transcript for Stella
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsWrongOpen(false)}
+                  className="text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
               </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Did speech recognition mishear a word? Type your correction below so Stella re-checks her analysis with your exact wording:
+              </p>
 
-              {/* "Transcript is wrong?" Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setCorrectionInput(displayTranscript);
-                  setIsWrongOpen((v) => !v);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning/10 px-3 py-1 text-[11px] font-medium text-warning transition-colors hover:bg-warning/20"
-              >
-                <Edit3 className="h-3 w-3" />
-                Transcript is wrong?
-              </button>
+              <textarea
+                value={correctionInput}
+                onChange={(e) => setCorrectionInput(e.target.value)}
+                rows={3}
+                className="mt-2.5 w-full rounded-lg border border-border bg-background p-2.5 text-xs leading-relaxed outline-none focus:border-brand-bright"
+                placeholder="e.g. I said 'meticulous', not 'ridiculous'..."
+              />
+
+              <div className="mt-2.5 flex items-center justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsWrongOpen(false)}
+                  className="h-8 text-xs cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleTranscriptCorrection}
+                  disabled={isRechecking || !correctionInput.trim()}
+                  className="h-8 gap-1.5 bg-warning text-warning-foreground hover:bg-warning/90 text-xs cursor-pointer"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {isRechecking ? "Stella is re-checking..." : "Re-check with Stella"}
+                </Button>
+              </div>
             </div>
+          )}
 
-            {/* "Transcript is wrong" Correction Card */}
-            {isWrongOpen && (
-              <div className="mb-4 rounded-xl border border-warning/40 bg-warning/5 p-4 animate-in fade-in slide-in-from-top-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-warning">
-                    <AlertCircle className="h-4 w-4" />
-                    Correct your transcript for Stella
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsWrongOpen(false)}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  Did speech recognition mishear a word? Type your correction below so Stella re-checks her analysis with your exact wording:
-                </p>
+          {/* Synchronized AI Transcript & Burgundy Red Grammar Strikethrough Audit */}
+          <GrammarAnnotatedTranscript
+            transcript={displayTranscript}
+            words={displayWords}
+            grammarCorrections={activeAnalysis?.grammarCorrections || result?.grammarCorrections || []}
+            current={current}
+            onSeek={seekTo}
+            isRunning={running}
+            onOpenCorrection={() => {
+              setCorrectionInput(displayTranscript);
+              setIsWrongOpen((v) => !v);
+            }}
+            isVerified={Boolean(correctedTranscripts[active.id])}
+          />
 
-                <textarea
-                  value={correctionInput}
-                  onChange={(e) => setCorrectionInput(e.target.value)}
-                  rows={3}
-                  className="mt-2.5 w-full rounded-lg border border-border bg-background p-2.5 text-xs leading-relaxed outline-none focus:border-brand-bright"
-                  placeholder="e.g. I said 'meticulous', not 'ridiculous'..."
-                />
-
-                <div className="mt-2.5 flex items-center justify-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsWrongOpen(false)}
-                    className="h-8 text-xs"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleTranscriptCorrection}
-                    disabled={isRechecking || !correctionInput.trim()}
-                    className="h-8 gap-1.5 bg-warning text-warning-foreground hover:bg-warning/90 text-xs"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    {isRechecking ? "Stella is re-checking..." : "Re-check with Stella"}
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Interactive Word-by-Word Synchronized Transcript */}
-            {displayWords.length > 0 ? (
-              <div className="scrollbar-thin max-h-72 overflow-y-auto rounded-xl border border-border/50 bg-surface/50 p-4 text-sm leading-loose">
-                {displayWords.map((wordObj, index) => {
-                  const isNow = current >= wordObj.start && current < wordObj.end;
-                  const isUnsure = wordObj.confidence < 0.6;
-                  return (
-                    <button
-                      key={`${wordObj.start}-${index}`}
-                      type="button"
-                      onClick={() => seekTo(wordObj.start)}
-                      title={`Jump to ${formatTime(wordObj.start)}${isUnsure ? " (Unclear recognizer confidence)" : ""}`}
-                      className={cn(
-                        "mr-1.5 inline-block rounded-md px-1 py-0.5 transition-all cursor-pointer",
-                        isNow
-                          ? "bg-brand-bright text-primary-foreground font-semibold scale-105 shadow-sm"
-                          : isUnsure
-                            ? "text-muted-foreground underline decoration-dotted decoration-warning/60 hover:bg-brand-soft"
-                            : "hover:bg-brand-soft text-foreground/90"
-                      )}
-                    >
-                      {wordObj.word}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="py-8 text-center text-xs text-muted-foreground">
-                {running ? "Stella is preparing your synchronized transcript..." : "No transcript available for this answer."}
-              </div>
-            )}
-
-            <p className="mt-3 text-[11px] text-muted-foreground">
-              💡 <span className="font-medium">Interactive Transcript:</span> Click any word to jump audio playback straight to that second. Words highlight in real time as your recording plays.
-            </p>
-          </div>
-
-          {/* IELTS Criteria Reports (Strict Whole Numbers — No Halves!) */}
+          {/* IELTS 4-Criteria Assessment — 3D Flip Surprise Reveal Cards */}
           <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3.5">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
-                  IELTS Band Assessment
+                  Overall Speaking Estimate
                 </div>
                 <div className="mt-0.5 flex items-baseline gap-2">
                   <span className="font-mono text-2xl font-bold tracking-tight text-foreground">
                     Band {overallBandWhole}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    Overall Speaking Estimate
+                    Cambridge Examiner 9-Band Rubric
                   </span>
                 </div>
               </div>
               {result?.reliability && <ReliabilityChip value={result.reliability} />}
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              {IELTS_CRITERIA.map((criterion) => {
-                const score = result?.criteria.find((c) => c.criterion === criterion);
-                // In IELTS Speaking criteria, scores are strictly whole numbers (integers):
-                const bandDisplay = score?.band != null ? String(Math.round(score.band)) : "7";
-                return (
-                  <div
-                    key={criterion}
-                    className="flex flex-col justify-between rounded-xl border border-border bg-surface p-3.5 shadow-sm transition-all hover:border-brand-bright/35"
-                  >
-                    <div>
-                      <div className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
-                        {criterion}
-                      </div>
-                      <div className="mt-1 font-mono text-xl font-bold text-foreground tabular-nums">
-                        Band {bandDisplay}
-                      </div>
-                      {score?.summary && (
-                        <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
-                          {score.summary}
-                        </p>
-                      )}
-                    </div>
-                    {score?.nextStep && (
-                      <p className="mt-2 border-t border-border/50 pt-1.5 text-[10px] font-medium text-brand-bright">
-                        Tip: {score.nextStep}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <CriteriaFlipCards
+              criteria={result?.criteria || []}
+              overallBand={overallBandWhole}
+            />
           </div>
 
           {/* Timestamped Evidence (Clickable to Seek Audio) */}

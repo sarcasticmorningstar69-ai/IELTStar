@@ -137,11 +137,19 @@ export interface AiEvaluation {
   disclaimer: string;
 }
 
+export interface AiGrammarCorrection {
+  original: string;
+  corrected: string;
+  explanation: string;
+}
+
 /** Per-answer result inside a larger analysis. */
 export interface AiAnswerAnalysis {
   recordingId: string;
   questionLabel: string;
   transcript: string;
+  annotatedTranscript?: string;
+  grammarCorrections?: AiGrammarCorrection[];
   words: AiTranscriptWord[];
   events: AiTimestampEvent[];
   audioQuality: AiAudioQuality;
@@ -160,6 +168,7 @@ export interface AiAnalysisResult {
   overallBand: number | null;
   overallRange?: { low: number; high: number };
   criteria: AiCriterionScore[];
+  grammarCorrections?: AiGrammarCorrection[];
   strengths: string[];
   priorities: string[];
   reliability: AiReliability;
