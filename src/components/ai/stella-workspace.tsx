@@ -47,8 +47,6 @@ import {
   RotateCcw,
   Send,
   Sparkles,
-  Volume2,
-  Square,
   X,
 } from "lucide-react";
 
@@ -82,19 +80,6 @@ interface ChatMessage {
   text: string;
   timestamp: string;
   isCorrection?: boolean;
-}
-
-function speakText(text: string, onEnd: () => void) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-GB";
-  utterance.rate = 0.96;
-  utterance.pitch = 1;
-  utterance.onend = onEnd;
-  utterance.onerror = onEnd;
-  window.speechSynthesis.speak(utterance);
-  return true;
 }
 
 export function StellaWorkspaceView({
@@ -237,7 +222,6 @@ export function StellaWorkspaceView({
   const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = React.useState("");
   const [chatLoading, setChatLoading] = React.useState(false);
-  const [speakingMessageId, setSpeakingMessageId] = React.useState<string | null>(null);
   const chatScrollRef = React.useRef<HTMLDivElement>(null);
 
   const runAnalysis = React.useCallback(async () => {
@@ -332,13 +316,11 @@ export function StellaWorkspaceView({
         : "thinking"
       : chatLoading
         ? "thinking"
-        : speakingMessageId
-          ? "speaking"
-          : notice
-            ? "error"
-            : result
-              ? "finished"
-              : "idle";
+        : notice
+          ? "error"
+          : result
+            ? "finished"
+            : "idle";
 
   const activeAnalysis = React.useMemo(
     () => result?.answers.find((a) => a.recordingId === active?.id) ?? null,
@@ -481,19 +463,6 @@ export function StellaWorkspaceView({
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [chatMessages, isWrongOpen]);
-
-  const toggleSpeakMessage = (id: string, text: string) => {
-    if (speakingMessageId === id) {
-      window.speechSynthesis?.cancel();
-      setSpeakingMessageId(null);
-      return;
-    }
-    setSpeakingMessageId(id);
-    const spoken = speakText(text.replace(/[*#]/g, ""), () => {
-      setSpeakingMessageId(null);
-    });
-    if (!spoken) setSpeakingMessageId(null);
-  };
 
   if (!answers.length) {
     return (
@@ -652,7 +621,6 @@ export function StellaWorkspaceView({
           >
             {chatMessages.map((msg) => {
               const isStella = msg.sender === "stella";
-              const isSpeaking = speakingMessageId === msg.id;
               return (
                 <div
                   key={msg.id}
@@ -660,7 +628,7 @@ export function StellaWorkspaceView({
                 >
                   {isStella && (
                     <div className="mt-0.5 shrink-0">
-                      <StellaAvatar state={isSpeaking ? "speaking" : "idle"} size={30} frame={false} />
+                      <StellaAvatar state="idle" size={30} frame={false} />
                     </div>
                   )}
                   <div
@@ -673,27 +641,7 @@ export function StellaWorkspaceView({
                     )}
                   >
                     <p className="whitespace-pre-line">{msg.text}</p>
-                    <div className="mt-2 flex items-center justify-between gap-3 text-[10px] opacity-70">
-                      <span>{msg.timestamp}</span>
-                      {isStella && (
-                        <button
-                          type="button"
-                          onClick={() => toggleSpeakMessage(msg.id, msg.text)}
-                          className="inline-flex items-center gap-1 font-medium hover:opacity-100"
-                          title="Read aloud"
-                        >
-                          {isSpeaking ? (
-                            <>
-                              <Square className="h-2.5 w-2.5" /> Stop
-                            </>
-                          ) : (
-                            <>
-                              <Volume2 className="h-2.5 w-2.5" /> Listen
-                            </>
-                          )}
-                        </button>
-                      )}
-                    </div>
+                    <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                   </div>
                 </div>
               );

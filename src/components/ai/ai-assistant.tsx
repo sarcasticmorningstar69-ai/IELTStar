@@ -42,11 +42,24 @@ import {
 } from "@/components/views/learn/learn-shared";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth/auth-context";
+import {
+  createConversation,
+  loadConversation,
+  saveMessageToConversation,
+  listConversations,
+  deleteConversation,
+  getActiveConversationId,
+  setActiveConversationId,
+  syncConversationsFromCloud,
+  getSlidingWindowContext,
+  type ConversationSummary,
+  type ChatMessageItem,
+} from "@/lib/ai/chat-history";
 import {
   Maximize2,
   Minimize2,
   Send,
-  Volume2,
   X,
   BookOpen,
   Sparkles,
@@ -54,7 +67,27 @@ import {
   ExternalLink,
   Video as VideoIcon,
   MessageSquare,
+  History as HistoryIcon,
+  Plus,
+  Trash2,
+  ShieldCheck,
 } from "lucide-react";
+
+function formatRelativeTime(dateStr: string): string {
+  try {
+    const diffMs = Date.now() - new Date(dateStr).getTime();
+    const diffMin = Math.floor(diffMs / (1000 * 60));
+    if (diffMin < 1) return "Just now";
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return "Yesterday";
+    return `${diffDays}d ago`;
+  } catch {
+    return "";
+  }
+}
 
 export function openStella(opts: { mode?: "drawer" | "full-window" } = { mode: "drawer" }) {
   if (typeof window !== "undefined") {
@@ -72,19 +105,6 @@ function surfaceForView(view: View): AiSurface {
   if (view.name === "learn" && view.tab === "tips") return "tip";
   if (view.name === "part1" || view.name === "part2" || view.name === "part3") return view.name;
   return "general";
-}
-
-function speakText(text: string, onEnd: () => void) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-GB";
-  utterance.rate = 0.96;
-  utterance.pitch = 1;
-  utterance.onend = onEnd;
-  utterance.onerror = onEnd;
-  window.speechSynthesis.speak(utterance);
-  return true;
 }
 
 interface ChatItem {
@@ -384,6 +404,139 @@ function YouTubeMockPlayerPanel({
   );
 }
 
+interface StellaHistoryPanelProps {
+  historyList: ConversationSummary[];
+  activeConversationId: string | null;
+  onSelectConversation: (id: string) => void;
+  onDeleteConversation: (id: string) => void;
+  onStartNewChat: () => void;
+  onCloseHistory: () => void;
+  onOpenPrivacyNotice: () => void;
+}
+
+function StellaHistoryPanel({
+  historyList,
+  activeConversationId,
+  onSelectConversation,
+  onDeleteConversation,
+  onStartNewChat,
+  onCloseHistory,
+  onOpenPrivacyNotice,
+}: StellaHistoryPanelProps) {
+  return (
+    <div className="flex-1 min-h-0 flex flex-col bg-card animate-in fade-in duration-150 h-full overflow-hidden">
+      {/* Panel Header */}
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-surface/40 shrink-0">
+        <div className="flex items-center gap-2">
+          <HistoryIcon className="h-4 w-4 text-brand-bright" />
+          <span className="text-xs font-semibold text-foreground">Coaching History</span>
+          <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-brand-bright">
+            {historyList.length}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onCloseHistory}
+          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground cursor-pointer gap-1"
+        >
+          <MessageSquare className="h-3 w-3" />
+          <span>Back to Chat</span>
+        </Button>
+      </div>
+
+      {/* New Thread CTA */}
+      <div className="p-3 border-b border-border bg-card shrink-0">
+        <button
+          type="button"
+          onClick={onStartNewChat}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-bright/40 bg-brand-soft py-2 px-3 text-xs font-semibold text-brand-bright transition-all hover:bg-brand-soft/80 shadow-xs cursor-pointer"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>Start New Coaching Thread</span>
+        </button>
+      </div>
+
+      {/* Conversations Scroll Area */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-1.5 scrollbar-thin text-xs bg-card">
+        {historyList.length === 0 ? (
+          <div className="py-16 text-center text-muted-foreground space-y-2">
+            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-muted/60 text-muted-foreground">
+              <HistoryIcon className="h-5 w-5" />
+            </div>
+            <p className="text-xs font-medium">No previous coaching sessions.</p>
+            <p className="text-[11px] text-muted-foreground/70 max-w-xs mx-auto">
+              Conversations you have with Stella across speaking mocks and cue cards will appear here.
+            </p>
+          </div>
+        ) : (
+          historyList.map((conv) => {
+            const isActive = conv.id === activeConversationId;
+            return (
+              <div
+                key={conv.id}
+                className={cn(
+                  "group flex items-center justify-between gap-2.5 rounded-xl p-3 transition-colors cursor-pointer border text-left",
+                  isActive
+                    ? "border-brand-bright/40 bg-brand-soft/50 text-foreground shadow-xs"
+                    : "border-transparent hover:border-border hover:bg-surface text-muted-foreground hover:text-foreground"
+                )}
+                onClick={() => onSelectConversation(conv.id)}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 font-semibold text-xs truncate">
+                    {conv.scopeKey.startsWith("video:") ? (
+                      <VideoIcon className="h-3 w-3 text-brand-bright shrink-0" />
+                    ) : (
+                      <MessageSquare className="h-3 w-3 text-brand-bright shrink-0" />
+                    )}
+                    <span className="truncate">{conv.title}</span>
+                  </div>
+                  <p className="text-[11px] truncate opacity-70 mt-0.5">{conv.lastMessageSnippet}</p>
+                  <div className="text-[10px] opacity-50 mt-1 flex items-center gap-2">
+                    <span>{formatRelativeTime(conv.updatedAt)}</span>
+                    <span>•</span>
+                    <span>{conv.messageCount} messages</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteConversation(conv.id);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-opacity cursor-pointer shrink-0"
+                  title="Delete conversation"
+                  aria-label="Delete conversation"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-border p-3 bg-surface/50 text-[11px] space-y-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 text-muted-foreground text-[10px]">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+          <span>Local-first • Synced across devices with Supabase</span>
+        </div>
+        <button
+          type="button"
+          onClick={onOpenPrivacyNotice}
+          className="flex items-center gap-1 text-brand-bright hover:underline text-[11px] cursor-pointer"
+        >
+          <ShieldCheck className="h-3 w-3" />
+          <span>AI Data Transparency &amp; Privacy Notice</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function AiAssistant() {
   const [mounted, setMounted] = React.useState(false);
   const view = useApp((s) => s.view);
@@ -392,9 +545,13 @@ export function AiAssistant() {
   const [question, setQuestion] = React.useState("");
   const [, setStatus] = React.useState<AiProviderStatus | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const [speaking, setSpeaking] = React.useState(false);
   const [stellaState, setStellaState] = React.useState<StellaState>("idle");
   const [messages, setMessages] = React.useState<ChatItem[]>([]);
+  const { user } = useAuth();
+  const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
+  const [isPrivacyNoticeOpen, setIsPrivacyNoticeOpen] = React.useState(false);
+  const [activeConversationId, setActiveConversationIdState] = React.useState<string | null>(null);
+  const [historyList, setHistoryList] = React.useState<ConversationSummary[]>([]);
   const chatScrollRef = React.useRef<HTMLDivElement>(null);
   const drawerChatScrollRef = React.useRef<HTMLDivElement>(null);
 
@@ -534,88 +691,136 @@ export function AiAssistant() {
     }
   }, [stellaMode, mounted]);
 
+  const scopeKey = isVideoMock ? `video:${selectedVideoId}` : surface;
+
+  // Sync down conversations when user logs in with Google
+  React.useEffect(() => {
+    if (user?.id) {
+      void syncConversationsFromCloud(user.id).then(() => {
+        setHistoryList(listConversations());
+      });
+    }
+  }, [user?.id]);
+
+  // Refresh history list whenever history panel opens
+  React.useEffect(() => {
+    if (isHistoryOpen) {
+      setHistoryList(listConversations());
+    }
+  }, [isHistoryOpen]);
+
+  // Load or initialize active conversation for the current view / mock
+  React.useEffect(() => {
+    const existingId = getActiveConversationId(scopeKey);
+    if (existingId) {
+      const session = loadConversation(existingId);
+      if (session && session.messages.length > 0) {
+        setActiveConversationIdState(existingId);
+        setMessages(session.messages);
+        return;
+      }
+    }
+
+    const greetingText = isVideoMock
+      ? `Hello! I'm watching IELTS Speaking Mock #${videoIndex(selectedVideoId) + 1} with you.\n\nAsk me to evaluate candidate fluency, identify grammar slips, suggest Band 9 rephrasings, or drill Part 3 follow-ups!`
+      : `Hello! I'm studying "${title}" with you.\n\nAsk me any questions about this material, request model phrasing, or ask for a practice drill!`;
+
+    const convTitle = isVideoMock
+      ? `Mock #${videoIndex(selectedVideoId) + 1} Coaching`
+      : `${title} Coaching`;
+
+    const initialSession = createConversation(scopeKey, convTitle);
+    const initialGreeting: ChatMessageItem = {
+      id: `intro-${Date.now()}`,
+      sender: "stella",
+      text: greetingText,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    saveMessageToConversation(initialSession.id, initialGreeting, user?.id);
+    setActiveConversationIdState(initialSession.id);
+    setMessages([initialGreeting]);
+  }, [scopeKey, selectedVideoId, title, isVideoMock, user?.id]);
+
+  const handleStartNewChat = () => {
+    const greetingText = isVideoMock
+      ? `Starting a new coaching thread for Mock #${videoIndex(selectedVideoId) + 1}.\n\nWhat specific part of this candidate's performance should we focus on?`
+      : `Starting a new coaching thread for "${title}".\n\nWhat would you like to explore or drill today?`;
+
+    const convTitle = isVideoMock
+      ? `Mock #${videoIndex(selectedVideoId) + 1} Session`
+      : `${title} Session`;
+
+    const newSession = createConversation(scopeKey, convTitle);
+    const greetingMsg: ChatMessageItem = {
+      id: `intro-${Date.now()}`,
+      sender: "stella",
+      text: greetingText,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    saveMessageToConversation(newSession.id, greetingMsg, user?.id);
+    setActiveConversationIdState(newSession.id);
+    setMessages([greetingMsg]);
+    setIsHistoryOpen(false);
+    setHistoryList(listConversations());
+  };
+
+  const handleSelectConversation = (convId: string) => {
+    const session = loadConversation(convId);
+    if (session) {
+      setActiveConversationId(session.scopeKey, convId);
+      setActiveConversationIdState(convId);
+      setMessages(session.messages);
+      setIsHistoryOpen(false);
+    }
+  };
+
+  const handleDeleteConversation = (convId: string) => {
+    deleteConversation(convId, user?.id);
+    const updated = listConversations();
+    setHistoryList(updated);
+    if (activeConversationId === convId) {
+      handleStartNewChat();
+    }
+  };
+
   const openDrawer = () => {
     setStellaMode("drawer");
-    if (messages.length === 0) {
-      setMessages([
-        {
-          id: "intro-1",
-          sender: "stella",
-          text: `Hello! I'm studying "${title}" with you.\n\nAsk me any questions about this material, request model phrasing, or ask for a practice drill!`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ]);
-    }
   };
 
   const close = () => {
     setStellaMode("closed");
+    setIsHistoryOpen(false);
   };
 
   React.useEffect(() => {
     const handler = (e: CustomEvent<{ mode?: "drawer" | "full-window" }>) => {
       const m = e.detail?.mode || "drawer";
       setStellaMode(m);
-      if (messages.length === 0) {
-        setMessages([
-          {
-            id: "intro-1",
-            sender: "stella",
-            text: `Hello! I'm studying "${title}" with you.\n\nAsk me any questions about this material, request model phrasing, or ask for a practice drill!`,
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          },
-        ]);
-      }
     };
     window.addEventListener("stella:open" as any, handler);
     return () => window.removeEventListener("stella:open" as any, handler);
-  }, [title, messages.length]);
-
-  React.useEffect(() => {
-    return () => {
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
   }, []);
-
-  const handleSpeakText = (text: string) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    if (speaking) {
-      window.speechSynthesis.cancel();
-      setSpeaking(false);
-      setStellaState("idle");
-      return;
-    }
-    const cleanText = text.replace(/[*_#`]/g, "").trim();
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.05;
-    utterance.onstart = () => {
-      setSpeaking(true);
-      setStellaState("speaking");
-    };
-    utterance.onend = () => {
-      setSpeaking(false);
-      setStellaState("idle");
-    };
-    utterance.onerror = () => {
-      setSpeaking(false);
-      setStellaState("idle");
-    };
-    window.speechSynthesis.speak(utterance);
-  };
 
   const submitQuestion = async (customText?: string) => {
     const q = (customText || question).trim();
     if (!q || loading) return;
 
-    const userMsg: ChatItem = {
+    const userMsg: ChatMessageItem = {
       id: `user-${Date.now()}`,
       sender: "user",
       text: q,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
+
+    let convId = activeConversationId;
+    if (!convId) {
+      const newConv = createConversation(scopeKey, isVideoMock ? `Mock #${videoIndex(selectedVideoId) + 1}` : title);
+      convId = newConv.id;
+      setActiveConversationIdState(convId);
+    }
+    saveMessageToConversation(convId, userMsg, user?.id);
 
     setMessages((prev) => [...prev, userMsg]);
     if (!customText) setQuestion("");
@@ -638,27 +843,32 @@ export function AiAssistant() {
           action: "chat",
           text: q,
           metadata,
+          recentMessages: getSlidingWindowContext(messages, 6),
         }),
       });
 
       if (!res.ok) throw new Error("AI request failed");
       const data = await res.json();
 
-      const stellaMsg: ChatItem = {
+      const reply = data.reply || data.answer || data.message || "I've analyzed that for you.";
+      const stellaMsg: ChatMessageItem = {
         id: `stella-${Date.now()}`,
         sender: "stella",
-        text: data.reply || "I've analyzed that for you.",
+        text: reply,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, stellaMsg]);
+      saveMessageToConversation(convId, stellaMsg, user?.id);
+      setHistoryList(listConversations());
     } catch {
-      const fallbackMsg: ChatItem = {
+      const fallbackMsg: ChatMessageItem = {
         id: `stella-err-${Date.now()}`,
         sender: "stella",
         text: `Here's what I suggest for "${title}":\n\n1. **Lead with a direct statement** — don't overcomplicate your first sentence.\n2. **Extend with a real contrast or consequence** to showcase complex grammar.\n3. **Keep speaking smoothly** — natural cadence is rated higher than complex pauses.`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);
+      saveMessageToConversation(convId, fallbackMsg, user?.id);
     } finally {
       setLoading(false);
       setStellaState("idle");
@@ -724,6 +934,20 @@ export function AiAssistant() {
           <div className="flex items-center gap-1">
             <button
               type="button"
+              onClick={() => setIsHistoryOpen((prev) => !prev)}
+              className={cn(
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors cursor-pointer",
+                isHistoryOpen
+                  ? "bg-brand-soft text-brand-bright"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+              title="Coaching History"
+              aria-label="Coaching History"
+            >
+              <HistoryIcon className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
               onClick={() => setStellaMode("full-window")}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
               title="Expand to Full Window"
@@ -742,66 +966,80 @@ export function AiAssistant() {
           </div>
         </header>
 
-        {/* Chat Stream */}
-        <div
-          ref={drawerChatScrollRef}
-          className="scrollbar-thin flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3 text-xs bg-card"
-        >
-          {messages.map((m) => (
+        {isHistoryOpen ? (
+          <StellaHistoryPanel
+            historyList={historyList}
+            activeConversationId={activeConversationId}
+            onSelectConversation={handleSelectConversation}
+            onDeleteConversation={handleDeleteConversation}
+            onStartNewChat={handleStartNewChat}
+            onCloseHistory={() => setIsHistoryOpen(false)}
+            onOpenPrivacyNotice={() => setIsPrivacyNoticeOpen(true)}
+          />
+        ) : (
+          <>
+            {/* Chat Stream */}
             <div
-              key={m.id}
-              className={cn(
-                "rounded-xl p-3 leading-relaxed",
-                m.sender === "stella"
-                  ? "border border-border bg-surface text-foreground"
-                  : "bg-primary text-primary-foreground ml-6"
-              )}
+              ref={drawerChatScrollRef}
+              className="scrollbar-thin flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3 text-xs bg-card"
             >
-              <p className="whitespace-pre-line">{m.text}</p>
-              <div className="mt-1 text-[10px] opacity-60 text-right">{m.timestamp}</div>
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={cn(
+                    "rounded-xl p-3 leading-relaxed",
+                    m.sender === "stella"
+                      ? "border border-border bg-surface text-foreground"
+                      : "bg-primary text-primary-foreground ml-6"
+                  )}
+                >
+                  <p className="whitespace-pre-line">{m.text}</p>
+                  <div className="mt-1 text-[10px] opacity-60 text-right">{m.timestamp}</div>
+                </div>
+              ))}
+              {loading && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground p-1">
+                  <StellaAvatar state="thinking" size={20} frame={false} />
+                  <span>Stella is thinking...</span>
+                </div>
+              )}
             </div>
-          ))}
-          {loading && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground p-1">
-              <StellaAvatar state="thinking" size={20} frame={false} />
-              <span>Stella is thinking...</span>
-            </div>
-          )}
-        </div>
 
-        {/* Pinned Input Footer */}
-        <div className="shrink-0 border-t border-border bg-card p-3 sm:p-4 space-y-2.5">
-          <div className="flex flex-wrap gap-1.5">
-            {["Explain this simply", "Give me an example", "Turn this into a drill"].map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() => submitQuestion(prompt)}
-                className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground hover:border-brand-bright/40 hover:text-foreground cursor-pointer"
+            {/* Pinned Input Footer */}
+            <div className="shrink-0 border-t border-border bg-card p-3 sm:p-4 space-y-2.5">
+              <div className="flex flex-wrap gap-1.5">
+                {["Explain this simply", "Give me an example", "Turn this into a drill"].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => submitQuestion(prompt)}
+                    className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground hover:border-brand-bright/40 hover:text-foreground cursor-pointer"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void submitQuestion();
+                }}
+                className="flex items-center gap-2"
               >
-                {prompt}
-              </button>
-            ))}
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void submitQuestion();
-            }}
-            className="flex items-center gap-2"
-          >
-            <input
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Ask Stella about this page..."
-              className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none focus:border-brand-bright"
-            />
-            <Button type="submit" size="sm" disabled={loading || !question.trim()} className="h-8 px-3 cursor-pointer">
-              <Send className="h-3.5 w-3.5" />
-            </Button>
-          </form>
-        </div>
+                <input
+                  type="text"
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="Ask Stella about this page..."
+                  className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none focus:border-brand-bright"
+                />
+                <Button type="submit" size="sm" disabled={loading || !question.trim()} className="h-8 px-3 cursor-pointer">
+                  <Send className="h-3.5 w-3.5" />
+                </Button>
+              </form>
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── FULL-WINDOW STUDY MODAL ── */}
@@ -839,6 +1077,30 @@ export function AiAssistant() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setIsHistoryOpen((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    if (isVideoMock) setMobileFullTab("right");
+                    else setMobileFullTab("left");
+                  }
+                  return next;
+                });
+              }}
+              className={cn(
+                "gap-1.5 text-xs transition-colors cursor-pointer",
+                isHistoryOpen
+                  ? "bg-brand-soft text-brand-bright font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              title="Coaching History"
+            >
+              <HistoryIcon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{isHistoryOpen ? "Close History" : "History"}</span>
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -881,7 +1143,7 @@ export function AiAssistant() {
               ) : (
                 <>
                   <MessageSquare className="h-3.5 w-3.5 text-brand-bright" />
-                  <span>Stella Chat</span>
+                  <span>{isHistoryOpen ? "History" : "Stella Chat"}</span>
                 </>
               )}
             </button>
@@ -898,7 +1160,7 @@ export function AiAssistant() {
               {isVideoMock ? (
                 <>
                   <MessageSquare className="h-3.5 w-3.5 text-brand-bright" />
-                  <span>Stella Chat</span>
+                  <span>{isHistoryOpen ? "History" : "Stella Chat"}</span>
                 </>
               ) : (
                 <>
@@ -928,6 +1190,16 @@ export function AiAssistant() {
                   navigate({ name: "video", videoId: id });
                 }}
               />
+            ) : isHistoryOpen ? (
+              <StellaHistoryPanel
+                historyList={historyList}
+                activeConversationId={activeConversationId}
+                onSelectConversation={handleSelectConversation}
+                onDeleteConversation={handleDeleteConversation}
+                onStartNewChat={handleStartNewChat}
+                onCloseHistory={() => setIsHistoryOpen(false)}
+                onOpenPrivacyNotice={() => setIsPrivacyNoticeOpen(true)}
+              />
             ) : (
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Chat Stream */}
@@ -956,18 +1228,7 @@ export function AiAssistant() {
                           )}
                         >
                           <p className="whitespace-pre-line">{msg.text}</p>
-                          <div className="mt-2 flex items-center justify-between gap-3 text-[10px] opacity-70">
-                            <span>{msg.timestamp}</span>
-                            {isStella && (
-                              <button
-                                type="button"
-                                onClick={() => handleSpeakText(msg.text)}
-                                className="inline-flex items-center gap-1 font-medium hover:opacity-100 cursor-pointer"
-                              >
-                                <Volume2 className="h-2.5 w-2.5" /> Listen
-                              </button>
-                            )}
-                          </div>
+                          <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                         </div>
                       </div>
                     );
@@ -1028,7 +1289,18 @@ export function AiAssistant() {
             )}
           >
             {isVideoMock ? (
-              <div className="flex flex-col h-full overflow-hidden">
+              isHistoryOpen ? (
+                <StellaHistoryPanel
+                  historyList={historyList}
+                  activeConversationId={activeConversationId}
+                  onSelectConversation={handleSelectConversation}
+                  onDeleteConversation={handleDeleteConversation}
+                  onStartNewChat={handleStartNewChat}
+                  onCloseHistory={() => setIsHistoryOpen(false)}
+                  onOpenPrivacyNotice={() => setIsPrivacyNoticeOpen(true)}
+                />
+              ) : (
+                <div className="flex flex-col h-full overflow-hidden">
                 {/* Chat Stream with Candidate Feedback */}
                 <div
                   ref={chatScrollRef}
@@ -1062,18 +1334,7 @@ export function AiAssistant() {
                           )}
                         >
                           <p className="whitespace-pre-line">{msg.text}</p>
-                          <div className="mt-2 flex items-center justify-between gap-3 text-[10px] opacity-70">
-                            <span>{msg.timestamp}</span>
-                            {isStella && (
-                              <button
-                                type="button"
-                                onClick={() => handleSpeakText(msg.text)}
-                                className="inline-flex items-center gap-1 font-medium hover:opacity-100 cursor-pointer"
-                              >
-                                <Volume2 className="h-2.5 w-2.5" /> Listen
-                              </button>
-                            )}
-                          </div>
+                          <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                         </div>
                       </div>
                     );
@@ -1123,7 +1384,7 @@ export function AiAssistant() {
                   </form>
                 </div>
               </div>
-            ) : (
+            )) : (
               <div className="flex flex-col h-full overflow-y-auto p-4 sm:p-6 space-y-5">
                 <StudyContextPanel view={view} title={title} />
               </div>
@@ -1131,6 +1392,70 @@ export function AiAssistant() {
           </section>
         </div>
       </div>
+
+      {/* ── CORPORATE AI PRIVACY & DATA TRANSPARENCY MODAL ── */}
+      {isPrivacyNoticeOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+          onClick={() => setIsPrivacyNoticeOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="privacy-notice-title"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-soft text-brand-bright">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 id="privacy-notice-title" className="text-base font-bold text-foreground">
+                    AI Data Transparency &amp; Privacy Notice
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    IELTStar Speaking Practice Safety &amp; Governance
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPrivacyNoticeOpen(false)}
+                className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
+              <p>
+                <strong className="text-foreground">Foundational AI Architecture:</strong> IELTStar Speaking Lab utilizes advanced multimodal reasoning and speech evaluation models (including Meta AI research architectures via secure API gateways) to deliver real-time candidate coaching, transcript analysis, and IELTS examiner rubric feedback.
+              </p>
+              <p>
+                <strong className="text-foreground">Data Utilization &amp; Community Tier:</strong> To maintain accessible, community-friendly pricing for all IELTS candidates, anonymized practice responses may be processed and calibrated to improve foundational speech and language learning systems. All interactions are stripped of account credentials.
+              </p>
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-700 dark:text-amber-300">
+                <strong>Important Privacy Notice:</strong> For your personal data security, please refrain from sharing sensitive personally identifiable information (such as credit cards, government identification numbers, passwords, or confidential employment secrets) during spoken or text practice sessions.
+              </div>
+              <p>
+                Account credentials, authentication tokens, and payment records remain strictly isolated in PostgreSQL and are never transmitted to external model training pipelines.
+              </p>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button
+                onClick={() => setIsPrivacyNoticeOpen(false)}
+                className="rounded-xl px-5 text-xs font-semibold cursor-pointer"
+              >
+                Understood
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>,
     document.body
   );
