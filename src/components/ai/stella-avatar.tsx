@@ -26,13 +26,7 @@ type StellaAvatarProps = {
 	size?: number;
 	/** Live microphone level, 0-1. Only affects the listening state. */
 	level?: number;
-	/**
-	 * Draw the circular "observatory window" behind Stella.
-	 *
-	 * Off by default: the avatar is the artwork itself, edge to edge, with no
-	 * surrounding chrome. Turn it on only when Stella sits on a busy or
-	 * coloured surface and needs separating from it.
-	 */
+	/** Legacy frame property maintained for backward compatibility. */
 	frame?: boolean;
 	/** Slow the idle choreography down for small, always-visible placements. */
 	quiet?: boolean;
@@ -41,18 +35,14 @@ type StellaAvatarProps = {
 };
 
 /**
- * Stella's animated avatar.
+ * Stella's animated profile avatar.
  *
- * Motion is produced entirely in CSS from her still artwork, so there are no
- * video files to load and the loop is always seamless. Any state can be
- * upgraded to a supplied image or video later by editing STELLA_MEDIA in
- * src/lib/ai/stella-media.ts — no changes are needed here.
+ * Rendered inside a circular profile container with upright, subtle micro-animations.
  */
 export function StellaAvatar({
 	state = "idle",
 	size = 88,
 	level = 0,
-	frame = false,
 	quiet = false,
 	className,
 	label,
@@ -89,7 +79,6 @@ export function StellaAvatar({
 			className={cn(
 				"stella",
 				`stella-state-${state}`,
-				!frame && "stella-frameless",
 				quiet && "stella-quiet",
 				className
 			)}
@@ -101,7 +90,6 @@ export function StellaAvatar({
 				} as React.CSSProperties
 			}
 		>
-			{frame && <span className="stella-frame" aria-hidden="true" />}
 			{showRing && <span className="stella-ring" aria-hidden="true" />}
 			{showOrbit && <span className="stella-orbit" aria-hidden="true" />}
 			<span className="stella-stage" aria-hidden="true">

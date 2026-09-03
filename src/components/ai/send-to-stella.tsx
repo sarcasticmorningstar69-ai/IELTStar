@@ -8,7 +8,7 @@
  * for a floating button to get their speaking evaluated.
  *
  * Two routes, both one click away:
- *   • Analyse everything
+ *   • Go Full Window with Stella (analyse everything)
  *   • Choose exactly which answers to send
  */
 import * as React from "react";
@@ -18,13 +18,13 @@ import { formatTime } from "@/components/audio/audio-ui";
 import { StellaAvatar } from "@/components/ai/stella-avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Check, ChevronDown, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Maximize2, Sparkles } from "lucide-react";
 
 export function SendToStella({
   recordings,
   mockId,
   sessionId,
-  heading = "Send these answers to Stella",
+  heading = "Go Full Window with Stella",
   blurb,
 }: {
   recordings: RecordingMeta[];
@@ -62,14 +62,19 @@ export function SendToStella({
   const availableParts = parts.filter((p) => ordered.some((r) => r.part === p));
 
   return (
-    <div className="rounded-2xl border border-brand-bright/30 bg-card p-5 sm:p-6">
+    <div className="rounded-2xl border border-brand-bright/35 bg-card p-5 shadow-sm sm:p-6">
       <div className="flex items-start gap-4">
         <StellaAvatar state="idle" size={54} />
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold tracking-tight">{heading}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold tracking-tight">{heading}</h3>
+            <span className="hidden items-center gap-1 rounded-full border border-brand-bright/40 bg-brand-soft/60 px-2 py-0.5 text-[10px] font-medium text-brand-bright sm:inline-flex">
+              <Maximize2 className="h-2.5 w-2.5" /> Full Window AI
+            </span>
+          </div>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             {blurb ??
-              `${ordered.length} ${ordered.length === 1 ? "answer" : "answers"} · ${formatTime(totalSeconds)} of speaking. Stella gives you a band estimate for each IELTS criterion, with every point linked to the moment in your audio.`}
+              `${ordered.length} ${ordered.length === 1 ? "answer" : "answers"} • ${formatTime(totalSeconds)} of speaking. Open the full-window workspace with AI thinking, IELTS reports, and interactive chat on the left, paired with exact audio playback and synchronized transcripts on the right.`}
           </p>
         </div>
       </div>
@@ -78,8 +83,8 @@ export function SendToStella({
         <Button onClick={() => open(ordered.map((r) => r.id))} className="gap-2">
           <Sparkles className="h-4 w-4" />
           {ordered.length === 1
-            ? "Analyse my answer"
-            : `Analyse all ${ordered.length} answers`}
+            ? "Go Full Window with Stella"
+            : `Go Full Window with Stella (${ordered.length} answers)`}
         </Button>
         {ordered.length > 1 && (
           <Button
@@ -161,7 +166,7 @@ export function SendToStella({
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-xs font-medium">{r.label}</span>
                     <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                      Part {r.part} · {formatTime(r.duration)}
+                      Part {r.part} • {formatTime(r.duration)}
                     </span>
                   </span>
                 </button>
@@ -176,7 +181,7 @@ export function SendToStella({
           >
             <Sparkles className="h-4 w-4" />
             {selected.size
-              ? `Analyse ${selected.size} ${selected.size === 1 ? "answer" : "answers"}`
+              ? `Open Full Window with ${selected.size} ${selected.size === 1 ? "answer" : "answers"}`
               : "Select at least one answer"}
           </Button>
         </div>
@@ -205,7 +210,7 @@ export function AnalyseAnswerLink({
       className="inline-flex items-center gap-1.5 text-[11px] font-medium text-brand-bright underline-offset-4 hover:underline"
     >
       <Sparkles className="h-3 w-3" />
-      Analyse this answer
+      Go Full Window with Stella
     </button>
   );
 }

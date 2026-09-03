@@ -181,6 +181,7 @@ export interface AiAnalysisRequest {
   mode: "mock-analysis";
   surface: AiSurface;
   mockId?: string;
+  sessionId?: string;
   scope: "entire-mock" | "selected-answers";
   answers: AiAnalysisAnswerInput[];
 }

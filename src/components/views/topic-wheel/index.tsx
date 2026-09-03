@@ -16,9 +16,10 @@ import { micManager } from "@/lib/audio/microphone";
 import { SegmentRecorder } from "@/lib/audio/recorder";
 import { AudioPlayer, formatTime } from "@/components/audio/audio-ui";
 import { AnalyseAnswerLink } from "@/components/ai/send-to-stella";
+import { StellaAvatar } from "@/components/ai/stella-avatar";
 import { TIP_CATEGORIES, TECHNIQUE_GROUPS } from "@/lib/data/content";
 import { cn } from "@/lib/utils";
-import { Sparkles, ChevronDown } from "lucide-react";
+import { Sparkles, ChevronDown, Maximize2 } from "lucide-react";
 
 type Phase = "idle" | "prepare" | "speak" | "review";
 
@@ -301,12 +302,13 @@ export function TopicWheelView() {
         name: "analysis",
         recordingIds: [recordingId],
         sessionId: sessionId ?? undefined,
-        heading: "Your Topic Wheel answer",
+        heading: `Topic Wheel • ${topic.prompt}`,
       });
       return;
     }
     setAiOpen(true);
   };
+  const openFullWindowAnalysis = openStella;
 
   const tip = React.useMemo(() => {
     const cat = hashPick(topic.id, TIP_CATEGORIES);
@@ -336,7 +338,7 @@ export function TopicWheelView() {
             Topic Wheel
           </div>
           <p className="text-xs text-muted-foreground">
-            Spin a prompt · prepare · speak · listen back
+            Spin a prompt • prepare • speak • listen back
           </p>
         </div>
       </header>
@@ -376,20 +378,43 @@ export function TopicWheelView() {
                 "h-10 px-4"
               )}
             >
-              {recording ? `Stop · ${formatTime(elapsed)}` : "Record"}
+              {recording ? `Stop • ${formatTime(elapsed)}` : "Record"}
             </button>
             <button
               type="button"
               onClick={openStella}
-              className={cn(btnBase, recordingId ? btnPrimary : btnQuiet, "h-10 px-4")}
+              className={cn(btnBase, recordingId ? btnPrimary : btnQuiet, "h-10 px-4 gap-1.5")}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              {recordingId ? "Analyse" : "AI"}
+              {recordingId ? "Analyse with Stella" : "AI"}
             </button>
           </div>
 
           {micNote && (
             <p className="mt-3 text-center text-sm text-muted-foreground">{micNote}</p>
+          )}
+
+          {/* Prompt card with direct Full Window Handoff when recording is available */}
+          {(phase === "review" || recordingId) && (
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-brand-bright/35 bg-card p-4 shadow-sm animate-in fade-in">
+              <div className="flex items-center gap-3">
+                <StellaAvatar state="idle" size={42} />
+                <div>
+                  <p className="text-xs font-semibold tracking-tight">Evaluate your answer with Stella</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Open Full-Window mode: AI reports & chat on left, exact audio & synchronized transcript on right.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={openFullWindowAnalysis}
+                className={cn(btnBase, btnPrimary, "h-9 px-4 gap-1.5 shrink-0 whitespace-nowrap")}
+              >
+                <Maximize2 className="h-3.5 w-3.5" />
+                Go Full Window
+              </button>
+            </div>
           )}
 
           {/* ---------------- guidance ---------------- */}
@@ -436,7 +461,7 @@ export function TopicWheelView() {
                   (key === "speak" && phase === "review");
                 return (
                   <li key={key} className="flex items-center gap-1.5">
-                    {i > 0 && <span className="text-border">→</span>}
+                    {i > 0 && <span className="text-border">•</span>}
                     <span
                       className={cn(
                         active
@@ -458,10 +483,10 @@ export function TopicWheelView() {
             </div>
             <p className="text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
               {phase === "speak"
-                ? "Speaking · 01:00"
+                ? "Speaking • 01:00"
                 : phase === "review"
                   ? "Review your answer"
-                  : "Prepare · 15:00"}
+                  : "Prepare • 15:00"}
             </p>
 
             <div className="flex gap-2 pt-1">
@@ -484,7 +509,7 @@ export function TopicWheelView() {
             {recording && (
               <p className="flex items-center gap-2 border-t border-border/60 pt-3 text-xs font-medium text-brand-bright">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-bright" />
-                Recording · {formatTime(elapsed)}
+                Recording • {formatTime(elapsed)}
               </p>
             )}
 
@@ -501,6 +526,14 @@ export function TopicWheelView() {
                   recordingId={recordingId}
                   sessionId={sessionId ?? undefined}
                 />
+                <button
+                  type="button"
+                  onClick={openFullWindowAnalysis}
+                  className={cn(btnBase, btnPrimary, "h-9 w-full px-2 gap-1.5")}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Go Full Window with Stella
+                </button>
                 <button
                   type="button"
                   onClick={discardRecording}
@@ -550,25 +583,27 @@ export function TopicWheelView() {
 
       {aiOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/60 p-4 backdrop-blur-sm sm:items-center">
-          <div className="w-full max-w-sm rounded-lg border border-border bg-card p-5 shadow-lg">
-            <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
-              Stella
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
+            <div className="flex items-center gap-2.5">
+              <StellaAvatar state="idle" size={36} />
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
+                  Stella AI
+                </div>
+                <p className="text-sm font-semibold tracking-tight">Record an answer first</p>
+              </div>
             </div>
-            <p className="mt-2 text-base font-medium tracking-tight">
-              Record an answer first
+            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+              Stella needs something to listen to. Speak on &ldquo;{topic.prompt}&rdquo;, then press Analyse — she&apos;ll evaluate your IELTS Band across all 4 criteria and open the interactive Full-Window review.
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Stella needs something to listen to. Speak on this topic, then press
-              Analyse — she&apos;ll open with your answer ready to go.
-            </p>
-            <div className="mt-5 flex gap-2">
+            <div className="mt-4 flex gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setAiOpen(false);
                   void toggleRecord();
                 }}
-                className={cn(btnBase, btnPrimary, "h-9 px-4")}
+                className={cn(btnBase, btnPrimary, "h-9 px-4 flex-1")}
               >
                 Record now
               </button>

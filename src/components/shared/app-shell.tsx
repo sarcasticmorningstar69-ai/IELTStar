@@ -5,6 +5,7 @@ import { useApp, FOCUS_VIEWS, type View } from "@/lib/store/app";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { BrandLockup, StarMark } from "@/components/shared/brand";
+import { UserMenu } from "@/components/auth/user-menu";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -148,7 +149,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="pt-3"><ThemeToggle /></div>
+        <div className="flex flex-col items-center gap-2 pt-3"><UserMenu compact /><ThemeToggle /></div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-md lg:hidden">

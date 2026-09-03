@@ -2,7 +2,8 @@
 
 /**
  * Problem & Solutions detail — one of the 36 supplied detailed problems,
- * shown inside its core area with techniques and a real practice drill.
+ * shown inside its core area with techniques, a real practice drill,
+ * and direct option to study in Full Window with Stella.
  */
 
 import * as React from "react";
@@ -17,6 +18,7 @@ import {
 import { EmptyState, SectionCard } from "@/components/shared/page-kit";
 import { StarMark } from "@/components/shared/brand";
 import { Button } from "@/components/ui/button";
+import { openStella } from "@/components/ai/ai-assistant";
 import {
   DifficultyPill,
   ProblemStatusPill,
@@ -27,7 +29,7 @@ import {
   shuffleDrill,
   type Drill,
 } from "./learn-shared";
-import { BadgeCheck, ChevronRight, Lightbulb, Mic, Shuffle, Wrench } from "lucide-react";
+import { BadgeCheck, ChevronRight, Lightbulb, Maximize2, Mic, Shuffle, Wrench } from "lucide-react";
 
 export function ProblemDetailView({ problemId }: { problemId: string }) {
   const navigate = useApp((s) => s.navigate);
@@ -76,18 +78,29 @@ export function ProblemDetailView({ problemId }: { problemId: string }) {
     <div className="fade-up space-y-6">
       <header className="mb-1">
         <div className="mb-1.5 text-[11px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
-          Problem &amp; Solutions · {area.name}
+          Problem &amp; Solutions • {area.name}
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-balance sm:text-[28px]">
-          {problem.title}
-        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-balance sm:text-[28px]">
+            {problem.title}
+          </h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => openStella({ mode: "full-window" })}
+            className="gap-2 border-brand-bright/40 text-brand-bright hover:bg-brand-soft shrink-0"
+          >
+            <Maximize2 className="h-3.5 w-3.5" />
+            Study with Stella (Full Window)
+          </Button>
+        </div>
         <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-2">
           <DifficultyPill difficulty={problem.difficulty} />
           <ProblemStatusPill status={status} />
           <span className="text-xs text-muted-foreground">
             Detailed problem {problem.num} of 36
             {state && state.occurrences > 0
-              ? ` · noticed ${state.occurrences} ${state.occurrences === 1 ? "time" : "times"} in your practice`
+              ? ` • noticed ${state.occurrences} ${state.occurrences === 1 ? "time" : "times"} in your practice`
               : ""}
           </span>
         </div>
@@ -159,7 +172,7 @@ export function ProblemDetailView({ problemId }: { problemId: string }) {
             {drill.kind === "q" ? (
               <>
                 <div className="text-[11px] font-semibold tracking-[0.14em] text-brand-bright uppercase">
-                  Part {drill.part} · {drill.topicTitle}
+                  Part {drill.part} • {drill.topicTitle}
                 </div>
                 <p className="mt-2.5 max-w-2xl text-lg leading-snug font-semibold tracking-tight text-balance">
                   {drill.question.prompt}
@@ -174,7 +187,7 @@ export function ProblemDetailView({ problemId }: { problemId: string }) {
             ) : (
               <>
                 <div className="text-[11px] font-semibold tracking-[0.14em] text-brand-bright uppercase">
-                  Part 2 · {drill.card.domain}
+                  Part 2 • {drill.card.domain}
                 </div>
                 <p className="mt-2.5 max-w-2xl text-lg leading-snug font-semibold tracking-tight text-balance">
                   {drill.card.prompt}

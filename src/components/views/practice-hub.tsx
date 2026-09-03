@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
 import { PageHeader, SectionCard } from "@/components/shared/page-kit";
-import { StarMark } from "@/components/shared/brand";
+import { MorphingMockAura } from "@/components/shared/morphing-shapes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CONTENT_STATS } from "@/lib/data/content";
@@ -16,7 +16,7 @@ const PARTS = [
     label: "Part 1",
     tagline: "Everyday Conversation",
     body: "Short personal questions about familiar topics. Answer naturally, give a reason, add one real detail.",
-    meta: `${CONTENT_STATS.part1Topics} topics · ${CONTENT_STATS.part1Questions} questions`,
+    meta: `${CONTENT_STATS.part1Topics} topics • ${CONTENT_STATS.part1Questions} questions`,
     view: { name: "part1" } as const,
   },
   {
@@ -34,13 +34,15 @@ const PARTS = [
     label: "Part 3",
     tagline: "Discussion",
     body: "Abstract discussion questions with thinking support that adapts to each question.",
-    meta: `${CONTENT_STATS.part3Topics} topics · ${CONTENT_STATS.part3Questions} questions`,
+    meta: `${CONTENT_STATS.part3Topics} topics • ${CONTENT_STATS.part3Questions} questions`,
     view: { name: "part3" } as const,
   },
 ];
 
 export function PracticeHubView() {
   const navigate = useApp((s) => s.navigate);
+  const [mockHovered, setMockHovered] = React.useState(false);
+
   return (
     <div className="fade-up space-y-6">
       <PageHeader
@@ -57,7 +59,7 @@ export function PracticeHubView() {
               key={p.kind}
               type="button"
               onClick={() => navigate(p.view)}
-              className="card-lift group relative overflow-hidden rounded-2xl border border-border bg-card p-5 text-left sm:p-6"
+              className="card-lift group relative overflow-hidden rounded-2xl border border-border bg-card p-5 text-left sm:p-6 cursor-pointer"
             >
               <span className="chip-anim flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-soft text-brand-bright">
                 <Icon className="h-[22px] w-[22px]" />
@@ -76,7 +78,7 @@ export function PracticeHubView() {
         })}
       </div>
 
-      {/* Full Speaking Mock — visually distinct hero card (div, not button, to avoid nested buttons) */}
+      {/* Full Speaking Mock — with Anime.js morphing aura */}
       <div
         role="button"
         tabIndex={0}
@@ -87,15 +89,17 @@ export function PracticeHubView() {
             navigate({ name: "mock-config" });
           }
         }}
+        onMouseEnter={() => setMockHovered(true)}
+        onMouseLeave={() => setMockHovered(false)}
         aria-label="Start Full Speaking Mock"
-        className="group relative block w-full cursor-pointer overflow-hidden rounded-3xl border border-brand-bright/35 bg-gradient-to-br from-brand-soft via-card to-card p-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-bright/60 hover:shadow-xl sm:p-8"
+        className="card-lift group relative block w-full cursor-pointer overflow-hidden rounded-3xl border border-brand-bright/35 bg-gradient-to-br from-brand-soft/80 via-card to-card p-6 text-left sm:p-8 shadow-sm"
       >
-        <div className="pointer-events-none absolute -right-6 -bottom-8 opacity-[0.08] transition-transform duration-500 group-hover:scale-110 group-hover:opacity-[0.12]">
-          <StarMark size={220} />
+        <div className="pointer-events-none absolute -right-6 -bottom-8">
+          <MorphingMockAura isHovered={mockHovered} size={250} />
         </div>
         <div className="relative">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md transition-transform duration-300 group-hover:scale-105">
               <ClipboardCheck className="h-6 w-6" />
             </span>
             <div>
@@ -118,7 +122,7 @@ export function PracticeHubView() {
               Start Full Mock
             </Button>
             <span className="text-xs text-muted-foreground">
-              Microphone check first · about 14 minutes
+              Microphone check first • about 14 minutes
             </span>
           </div>
         </div>
@@ -130,7 +134,7 @@ export function PracticeHubView() {
             type="button"
             onClick={() => navigate({ name: "videos" })}
             className={cn(
-              "flex items-center justify-between rounded-xl border border-border px-4 py-3.5 text-left text-sm font-medium transition-colors",
+              "card-lift flex items-center justify-between rounded-xl border border-border px-4 py-3.5 text-left text-sm font-medium transition-colors cursor-pointer",
               "hover:border-brand-bright/35 hover:bg-muted/40"
             )}
           >
@@ -141,7 +145,7 @@ export function PracticeHubView() {
             type="button"
             onClick={() => navigate({ name: "practice-again" })}
             className={cn(
-              "flex items-center justify-between rounded-xl border border-border px-4 py-3.5 text-left text-sm font-medium transition-colors",
+              "card-lift flex items-center justify-between rounded-xl border border-border px-4 py-3.5 text-left text-sm font-medium transition-colors cursor-pointer",
               "hover:border-brand-bright/35 hover:bg-muted/40"
             )}
           >

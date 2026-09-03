@@ -1,6 +1,7 @@
 /**
- * IndexedDB storage for audio blobs.
- * Audio NEVER goes to localStorage and never leaves the device.
+ * Hybrid Audio Storage:
+ * 1. Local IndexedDB: Instant 0ms offline-first playback and waveform rendering on the current device.
+ * 2. Cloudflare R2: Automatic background backup and multi-device streaming with $0 egress fees.
  */
 
 const DB_NAME = "ieltstar-audio";
@@ -12,6 +13,7 @@ export interface StoredAudio {
   blob: Blob;
   mimeType: string;
   createdAt: number;
+  r2Synced?: boolean;
 }
 
 function openDB(): Promise<IDBDatabase> {
@@ -32,7 +34,41 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
+/**
+ * Upload an audio blob to Cloudflare R2 in the background using a presigned PUT URL.
+ */
+export async function syncAudioToR2(id: string, blob: Blob, mimeType: string): Promise<string | null> {
+  try {
+    const res = await fetch("/api/audio/upload-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recordingId: id, mimeType }),
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.configured || !data.presignedUrl) return null;
+
+    const uploadRes = await fetch(data.presignedUrl, {
+      method: "PUT",
+      headers: { "Content-Type": mimeType },
+      body: blob,
+    });
+
+    if (!uploadRes.ok) {
+      console.warn("R2 upload failed with status:", uploadRes.status);
+      return null;
+    }
+
+    return data.key;
+  } catch (err) {
+    console.debug("Background R2 sync deferred or offline:", err);
+    return null;
+  }
+}
+
 export async function putAudio(id: string, blob: Blob, mimeType: string): Promise<void> {
+  // 1. Instant local persistence in IndexedDB for 0ms lag
   try {
     const db = await openDB();
     await new Promise<void>((resolve, reject) => {
@@ -43,8 +79,12 @@ export async function putAudio(id: string, blob: Blob, mimeType: string): Promis
     });
     db.close();
   } catch {
-    // storage may be full or unavailable — recording metadata stays usable
-    console.warn("IELTStar: could not persist audio blob", id);
+    console.warn("IELTStar: could not persist audio to local IndexedDB", id);
+  }
+
+  // 2. Asynchronous background sync to Cloudflare R2
+  if (typeof window !== "undefined") {
+    syncAudioToR2(id, blob, mimeType).catch(() => {});
   }
 }
 
@@ -65,8 +105,22 @@ export async function getAudio(id: string): Promise<StoredAudio | null> {
 }
 
 export async function getAudioURL(id: string): Promise<string | null> {
+  // 1. First priority: Check local IndexedDB (instant, 0 network latency)
   const rec = await getAudio(id);
-  return rec ? URL.createObjectURL(rec.blob) : null;
+  if (rec) return URL.createObjectURL(rec.blob);
+
+  // 2. Second priority: If on a different device or cache cleared, fetch Cloudflare R2 streaming URL
+  try {
+    const res = await fetch(`/api/audio/playback-url?id=${encodeURIComponent(id)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) return data.url;
+    }
+  } catch {
+    /* ignore network error */
+  }
+
+  return null;
 }
 
 export async function deleteAudio(id: string): Promise<void> {
@@ -135,8 +189,21 @@ export async function estimateAudioUsage(): Promise<number> {
 export async function computePeaks(recordingId: string, bars = 96): Promise<number[] | null> {
   try {
     const rec = await getAudio(recordingId);
-    if (!rec) return null;
-    const arrayBuffer = await rec.blob.arrayBuffer();
+    let arrayBuffer: ArrayBuffer | null = null;
+
+    if (rec) {
+      arrayBuffer = await rec.blob.arrayBuffer();
+    } else {
+      // Fallback: load audio from Cloudflare R2 if not cached in local IndexedDB
+      const url = await getAudioURL(recordingId);
+      if (!url) return null;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      arrayBuffer = await res.arrayBuffer();
+    }
+
+    if (!arrayBuffer) return null;
+
     const Ctx: typeof AudioContext =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -148,16 +215,15 @@ export async function computePeaks(recordingId: string, bars = 96): Promise<numb
     const peaks: number[] = [];
     for (let i = 0; i < bars; i++) {
       let max = 0;
-      const start = i * block;
-      for (let j = 0; j < block; j += Math.max(1, Math.floor(block / 48))) {
-        const v = Math.abs(channel[start + j] || 0);
-        if (v > max) max = v;
+      const offset = i * block;
+      for (let j = 0; j < block; j++) {
+        const val = Math.abs(channel[offset + j] || 0);
+        if (val > max) max = val;
       }
       peaks.push(max);
     }
-    ctx.close();
-    const globalMax = Math.max(...peaks, 0.01);
-    return peaks.map((p) => Math.min(1, p / globalMax));
+    await ctx.close();
+    return peaks;
   } catch {
     return null;
   }

@@ -283,11 +283,9 @@ html.theme-fading *::after {
   }
 }
 
-button:hover svg path:not(.no-draw),
-a:hover svg path:not(.no-draw),
-[role="button"]:hover svg path:not(.no-draw),
-.group:hover svg path:not(.no-draw) {
-  animation: icon-draw 480ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Scoped icon-draw disabled by default to prevent jarring SVG path flickering on card/button hovers */
+.draw-on-hover:hover svg path:not(.no-draw) {
+  animation: icon-draw 480ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Video cards already have their own rich hover choreography — their icons
@@ -306,21 +304,21 @@ a:hover svg path:not(.no-draw),
 .video-card {
   position: relative;
   background: var(--card);
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid var(--border);
   transition:
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.4s ease;
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
 
 .video-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 28px -14px rgb(0 0 0 / 0.4);
-  border-color: color-mix(in oklab, var(--brand-bright) 30%, var(--border));
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px -12px rgb(0 0 0 / 0.3);
+  border-color: color-mix(in oklab, var(--brand-bright) 45%, var(--border));
   z-index: 5;
 }
 
@@ -379,19 +377,18 @@ a:hover svg path:not(.no-draw),
   transform: scale(0.97);
 }
 
-/* Springy card lift used across lists/grids */
+/* Silky smooth curve-speed card lift */
 .card-lift {
   transition:
-    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    box-shadow 0.3s ease,
-    border-color 0.25s ease;
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .card-lift:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--brand-bright) 45%, var(--border));
-  box-shadow: 0 12px 28px -10px rgb(0 0 0 / 0.3);
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--brand-bright) 50%, var(--border));
+  box-shadow: 0 16px 32px -12px rgb(0 0 0 / 0.25);
 }
-
 /* Row hover: gentle indent + arrow nudge */
 .row-hover {
   transition: background-color 0.2s ease, padding-left 0.25s ease;
@@ -401,16 +398,20 @@ a:hover svg path:not(.no-draw),
   padding-left: 0.5rem;
 }
 
-/* Icon chip inside stat/part cards: fills with brand on hover */
+/* Icon chip inside stat/part cards: smooth elevation without jarring twist */
 .chip-anim {
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition:
+    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .group:hover .chip-anim {
   background-color: var(--brand);
   color: #ffffff;
-  transform: scale(1.08) rotate(-4deg);
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px -2px color-mix(in oklab, var(--brand-bright) 45%, transparent);
 }
-
 /* Mobile bottom nav: pressable pills */
 .tap-anim {
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);

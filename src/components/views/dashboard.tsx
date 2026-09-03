@@ -4,13 +4,14 @@ import * as React from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useApp } from "@/lib/store/app";
 import { useProgress, selectStats, selectTrainingAreas, type SessionMeta } from "@/lib/store/progress";
+import { useAuth } from "@/lib/auth/auth-context";
 import { FOCUS_OPTIONS, topicTitle, PART1_TOPICS, PART2_CARDS, PART3_TOPICS } from "@/lib/data/content";
 import { PageHeader, SectionCard, EmptyState, StatusPill } from "@/components/shared/page-kit";
 import { StarMark } from "@/components/shared/brand";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  Mic, Clock, ClipboardCheck, Flame, TrendingUp, ChevronRight, Sparkles, Check,
+  Mic, Clock, ClipboardCheck, Flame, TrendingUp, ChevronRight, Sparkles, Check, ArrowRight, Cloud,
 } from "lucide-react";
 
 const QUICK_CATEGORY_LABEL: Record<string, string> = {

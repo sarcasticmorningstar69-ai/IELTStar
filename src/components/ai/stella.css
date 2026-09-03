@@ -1,201 +1,123 @@
 /* =========================================================================
-   STELLA — code-driven character animation
+   STELLA - Profile Avatar & Assistant Character
 
-   Stella is a rigid handmade star, so she never deforms. Every state is built
-   from `transform` and `opacity` only, which keeps the whole thing on the
-   compositor: no layout, no paint, no dropped frames, no video files.
-
-   Structure:
-     .stella            sizing + state class + CSS variables
-       .stella-frame    optional circular "observatory window" (off by default)
-       .stella-ring     listening ring, reacts to mic level
-       .stella-orbit    travelling dot for transcribing / thinking
-       .stella-stage    trims the artwork's own padding
-         .stella-body   Stella herself (the animated element)
+   Rendered inside a clean, modern circular profile avatar container.
+   All animations are upright without tilting or rotational distortion.
    ========================================================================= */
 
 .stella {
 	--stella-size: 88px;
 	--stella-level: 0;
-	--stella-trim: 1.3;
+	--stella-trim: 0.86;
 	position: relative;
 	display: inline-grid;
 	place-items: center;
 	flex: none;
 	width: var(--stella-size);
 	height: var(--stella-size);
-	isolation: isolate;
-}
-
-/* Optional theme-aware frame, for placing Stella on a busy or coloured
-   surface. Off by default — normally the artwork is the entire avatar. */
-.stella-frame {
-	position: absolute;
-	inset: 0;
 	border-radius: 50%;
 	background: radial-gradient(
-		circle at 50% 30%,
-		color-mix(in oklab, var(--brand-bright) 8%, var(--elevated)) 0%,
-		var(--surface) 74%
+		circle at 50% 35%,
+		color-mix(in oklab, var(--brand-bright) 10%, var(--card)) 0%,
+		var(--surface, var(--card)) 100%
 	);
-	border: 1px solid color-mix(in oklab, var(--brand-bright) 20%, var(--border));
+	border: 1.5px solid color-mix(in oklab, var(--brand-bright) 32%, var(--border));
 	box-shadow:
-		inset 0 1px 0 color-mix(in oklab, #ffffff 40%, transparent),
-		inset 0 -10px 20px -14px color-mix(in oklab, var(--brand) 45%, transparent);
+		0 3px 12px -2px color-mix(in oklab, var(--brand) 18%, transparent),
+		inset 0 1px 1px color-mix(in oklab, #ffffff 60%, transparent);
+	isolation: isolate;
+	overflow: visible;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.stella-frameless .stella-frame {
-	display: none;
-}
-
-/* Full-bleed by default. The scale removes the empty margin baked into the
-   artwork so the star reaches the edges of its box instead of floating in the
-   middle of its own padding. Tune with STELLA_TRIM in stella-media.ts. */
+/* Inner stage that scales the star image neatly inside the circle */
 .stella-stage {
 	position: absolute;
 	inset: 0;
+	border-radius: 50%;
 	display: grid;
 	place-items: center;
+	overflow: hidden;
 	transform: scale(var(--stella-trim));
-}
-
-/* When the frame IS drawn, Stella keeps a safe inset instead, so her sharp
-   points are never clipped by the ring at any point in the animation. */
-.stella:not(.stella-frameless) .stella-stage {
-	inset: 16%;
-	transform: none;
 }
 
 .stella-body {
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	transform-origin: 50% 52%;
+	transform-origin: 50% 50%;
 	will-change: transform;
 	pointer-events: none;
 	user-select: none;
 	-webkit-user-drag: none;
 }
 
-/* Supplied videos animate themselves — never double-animate them. */
+/* Supplied videos animate themselves - never double-animate them. */
 .stella-media {
 	animation: none !important;
 }
 
 /* -------------------------------------------------------------------------
-   IDLE — a bored, curious little star entertaining herself.
-   Distinct beats, not a metronome tilt: rest, lazy look around, hesitate,
-   lean in, anticipate, hop with overshoot, slow tumble, wobble down, settle.
+   IDLE - Gentle, calm breathing float without any tilt
    ------------------------------------------------------------------------- */
 @keyframes stella-idle {
-	0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-	9% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
-	23% { transform: translate3d(1%, -5%, 0) rotate(-15deg) scale(1.006); }
-	31% { transform: translate3d(1%, -4%, 0) rotate(-10deg) scale(1.004); }
-	37% { transform: translate3d(0, -2%, 0) rotate(8deg) scale(1.012); }
-	42% { transform: translate3d(0, 3%, 0) rotate(6deg) scale(0.982); }
-	49% { transform: translate3d(-1%, -10%, 0) rotate(-5deg) scale(1.022); }
-	56% { transform: translate3d(-1%, -6%, 0) rotate(-2deg) scale(1.004); }
-	70% { transform: translate3d(3%, -3%, 0) rotate(26deg) scale(1); }
-	82% { transform: translate3d(-2%, -1%, 0) rotate(-13deg) scale(1); }
-	90% { transform: translate3d(0, 0, 0) rotate(7deg) scale(1); }
-	95% { transform: translate3d(0, 0, 0) rotate(-3deg) scale(1); }
-	100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+	0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+	50% { transform: translate3d(0, -2.5%, 0) scale(1.02); }
 }
 
 .stella-state-idle .stella-body {
-	animation: stella-idle 7s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+	animation: stella-idle 4.5s ease-in-out infinite;
 }
 
-/* Small placements (the floating button) get the same choreography, slower,
-   so it reads as calm rather than fidgety. */
 .stella-quiet .stella-body {
-	animation-duration: 11s;
+	animation-duration: 6s;
 }
 
 /* -------------------------------------------------------------------------
-   LISTENING — leans toward the student, breathing with the voice.
+   LISTENING - reacts smoothly with microphone audio energy
    ------------------------------------------------------------------------- */
 @keyframes stella-listening {
-	0% { transform: translate3d(0, 0, 0) rotate(6deg); }
-	25% { transform: translate3d(0, -3%, 0) rotate(10deg); }
-	50% { transform: translate3d(0, -1%, 0) rotate(5deg); }
-	75% { transform: translate3d(0, -4%, 0) rotate(9deg); }
-	100% { transform: translate3d(0, 0, 0) rotate(6deg); }
+	0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+	50% { transform: translate3d(0, -2%, 0) scale(1.03); }
 }
 
 .stella-state-listening .stella-body {
-	animation: stella-listening 2.4s ease-in-out infinite;
-	/* Individual transform properties compose with `transform`, so live mic
-	   level scales Stella without fighting the keyframes. */
-	scale: calc(1 + (var(--stella-level) * 0.07));
+	animation: stella-listening 1.8s ease-in-out infinite;
+	scale: calc(1 + (var(--stella-level) * 0.08));
 }
 
-/* Sits just outside the artwork now that there is no frame to align to. */
+/* Pulse ring around the circular profile box */
 .stella-ring {
 	position: absolute;
-	inset: -6%;
+	inset: -5px;
 	border-radius: 50%;
 	pointer-events: none;
-	border: 1px solid color-mix(in oklab, var(--brand-bright) 60%, transparent);
-	opacity: calc(0.12 + (var(--stella-level) * 0.55));
-	scale: calc(1 + (var(--stella-level) * 0.06));
+	border: 2px solid color-mix(in oklab, var(--brand-bright) 75%, transparent);
+	opacity: calc(0.2 + (var(--stella-level) * 0.65));
+	scale: calc(1 + (var(--stella-level) * 0.08));
 	transition: opacity 120ms linear, scale 120ms linear;
 }
 
-.stella:not(.stella-frameless) .stella-ring {
-	inset: 0;
-}
-
 /* -------------------------------------------------------------------------
-   TRANSCRIBING — deliberate quarter turns with a pause on each landing.
-   Reads as "organising", not as a loading spinner.
-   ------------------------------------------------------------------------- */
-@keyframes stella-transcribing {
-	0% { transform: rotate(0deg) translate3d(0, 0, 0); }
-	20% { transform: rotate(88deg) translate3d(0, -2%, 0); }
-	25% { transform: rotate(90deg) translate3d(0, 0, 0); }
-	45% { transform: rotate(178deg) translate3d(0, -2%, 0); }
-	50% { transform: rotate(180deg) translate3d(0, 0, 0); }
-	70% { transform: rotate(268deg) translate3d(0, -2%, 0); }
-	75% { transform: rotate(270deg) translate3d(0, 0, 0); }
-	95% { transform: rotate(358deg) translate3d(0, -2%, 0); }
-	100% { transform: rotate(360deg) translate3d(0, 0, 0); }
-}
-
-.stella-state-transcribing .stella-body {
-	animation: stella-transcribing 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-/* -------------------------------------------------------------------------
-   THINKING — slow changes of direction with real hesitation. Deliberately
-   not a full rotation, so it never resembles a spinner or a roulette wheel.
+   TRANSCRIBING & THINKING - smooth ambient pulse & orbital glow
    ------------------------------------------------------------------------- */
 @keyframes stella-thinking {
-	0% { transform: rotate(-8deg) translate3d(0, 0, 0); }
-	18% { transform: rotate(-17deg) translate3d(-2%, -3%, 0); }
-	27% { transform: rotate(-15deg) translate3d(-2%, -3%, 0); }
-	49% { transform: rotate(13deg) translate3d(3%, -5%, 0); }
-	59% { transform: rotate(11deg) translate3d(3%, -4%, 0); }
-	79% { transform: rotate(-4deg) translate3d(-1%, -1%, 0); }
-	100% { transform: rotate(-8deg) translate3d(0, 0, 0); }
+	0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+	50% { transform: translate3d(0, -3%, 0) scale(1.03); }
 }
 
+.stella-state-transcribing .stella-body,
 .stella-state-thinking .stella-body {
-	animation: stella-thinking 3.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	animation: stella-thinking 2.4s ease-in-out infinite;
 }
 
-/* Travelling point around Stella during transcribing / thinking. */
+/* Orbiting luminous dot around the circular profile */
 .stella-orbit {
 	position: absolute;
-	inset: -8%;
+	inset: -5px;
 	border-radius: 50%;
 	pointer-events: none;
-	animation: stella-orbit-spin 2.9s linear infinite;
-}
-
-.stella:not(.stella-frameless) .stella-orbit {
-	inset: -2px;
+	animation: stella-orbit-spin 2.6s linear infinite;
 }
 
 .stella-orbit::after {
@@ -203,13 +125,14 @@
 	position: absolute;
 	top: 0;
 	left: 50%;
-	width: 5px;
-	height: 5px;
-	margin-top: -2.5px;
-	margin-left: -2.5px;
+	width: 6px;
+	height: 6px;
+	margin-top: -3px;
+	margin-left: -3px;
 	border-radius: 50%;
 	background: var(--brand-bright);
-	opacity: 0.8;
+	box-shadow: 0 0 8px var(--brand-bright);
+	opacity: 0.9;
 }
 
 @keyframes stella-orbit-spin {
@@ -217,63 +140,177 @@
 }
 
 /* -------------------------------------------------------------------------
-   SPEAKING — rises and settles with the rhythm of the sentence.
+   SPEAKING - rhythmic vocal pulse
    ------------------------------------------------------------------------- */
 @keyframes stella-speaking {
-	0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-	15% { transform: translate3d(0, -4%, 0) rotate(-3deg); }
-	30% { transform: translate3d(0, -1%, 0) rotate(3deg); }
-	45% { transform: translate3d(0, -5%, 0) rotate(-2deg); }
-	60% { transform: translate3d(0, -2%, 0) rotate(3deg); }
-	80% { transform: translate3d(0, -3%, 0) rotate(-1deg); }
-	100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+	0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+	25% { transform: translate3d(0, -3%, 0) scale(1.035); }
+	75% { transform: translate3d(0, -1%, 0) scale(1.015); }
 }
 
 .stella-state-speaking .stella-body {
-	animation: stella-speaking 1.9s ease-in-out infinite;
+	animation: stella-speaking 1.4s ease-in-out infinite;
 }
 
 /* -------------------------------------------------------------------------
-   FINISHED — one short, satisfying move, then rest. Plays once.
+   FINISHED - crisp completion settle
    ------------------------------------------------------------------------- */
 @keyframes stella-finished {
-	0% { transform: translate3d(0, 3%, 0) rotate(0deg) scale(0.955); }
-	35% { transform: translate3d(0, -12%, 0) rotate(-19deg) scale(1.075); }
-	60% { transform: translate3d(0, -2%, 0) rotate(9deg) scale(1); }
-	80% { transform: translate3d(0, -4%, 0) rotate(-4deg) scale(1.012); }
-	100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+	0% { transform: scale(0.95); }
+	50% { transform: scale(1.05); }
+	100% { transform: scale(1); }
 }
 
 .stella-state-finished .stella-body {
-	animation: stella-finished 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	animation: stella-finished 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* -------------------------------------------------------------------------
-   ERROR — she simply stops and dips. No flashing, no alarm.
+   ERROR - subtle dip
    ------------------------------------------------------------------------- */
 @keyframes stella-error {
-	0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-	45% { transform: translate3d(0, 4%, 0) rotate(-10deg); }
-	100% { transform: translate3d(0, 3%, 0) rotate(-7deg); }
+	0%, 100% { transform: translate3d(0, 0, 0); }
+	50% { transform: translate3d(0, 3%, 0); }
 }
 
 .stella-state-error .stella-body {
-	animation: stella-error 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	animation: stella-error 500ms ease-in-out both;
 }
 
 /* -------------------------------------------------------------------------
-   REDUCED MOTION — Stella holds a still, characterful pose.
+   REDUCED MOTION
    ------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
 	.stella-body,
 	.stella-orbit {
 		animation: none !important;
 	}
-	.stella-body {
-		transform: rotate(-4deg);
-	}
 	.stella-ring {
 		transition: none !important;
 		scale: 1;
 	}
+}
+
+/* =========================================================================
+   STELLA MORPH CONTAINER
+   Single always-mounted element that CSS-transitions between three states:
+     closed  → pill button (140×48, rounded-full)
+     drawer  → floating card (440×720, rounded-3xl)
+     full    → fills viewport (100vw×100vh, square corners)
+
+   Uses cubic-bezier(0.175, 0.885, 0.32, 1.275) = CSS outBack(1.7).
+   Animates real geometry (width, height) instead of scale transforms
+   so text, borders, and padding are NEVER distorted.
+   ========================================================================= */
+
+/* =========================================================================
+   STELLA 60FPS ANIME.JS GPU-ACCELERATED PANELS
+   All animations run on the GPU compositor thread using transform: scale & opacity.
+   Zero layout reflow. Locked 60fps minimum.
+   ========================================================================= */
+
+/* --- FLOATING PILL BUTTON --- */
+.stella-pill-btn {
+	position: fixed;
+	bottom: 80px;
+	right: 16px;
+	height: 48px;
+	border-radius: 9999px;
+	background-color: var(--primary);
+	color: var(--primary-foreground);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow:
+		0 10px 25px -5px rgba(0, 0, 0, 0.4),
+		0 4px 6px -2px rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 18px 0 8px;
+	cursor: pointer;
+	z-index: 50;
+	will-change: transform, opacity;
+	transform-origin: bottom right;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	transition: box-shadow 0.25s ease, filter 0.25s ease;
+}
+.stella-pill-btn:hover {
+	box-shadow:
+		0 14px 30px -5px rgba(0, 0, 0, 0.5),
+		0 6px 12px -2px rgba(0, 0, 0, 0.25);
+	filter: brightness(1.08);
+}
+@media (min-width: 640px) {
+	.stella-pill-btn {
+		bottom: 24px;
+		right: 24px;
+	}
+}
+
+/* --- CORNER DRAWER CARD --- */
+.stella-drawer-card {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	width: 100vw;
+	height: 85vh;
+	height: 85dvh;
+	max-height: 720px;
+	border-radius: 24px 24px 0 0;
+	background-color: var(--card);
+	border: 1px solid var(--border);
+	box-shadow:
+		0 25px 60px -15px rgba(0, 0, 0, 0.65),
+		0 0 0 1px rgba(255, 255, 255, 0.08);
+	transform-origin: bottom right;
+	will-change: transform, opacity;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	perspective: 1000px;
+	z-index: 100;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (min-width: 640px) {
+	.stella-drawer-card {
+		bottom: 24px;
+		right: 24px;
+		width: 440px;
+		height: min(720px, calc(100vh - 48px));
+		border-radius: 24px;
+		padding-bottom: 0;
+	}
+}
+
+/* --- FULL-WINDOW STUDY MODAL --- */
+.stella-full-modal {
+	position: fixed;
+	inset: 0;
+	width: 100vw;
+	height: 100vh;
+	height: 100dvh;
+	background-color: var(--background);
+	z-index: 110;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transform-origin: bottom right;
+	will-change: transform, opacity;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* --- BACKDROP --- */
+.stella-backdrop-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 99;
+	background-color: rgba(5, 8, 15, 0.7);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	will-change: opacity;
+	backface-visibility: hidden;
 }

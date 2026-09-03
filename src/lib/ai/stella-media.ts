@@ -61,10 +61,10 @@ export const STELLA_ARTWORK_FALLBACK = "/ielstar-star.png";
  * that empty margin. If you re-export the PNG cropped tight to the star, set
  * this to 1.
  */
-export const STELLA_TRIM = 1.3;
+export const STELLA_TRIM = 0.86;
 
 /** The shipped fallback is framed more tightly, so it needs less zoom. */
-export const STELLA_FALLBACK_TRIM = 1.12;
+export const STELLA_FALLBACK_TRIM = 0.86;
 
 export const STELLA_MEDIA: Record<StellaState, StellaMedia> = {
 	idle: { kind: "coded" },

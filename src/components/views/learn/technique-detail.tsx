@@ -2,7 +2,8 @@
 
 /**
  * Technique detail — one consolidated technique group rendered in full:
- * every underlying technique kept complete, at a comfortable reading width.
+ * every underlying technique kept complete, at a comfortable reading width,
+ * with direct option to study in Full Window with Stella.
  */
 
 import { useApp } from "@/lib/store/app";
@@ -11,7 +12,8 @@ import { EmptyState, PageHeader } from "@/components/shared/page-kit";
 import { StarMark } from "@/components/shared/brand";
 import { Button } from "@/components/ui/button";
 import { TechniqueSections } from "./learn-shared";
-import { ChevronRight, Mic } from "lucide-react";
+import { openStella } from "@/components/ai/ai-assistant";
+import { ChevronRight, Maximize2, Mic, Sparkles } from "lucide-react";
 
 export function TechniqueDetailView({ groupId }: { groupId: string }) {
   const navigate = useApp((s) => s.navigate);
@@ -40,18 +42,30 @@ export function TechniqueDetailView({ groupId }: { groupId: string }) {
   return (
     <div className="fade-up mx-auto max-w-3xl">
       <PageHeader
-        eyebrow={`Technique · ${group.category}`}
+        eyebrow={`Technique • ${group.category}`}
         title={group.title}
         subtitle={group.oneLine}
       />
 
-      <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-          {techniques.length} {techniques.length === 1 ? "technique" : "techniques"} in this group
-        </span>
-        <span className="text-xs text-muted-foreground">
-          Every technique is kept complete — read it through, then take one into practice.
-        </span>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
+            {techniques.length} {techniques.length === 1 ? "technique" : "techniques"} in this group
+          </span>
+          <span className="text-xs text-muted-foreground">
+            Read it through, or study side-by-side with Stella in Full Window.
+          </span>
+        </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => openStella({ mode: "full-window" })}
+          className="gap-2 border-brand-bright/40 text-brand-bright hover:bg-brand-soft"
+        >
+          <Maximize2 className="h-3.5 w-3.5" />
+          Study with Stella (Full Window)
+        </Button>
       </div>
 
       <ol className="space-y-5">
@@ -90,6 +104,14 @@ export function TechniqueDetailView({ groupId }: { groupId: string }) {
             <Button onClick={() => navigate({ name: "practice" })} className="gap-2">
               <Mic className="h-4 w-4" aria-hidden />
               Practice now
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => openStella({ mode: "full-window" })}
+              className="gap-2 border-brand-bright/40 text-brand-bright"
+            >
+              <Sparkles className="h-4 w-4" aria-hidden />
+              Discuss in Full Window
             </Button>
             <Button
               variant="outline"

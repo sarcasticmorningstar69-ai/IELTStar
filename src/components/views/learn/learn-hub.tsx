@@ -65,6 +65,65 @@ const LEARN_TABS = [
 
 const TOTAL_PROBLEMS = CORE_AREAS.reduce((a, x) => a + x.problemIds.length, 0);
 
+function MorphingTabSwitcher({
+  tabs,
+  activeKey,
+  onChange,
+}: {
+  tabs: readonly { key: string; short: string; full: string }[];
+  activeKey: string;
+  onChange: (key: any) => void;
+}) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const pillRef = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    if (!containerRef.current || !pillRef.current) return;
+    const activeBtn = containerRef.current.querySelector<HTMLButtonElement>(`[data-key="${activeKey}"]`);
+    if (activeBtn) {
+      const { offsetLeft, offsetWidth, offsetHeight } = activeBtn;
+      pillRef.current.style.transform = `translateX(${offsetLeft}px)`;
+      pillRef.current.style.width = `${offsetWidth}px`;
+      pillRef.current.style.height = `${offsetHeight}px`;
+    }
+  }, [activeKey]);
+
+  return (
+    <div
+      ref={containerRef}
+      role="tablist"
+      aria-label="Learn sections"
+      className="relative mb-7 flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-border bg-card p-1 shadow-sm"
+    >
+      <div
+        ref={pillRef}
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-1 rounded-full bg-primary shadow-sm transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[transform,width]"
+      />
+      {tabs.map((t) => {
+        const isActive = activeKey === t.key;
+        return (
+          <button
+            key={t.key}
+            data-key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onChange(t.key)}
+            className={cn(
+              "relative z-10 flex-1 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors duration-200 sm:flex-none sm:px-5 cursor-pointer",
+              isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <span className="sm:hidden">{t.short}</span>
+            <span className="hidden sm:inline">{t.full}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function LearnView({ tab }: { tab?: "problems" | "techniques" | "tips" }) {
   const navigate = useApp((s) => s.navigate);
   const active = tab ?? "problems";
@@ -76,33 +135,11 @@ export function LearnView({ tab }: { tab?: "problems" | "techniques" | "tips" })
         subtitle="Problems, techniques and tips — grounded in real speaking practice."
       />
 
-      <div
-        role="tablist"
-        aria-label="Learn sections"
-        className="scrollbar-thin mb-7 flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-border bg-card p-1"
-      >
-        {LEARN_TABS.map((t) => {
-          const isActive = active === t.key;
-          return (
-            <button
-              key={t.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => navigate({ name: "learn", tab: t.key })}
-              className={cn(
-                "flex-1 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors sm:flex-none sm:px-5",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <span className="sm:hidden">{t.short}</span>
-              <span className="hidden sm:inline">{t.full}</span>
-            </button>
-          );
-        })}
-      </div>
+      <MorphingTabSwitcher
+        tabs={LEARN_TABS}
+        activeKey={active}
+        onChange={(key) => navigate({ name: "learn", tab: key })}
+      />
 
       <div key={active} className="fade-up">
         {active === "problems" ? (
@@ -214,8 +251,10 @@ function AreaCard({
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-2xl border bg-card transition-all duration-200",
-        open ? "border-brand-bright/40 shadow-md" : "border-border hover:border-brand-bright/40 hover:shadow-md"
+        "overflow-hidden rounded-2xl border transition-all duration-200",
+        open
+          ? "border-brand-bright/50 bg-card shadow-lg ring-1 ring-brand-bright/20"
+          : "border-border bg-card hover:border-brand-bright/40 hover:shadow-md"
       )}
     >
       <button
@@ -223,34 +262,52 @@ function AreaCard({
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={panelId}
-        className="flex w-full items-start gap-3 p-4 text-left sm:gap-4 sm:p-5"
+        className={cn(
+          "flex w-full items-start gap-3.5 p-4 text-left transition-colors sm:gap-5 sm:p-5",
+          open ? "bg-gradient-to-r from-brand-soft/50 via-card to-card border-b border-border/70" : "hover:bg-muted/30"
+        )}
       >
-        <span
-          className="mt-0.5 w-6 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground/70 sm:mt-0.5"
-          aria-hidden
-        >
-          {String(area.index).padStart(2, "0")}
-        </span>
+        <div className="flex flex-col items-center">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft font-mono text-sm font-bold text-brand-bright shadow-sm">
+            {String(area.index).padStart(2, "0")}
+          </span>
+          <span className="mt-1 text-[9px] font-bold tracking-wider text-muted-foreground uppercase">
+            Area
+          </span>
+        </div>
+
         <span className="min-w-0 flex-1">
-          <span className="block text-[15px] font-semibold tracking-tight text-balance">
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-brand-bright/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-brand-bright uppercase">
+              Core Area {String(area.index).padStart(2, "0")}
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              {area.problemIds.length} specific issues
+            </span>
+          </div>
+
+          <span className="mt-1.5 block text-lg font-bold tracking-tight text-foreground text-balance sm:text-xl">
             {area.name}
           </span>
+
           <span
             className={cn(
-              "mt-1 block text-xs leading-relaxed text-muted-foreground",
+              "mt-1.5 block text-xs leading-relaxed text-muted-foreground",
               open ? "line-clamp-3" : "line-clamp-2"
             )}
           >
-            {area.includes.join(" · ")}
+            {area.includes.join(" • ")}
           </span>
-          <span className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+
+          <span className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
             <ProblemStatusPill status={status} />
-            <span className="text-xs text-muted-foreground">
-              {area.problemIds.length} detailed {area.problemIds.length === 1 ? "problem" : "problems"}
-              {touched > 0 ? ` · ${touched} in your practice` : ""}
-            </span>
-            <span className="ml-auto flex items-center gap-1 text-[11px] font-semibold tracking-wide text-brand-bright">
-              {open ? "Close" : "Explore"}
+            {touched > 0 && (
+              <span className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-brand-bright">
+                {touched} noticed in practice
+              </span>
+            )}
+            <span className="ml-auto flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold tracking-wide text-brand-bright shadow-sm">
+              {open ? "Close Area" : "Explore Issues"}
               <ChevronDown
                 className={cn(
                   "h-3.5 w-3.5 transition-transform duration-200",
@@ -262,10 +319,21 @@ function AreaCard({
           </span>
         </span>
       </button>
+
       {mounted && (
         <Reveal open={open} id={panelId}>
-          <div className="border-t border-border">
-            <ul className="divide-y divide-border">
+          <div className="border-t border-border bg-muted/20 p-3.5 sm:p-5">
+            <div className="mb-3 flex items-center justify-between px-1">
+              <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-bright" />
+                Problems Under This Area ({area.problemIds.length})
+              </div>
+              <span className="text-[11px] text-muted-foreground">
+                Select a problem to view diagnostic &amp; drill
+              </span>
+            </div>
+
+            <ul className="space-y-2">
               {area.problemIds.map((pid) => {
                 const problem = problemById(pid);
                 if (!problem) return null;
@@ -287,15 +355,17 @@ function ProblemRow({ problem, state }: { problem: OriginalProblem; state?: Prob
       <button
         type="button"
         onClick={() => navigate({ name: "problem", problemId: problem.id })}
-        className="group flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/40 sm:px-5"
+        className="group flex w-full items-start gap-3.5 rounded-xl border border-border bg-card p-3.5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-bright/50 hover:shadow-md sm:px-4.5"
         aria-label={`Open problem: ${problem.title}`}
       >
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-[11px] font-semibold tabular-nums text-muted-foreground">
+        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-surface font-mono text-xs font-bold text-foreground border border-border/80 shadow-inner group-hover:border-brand-bright/40 group-hover:text-brand-bright">
           {problem.num}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-sm font-semibold tracking-tight">{problem.title}</span>
+            <span className="text-sm font-semibold tracking-tight text-foreground group-hover:text-brand-bright transition-colors">
+              {problem.title}
+            </span>
             <DifficultyPill difficulty={problem.difficulty} />
           </span>
           <span className="mt-1 block text-xs leading-relaxed text-muted-foreground line-clamp-2">
@@ -306,7 +376,7 @@ function ProblemRow({ problem, state }: { problem: OriginalProblem; state?: Prob
           <ProblemStatusPill status={status} className="hidden sm:inline-flex" />
           <ProblemStatusDot status={status} className="sm:hidden" />
           <ChevronRight
-            className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5"
+            className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-bright"
             aria-hidden
           />
         </span>

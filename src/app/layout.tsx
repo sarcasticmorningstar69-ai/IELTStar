@@ -2,11 +2,13 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/lib/auth/auth-context";
+import { AuthModal } from "@/components/auth/auth-modal";
 
 export const metadata: Metadata = {
   title: "IELTStar Speaking Lab",
   description:
-    "Practice, record, review and train your IELTS Speaking — a calm speaking coach that lives in your browser. Recordings stay on your device.",
+    "Practice, record, review and train your IELTS Speaking - a calm speaking coach that lives in your browser with cross-device cloud sync.",
   icons: {
     icon: "/ielstar-star-light.png",
   },
@@ -41,8 +43,11 @@ export default function RootLayout({
         }
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          {children}
-          <Toaster />
+          <AuthProvider>
+            {children}
+            <AuthModal />
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
