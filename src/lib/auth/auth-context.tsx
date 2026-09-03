@@ -24,18 +24,36 @@ interface AuthContextType {
   authModalTab: AuthTab;
   openAuthModal: (tab?: AuthTab) => void;
   closeAuthModal: () => void;
-  signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signInWithEmail: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>;
   signUpWithEmail: (
     email: string,
     password: string,
     metadata?: { name?: string; targetBand?: number }
-  ) => Promise<{ error: AuthError | null; needsEmailVerification?: boolean; sessionCreated?: boolean }>;
+  ) => Promise<{
+    error: AuthError | null;
+    needsEmailVerification?: boolean;
+    sessionCreated?: boolean;
+  }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
+/**
+ * Display-only cache of the signed-in student's profile.
+ *
+ * This exists so the UI can paint their name and target band instantly on a
+ * cold load. It is NEVER a source of authentication: a cached profile cannot
+ * create a user or a session. An earlier version of this file synthesised a
+ * `User` object from this key when Supabase had no session, which meant anyone
+ * could sign in as anyone by editing localStorage, and which also silently
+ * gave students a `local-<random>` id that no server knew about, so their
+ * progress never synced across devices.
+ */
 const LOCAL_PROFILE_KEY = "ieltstar_user_profile";
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -55,19 +73,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return {
       id: u.id,
       email: u.email || "",
-      name: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split("@")[0] || "Student",
-      targetBand: u.user_metadata?.target_band ? Number(u.user_metadata.target_band) : 7.5,
+      name:
+        u.user_metadata?.full_name ||
+        u.user_metadata?.name ||
+        u.email?.split("@")[0] ||
+        "Student",
+      targetBand: u.user_metadata?.target_band
+        ? Number(u.user_metadata.target_band)
+        : 7.5,
       testDate: u.user_metadata?.test_date || "",
       avatarUrl: u.user_metadata?.avatar_url || "",
     };
   };
 
-  // Restore local profile if exists
   const getCachedProfile = (): UserProfile | null => {
     if (typeof window === "undefined") return null;
     try {
       const stored = localStorage.getItem(LOCAL_PROFILE_KEY);
-      return stored ? JSON.parse(stored) : null;
+      return stored ? (JSON.parse(stored) as UserProfile) : null;
     } catch {
       return null;
     }
@@ -83,37 +106,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const applySession = React.useCallback((next: Session | null) => {
+    setSession(next);
+    if (next?.user) {
+      setUser(next.user);
+      const prof = buildProfileFromUser(next.user);
+      setProfile(prof);
+      saveCachedProfile(prof);
+    } else {
+      setUser(null);
+      setProfile(null);
+      saveCachedProfile(null);
+    }
+  }, []);
+
   React.useEffect(() => {
     let mounted = true;
 
     async function initSession() {
       try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
-        if (mounted) {
-          if (initialSession?.user) {
-            setSession(initialSession);
-            setUser(initialSession.user);
-            const prof = buildProfileFromUser(initialSession.user);
-            setProfile(prof);
-            saveCachedProfile(prof);
-          } else {
-            // Check fallback cached profile so student is not locked out
-            const cached = getCachedProfile();
-            if (cached) {
-              setProfile(cached);
-              setUser({
-                id: cached.id,
-                email: cached.email,
-                app_metadata: {},
-                user_metadata: { full_name: cached.name, target_band: cached.targetBand, test_date: cached.testDate },
-                aud: "authenticated",
-                created_at: new Date().toISOString(),
-              } as User);
-            }
-          }
+        // getUser() validates the token with the auth server. getSession()
+        // only reads local storage, so it must not gate anything.
+        const { data, error } = await supabase.auth.getUser();
+
+        if (!mounted) return;
+
+        if (error || !data?.user) {
+          setUser(null);
+          setSession(null);
+          setProfile(null);
+          saveCachedProfile(null);
+          return;
         }
+
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        setSession(sessionData?.session ?? null);
+        setUser(data.user);
+        const prof = buildProfileFromUser(data.user);
+        setProfile(prof);
+        saveCachedProfile(prof);
       } catch (err) {
         console.error("Supabase auth init error:", err);
+        if (mounted) {
+          setUser(null);
+          setSession(null);
+          setProfile(null);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -121,26 +161,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        if (mounted) {
-          setSession(newSession);
-          if (newSession?.user) {
-            setUser(newSession.user);
-            const prof = buildProfileFromUser(newSession.user);
-            setProfile(prof);
-            saveCachedProfile(prof);
-          }
-          setLoading(false);
-        }
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (!mounted) return;
+      applySession(newSession);
+      setLoading(false);
+    });
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, applySession]);
 
   const openAuthModal = React.useCallback((tab: AuthTab = "signin") => {
     setAuthModalTab(tab);
@@ -152,34 +185,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (!error && data.session) {
-      const prof = buildProfileFromUser(data.user);
-      setProfile(prof);
-      saveCachedProfile(prof);
-      closeAuthModal();
-      return { error: null };
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { error };
     }
 
-    // If Supabase blocked due to unconfirmed email, check if we have local credentials for this user
-    if (error?.message?.toLowerCase().includes("email not confirmed")) {
-      const cached = getCachedProfile();
-      if (cached && cached.email.toLowerCase() === email.toLowerCase()) {
-        setProfile(cached);
-        setUser({
-          id: cached.id,
-          email: cached.email,
-          app_metadata: {},
-          user_metadata: { full_name: cached.name, target_band: cached.targetBand },
-          aud: "authenticated",
-          created_at: new Date().toISOString(),
-        } as User);
-        closeAuthModal();
-        return { error: null };
-      }
-    }
-
-    return { error };
+    applySession(data.session ?? null);
+    closeAuthModal();
+    return { error: null };
   };
 
   const signUpWithEmail = async (
@@ -199,69 +216,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) {
-      // If Supabase free tier email rate limit is hit, gracefully fall back to local authenticated user
-      // so the student is never blocked from using the app or selecting their target score.
-      const isRateLimit = error.message?.toLowerCase().includes("rate limit") || error.status === 429;
-      if (isRateLimit) {
-        console.warn("Supabase email rate limit reached; falling back to active local session:", error.message);
-        const fallbackProfile: UserProfile = {
-          id: "local-" + Math.random().toString(36).slice(2),
-          email,
-          name: metadata?.name || email.split("@")[0],
-          targetBand: metadata?.targetBand || 7.5,
-        };
-        setProfile(fallbackProfile);
-        saveCachedProfile(fallbackProfile);
-        setUser({
-          id: fallbackProfile.id,
-          email,
-          app_metadata: {},
-          user_metadata: { full_name: fallbackProfile.name, target_band: fallbackProfile.targetBand },
-          aud: "authenticated",
-          created_at: new Date().toISOString(),
-        } as User);
-        return { error: null, needsEmailVerification: false, sessionCreated: true };
-      }
       return { error, needsEmailVerification: false, sessionCreated: false };
     }
 
-    // Always immediately establish the active user locally so their progress is registered
-    const newUserProfile: UserProfile = {
-      id: data.user?.id || ("local-" + Math.random().toString(36).slice(2)),
-      email,
-      name: metadata?.name || email.split("@")[0],
-      targetBand: metadata?.targetBand || 7.5,
-    };
-
-    setProfile(newUserProfile);
-    saveCachedProfile(newUserProfile);
-
-    if (data.user) {
-      setUser(data.user);
-    } else {
-      setUser({
-        id: newUserProfile.id,
-        email,
-        app_metadata: {},
-        user_metadata: { full_name: newUserProfile.name, target_band: newUserProfile.targetBand },
-        aud: "authenticated",
-        created_at: new Date().toISOString(),
-      } as User);
+    // With "Confirm email" disabled in the Supabase dashboard, signUp returns a
+    // session immediately and no email is sent, so the 2-emails-per-hour limit
+    // on the built-in provider never applies.
+    if (data.session) {
+      applySession(data.session);
+      closeAuthModal();
+      return {
+        error: null,
+        needsEmailVerification: false,
+        sessionCreated: true,
+      };
     }
 
-    const sessionCreated = Boolean(data.session);
-    const needsEmailVerification = !data.session;
-
-    return { error: null, needsEmailVerification, sessionCreated };
+    // No session means the project still requires email confirmation. Tell the
+    // student the truth rather than faking a signed-in state.
+    return { error: null, needsEmailVerification: true, sessionCreated: false };
   };
 
   const signInWithGoogle = async () => {
-    const redirectUrl = typeof window !== "undefined" ? window.location.origin : "";
+    const redirectUrl =
+      typeof window !== "undefined" ? window.location.origin : "";
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: redirectUrl,
-      },
+      options: { redirectTo: redirectUrl },
     });
     return { error };
   };
@@ -279,7 +260,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/reset-password` : "";
+    const redirectUrl =
+      typeof window !== "undefined"
+        ? window.location.origin + "/reset-password"
+        : "";
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
     });
@@ -287,10 +271,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateProfile = async (data: Partial<UserProfile>) => {
+    if (!user) {
+      openAuthModal("signin");
+      return;
+    }
+
     const current = profile || getCachedProfile();
     const updated: UserProfile = {
-      id: current?.id || "student",
-      email: current?.email || "",
+      id: user.id,
+      email: user.email || current?.email || "",
       name: data.name ?? current?.name ?? "Student",
       targetBand: data.targetBand ?? current?.targetBand ?? 7.5,
       testDate: data.testDate ?? current?.testDate ?? "",
@@ -300,16 +289,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(updated);
     saveCachedProfile(updated);
 
-    if (user && !user.id.startsWith("local-")) {
-      try {
-        const updates: Record<string, unknown> = {};
-        if (data.name !== undefined) updates.full_name = data.name;
-        if (data.targetBand !== undefined) updates.target_band = data.targetBand;
-        if (data.testDate !== undefined) updates.test_date = data.testDate;
+    try {
+      const updates: Record<string, unknown> = {};
+      if (data.name !== undefined) updates.full_name = data.name;
+      if (data.targetBand !== undefined) updates.target_band = data.targetBand;
+      if (data.testDate !== undefined) updates.test_date = data.testDate;
+      if (Object.keys(updates).length > 0) {
         await supabase.auth.updateUser({ data: updates });
-      } catch (err) {
-        console.warn("Could not sync profile to Supabase server:", err);
       }
+    } catch (err) {
+      console.warn("Could not sync profile to Supabase:", err);
     }
   };
 
