@@ -20,6 +20,8 @@ import {
   Zap,
   Layers,
   ChevronDown,
+  Flame,
+  Rocket,
 } from "lucide-react";
 
 interface DeepDivePanelProps {
@@ -82,12 +84,13 @@ export function DeepDivePanel({ deepDive, onAskStella, className }: DeepDivePane
       {/* Header Banner */}
       <div className="relative mb-6 flex flex-col justify-between gap-4 border-b border-border/60 pb-5 sm:flex-row sm:items-center">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">
-            <Zap className="h-3.5 w-3.5 animate-pulse text-amber-400" />
-            <span>Highest Reasoning Diagnostic · 100K-Lumen Deep Dive</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/15 px-3.5 py-1 text-xs font-bold text-amber-300 shadow-sm">
+            <Flame className="h-4 w-4 animate-pulse text-amber-400 fill-amber-500/30" />
+            <span className="tracking-wide uppercase">Jet-Booster Mode Active · In-Depth Telemetry</span>
           </div>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            Linguistic Forensic Diagnostic
+          <h3 className="mt-2 text-xl font-extrabold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
+            <span>In-Depth Linguistic Analysis</span>
+            <Rocket className="h-5 w-5 text-amber-400 -rotate-45 hidden sm:inline" />
           </h3>
           <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
             Exhaustive, category-by-category dissection of your lexical range, grammatical architecture, and discourse mechanics.

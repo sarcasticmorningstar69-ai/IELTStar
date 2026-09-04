@@ -902,7 +902,7 @@ async function handleChat(request: Request, userId: string) {
     if (ec.deepDive && typeof ec.deepDive === "object") {
       const dd = ec.deepDive as Record<string, unknown>;
       if (Array.isArray(dd.vocabHighlights) && dd.vocabHighlights.length > 0) {
-        lines.push(`Deep Dive High-Band Vocabulary: ${dd.vocabHighlights.join(", ")}`);
+        lines.push(`In-Depth Analysis High-Band Vocabulary: ${dd.vocabHighlights.join(", ")}`);
       }
       if (Array.isArray(dd.grammarHighlights) && dd.grammarHighlights.length > 0) {
         lines.push(`Grammar Categories Dissected: ${dd.grammarHighlights.join(", ")}`);

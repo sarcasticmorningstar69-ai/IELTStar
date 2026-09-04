@@ -50,6 +50,8 @@ import {
   ArrowUp,
   X,
   Zap,
+  Flame,
+  Rocket,
 } from "lucide-react";
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
@@ -768,7 +770,7 @@ export function StellaWorkspaceView({
                 {stage === "reviewing" && (
                   <span>
                     {deepDiveRunning
-                      ? "Stella is running forensic deep reasoning (2–4 minutes)…"
+                      ? "Stella is firing high-reasoning boosters (In-Depth Analysis — 2–4 minutes)…"
                       : "Stella is transcribing and reviewing…"}
                   </span>
                 )}
@@ -821,26 +823,31 @@ export function StellaWorkspaceView({
           )}
 
           {!running && !result && failures.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border p-6 text-center space-y-3">
-              <p className="text-xs text-muted-foreground">
-                No analysis yet for this submission.
-              </p>
+            <div className="rounded-2xl border border-dashed border-border p-6 text-center space-y-4">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-foreground">
+                  Select Analysis Engine
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Choose standard evaluation (~30s) or ignite high-reasoning jet boosters for in-depth linguistic depth (2–4 min).
+                </p>
+              </div>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-8 cursor-pointer text-xs"
+                  className="h-8.5 cursor-pointer px-3.5 text-xs"
                   onClick={() => void runAnalysis(undefined, false)}
                 >
                   Standard Analysis
                 </Button>
                 <Button
                   size="sm"
-                  className="h-8 cursor-pointer gap-1.5 bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
+                  className="group h-8.5 cursor-pointer gap-2 rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-4 text-xs font-black uppercase tracking-wider text-black shadow-md shadow-orange-500/20 hover:scale-[1.02] hover:shadow-orange-500/35 transition-all"
                   onClick={() => void runAnalysis(undefined, true)}
                 >
-                  <Zap className="h-3.5 w-3.5 fill-current" />
-                  <span>100K-Lumen Deep Dive (High Reasoning)</span>
+                  <Flame className="h-4 w-4 fill-black text-black transition-transform group-hover:scale-110" />
+                  <span>In-Depth Analysis (Jet Boosters)</span>
                 </Button>
               </div>
             </div>
@@ -908,15 +915,47 @@ export function StellaWorkspaceView({
                 </div>
               )}
 
-              {hasCriteria && (
-                <CriteriaFlipCards
-                  criteria={result.criteria}
-                  overallBand={
-                    result.overallBand === null || result.overallBand === undefined
-                      ? null
-                      : Math.round(result.overallBand)
-                  }
-                />
+              {/* Jet Booster Console: In-Depth Linguistic Analysis */}
+              {!result.deepDive && (
+                <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 shadow-[0_0_35px_rgba(245,158,11,0.14)]">
+                  <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-amber-500/20 blur-3xl" />
+                  <div className="pointer-events-none absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-rose-500/20 blur-3xl" />
+
+                  <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-black tracking-widest uppercase text-amber-400">
+                          <Flame className="h-3.5 w-3.5 text-amber-400 animate-pulse fill-amber-500/30" />
+                          BOOSTERS READY · MAXIMUM REASONING
+                        </span>
+                        <span className="text-[11px] font-medium text-zinc-400">
+                          2–4 min supersonic deliberation
+                        </span>
+                      </div>
+                      <h4 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                        <span>Ignite In-Depth Analysis</span>
+                        <Rocket className="h-4 w-4 text-amber-400 -rotate-45" />
+                      </h4>
+                      <p className="text-xs text-zinc-300 leading-relaxed max-w-xl">
+                        Fire Stella’s highest reasoning engine. Replaces spoken phrasing with Band 8–9 curriculum vocabulary and performs an exhaustive category-by-category forensic grammar breakdown.
+                      </p>
+                    </div>
+
+                    <div className="shrink-0 flex items-center">
+                      <Button
+                        size="sm"
+                        disabled={running}
+                        onClick={() => void runAnalysis(undefined, true)}
+                        className="group relative cursor-pointer overflow-hidden rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-black shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.03] hover:shadow-orange-500/40 active:scale-[0.98] disabled:opacity-50"
+                      >
+                        <span className="relative flex items-center gap-2">
+                          <Flame className="h-4 w-4 fill-black text-black transition-transform group-hover:scale-125" />
+                          <span>{running && deepDiveRunning ? "Firing Boosters…" : "Ignite Boosters"}</span>
+                        </span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               )}
 
               {result.deepDive && (
@@ -929,24 +968,15 @@ export function StellaWorkspaceView({
                 />
               )}
 
-              {!result.deepDive && !running && (
-                <div className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-brand/10 to-amber-500/10 p-4 text-center">
-                  <div className="flex items-center justify-center gap-2 text-xs font-bold text-amber-400">
-                    <Zap className="h-4 w-4" />
-                    <span>Want an exhaustive, forensic linguistic analysis?</span>
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Activate the 100K-lumen Deep Dive to get high-reasoning vocabulary replacements from our curriculum and category-by-category grammar dissection.
-                  </p>
-                  <Button
-                    size="sm"
-                    className="mt-3 cursor-pointer gap-1.5 bg-amber-500 text-black hover:bg-amber-400 font-semibold text-xs"
-                    onClick={() => void runAnalysis(undefined, true)}
-                  >
-                    <Zap className="h-3.5 w-3.5 fill-current" />
-                    <span>Run 100K-Lumen Deep Dive Diagnostic</span>
-                  </Button>
-                </div>
+              {hasCriteria && (
+                <CriteriaFlipCards
+                  criteria={result.criteria}
+                  overallBand={
+                    result.overallBand === null || result.overallBand === undefined
+                      ? null
+                      : Math.round(result.overallBand)
+                  }
+                />
               )}
 
               {result.strengths.length > 0 && (

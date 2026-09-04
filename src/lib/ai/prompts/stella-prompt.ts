@@ -205,8 +205,8 @@ Rules for this object:
 - Return valid, complete JSON. Never truncate the object.`;
 
 export const STELLA_DEEP_DIVE_INSTRUCTION = [
-  "DEEP DIVE MODE: BALLISTIC FORENSIC EXAMINER DIAGNOSTIC (ACTIVE)",
-  "You are examining the candidate's speech with the intensity and clarity of a 100,000-lumen flashlight on a pitch-black night.",
+  "IN-DEPTH ANALYSIS MODE: FORENSIC EXAMINER DIAGNOSTIC (ACTIVE)",
+  "You are performing an exhaustive, high-precision forensic examination of the candidate's speech with jet-booster depth.",
   "Leave no linguistic stone unturned. Provide an exhaustive, surgical, deeply actionable diagnostic across Vocabulary and Grammar.",
   "",
   "1. VOCABULARY FORENSICS:",
