@@ -603,6 +603,12 @@ async function handleRecording(request: Request, userId: string) {
       systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
       maxTokens: MAX_ANALYSIS_OUTPUT_TOKENS,
       jsonMode: true,
+      /*
+       * Band judgements are the one place the reasoning pass earns its cost:
+       * four criteria have to stay consistent with each other and with the
+       * descriptor table across up to twenty answers.
+       */
+      reasoningEffort: "medium",
     });
     evaluation = evaluationSchema.parse(parseJson(raw));
   } catch (error) {
@@ -750,6 +756,14 @@ async function handleChat(request: Request, userId: string) {
       }],
       systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
       maxTokens: MAX_CHAT_OUTPUT_TOKENS,
+      /*
+       * No reasoning pass for chat. Reasoning tokens are billed and are spent
+       * before the first visible character, so on "what is a good Part 2
+       * opener" they only make the student wait. They also count against
+       * MAX_CHAT_OUTPUT_TOKENS, which is a deliberate scope limit — letting
+       * thinking consume it is what broke chat and prompted raising it.
+       */
+      reasoningEffort: "none",
     });
     return reply({ answer: text, message: text, reply: text });
   } catch (error) {
