@@ -9,6 +9,7 @@ import {
   type AiCriterionScore,
   type AiProviderStatus,
   type AiReliability,
+  type AiUpgradedSample,
 } from "@/lib/ai/types";
 import { DEFAULT_FEEDBACK_MODEL, callOpenRouter } from "@/lib/ai/openrouter-client";
 import { transcribeWithDeepgram } from "@/lib/ai/deepgram-client";
@@ -22,6 +23,11 @@ import {
   wrapTranscriptAsData,
 } from "@/lib/ai/scope-guard";
 import { MAX_AUDIO_BYTES, MAX_AUDIO_SECONDS } from "@/lib/storage/r2";
+import {
+  MAX_BAND,
+  MIN_BAND,
+  overallSpeakingBand,
+} from "@/lib/ai/prompts/band-descriptors";
 import {
   STELLA_SYSTEM_INSTRUCTION,
   EVALUATION_JSON_SCHEMA_PROMPT,
@@ -46,6 +52,10 @@ const TRANSCRIBE_CONCURRENCY = 3;
 const AUDIO_FIELD_PREFIX = "audio:";
 const MAX_AUDIO_MB = Math.round(MAX_AUDIO_BYTES / (1024 * 1024));
 const MAX_AUDIO_MINUTES = Math.round(MAX_AUDIO_SECONDS / 60);
+/** At most three higher-band rewrites per criterion; more is noise. */
+const MAX_UPGRADES_PER_CRITERION = 3;
+/** Shorter quotes than this cannot be matched against a transcript safely. */
+const MIN_UPGRADE_QUOTE_LENGTH = 8;
 
 const surfaces = [
   "part1", "part2", "part3", "full-mock", "topic-wheel", "technique",
@@ -91,13 +101,36 @@ const correctionSchema = z.object({
   explanation: z.string().trim().min(1).max(1200),
 }).strip();
 
+/**
+ * A higher-band rewrite of the student's own sentence.
+ *
+ * `targetBand` is an integer for the same reason criterion bands are: it names
+ * a level in the descriptor table, and there is no level 7.5.
+ */
+const upgradedSampleSchema = z.object({
+  original: z.string().trim().min(1).max(700),
+  upgraded: z.string().trim().min(1).max(700),
+  targetBand: z.number().int().min(MIN_BAND).max(MAX_BAND),
+  whyBetter: z.string().trim().min(1).max(700),
+}).strip();
+
+/**
+ * Criterion bands are INTEGERS 1-9.
+ *
+ * Rejecting a decimal rather than rounding it is deliberate. The official
+ * descriptor table has no half levels, so a 6.5 means the model ignored the
+ * rubric; silently rounding it would hide that and hand the student a score
+ * that corresponds to no descriptor at all. Band 0 is excluded too: it means
+ * "did not attend", which is not a language judgement we can make.
+ */
 const criterionSchema = z.object({
   criterion: z.string().trim().min(1).max(100),
-  band: z.number().finite().min(0).max(9).nullable(),
+  band: z.number().int().min(MIN_BAND).max(MAX_BAND).nullable(),
   summary: z.string().trim().min(1).max(2000),
   evidence: z.array(z.string().trim().min(1).max(700)).max(8).optional(),
   strengths: z.array(z.string().trim().min(1).max(700)).max(8).optional(),
   weaknesses: z.array(z.string().trim().min(1).max(700)).max(8).optional(),
+  upgradedSamples: z.array(upgradedSampleSchema).max(6).optional(),
   nextStep: z.string().trim().min(1).max(1200),
   reliability: reliabilitySchema.optional(),
 }).strip();
@@ -116,7 +149,13 @@ const answerNoteSchema = z.object({
 }).strip();
 
 const evaluationSchema = z.object({
-  overallBand: z.number().finite().min(0).max(9).nullable(),
+  /*
+   * Accepted so a model that reports it is not rejected, but never used: the
+   * overall band is recomputed from the criterion scores below. Averaging is
+   * arithmetic, and a language model should not be the thing that decides
+   * which way a borderline result rounds.
+   */
+  overallBand: z.number().finite().min(0).max(9).nullable().optional(),
   criteria: z.array(criterionSchema).length(4),
   grammarCorrections: z.array(correctionSchema).max(30).default([]),
   answerNotes: z.array(answerNoteSchema).max(MAX_ANSWERS).optional(),
@@ -171,11 +210,60 @@ function normalizeCriterion(value: string): CriterionName | null {
   return null;
 }
 
-function band(value: number | null) {
-  return value === null ? null : Math.max(0, Math.min(9, Math.round(value * 2) / 2));
+/** Whole bands only, clamped to the range the descriptor table defines. */
+function criterionBand(value: number | null) {
+  return value === null
+    ? null
+    : Math.max(MIN_BAND, Math.min(MAX_BAND, Math.round(value)));
 }
 
-function criteriaFrom(evaluation: Evaluation): AiCriterionScore[] {
+/**
+ * Loose text match used to prove a quotation came from the student.
+ *
+ * Punctuation and casing are dropped because the model quotes from an
+ * unpunctuated recogniser transcript and often adds a capital or a full stop.
+ * Word order and wording still have to match.
+ */
+function normalizeForMatch(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Keep only rewrites we can prove are grounded in what the student said.
+ *
+ * A fabricated "original" is the worst failure mode for this feature: the
+ * student is shown a sentence they never spoke and told it was theirs. So the
+ * quote must actually appear in their transcript, and the target band must sit
+ * above the band we just awarded, or the "upgrade" is not an upgrade.
+ */
+function usableUpgrades(
+  samples: AiUpgradedSample[] | undefined,
+  criterionScore: number | null,
+  transcriptHaystack: string
+): AiUpgradedSample[] | undefined {
+  if (!samples || samples.length === 0) return undefined;
+
+  const kept = samples.filter((sample) => {
+    const quote = normalizeForMatch(sample.original);
+    if (quote.length < MIN_UPGRADE_QUOTE_LENGTH) return false;
+    if (!transcriptHaystack.includes(quote)) return false;
+    if (normalizeForMatch(sample.upgraded) === quote) return false;
+    if (criterionScore !== null && sample.targetBand <= criterionScore) return false;
+    return true;
+  });
+
+  const trimmed = kept.slice(0, MAX_UPGRADES_PER_CRITERION);
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function criteriaFrom(
+  evaluation: Evaluation,
+  transcriptHaystack: string
+): AiCriterionScore[] {
   return IELTS_CRITERIA.map((name) => {
     const source = evaluation.criteria.find(
       (item) => normalizeCriterion(item.criterion) === name
@@ -189,12 +277,22 @@ function criteriaFrom(evaluation: Evaluation): AiCriterionScore[] {
     const reliability: AiReliability = name === "Pronunciation"
       ? "low"
       : source.reliability === "high" ? "medium" : source.reliability || "medium";
+    const scored = criterionBand(source.band);
+    /*
+     * No pronunciation rewrites. We only ever see text, so a "higher band
+     * pronunciation" example would be invented advice about sounds nobody
+     * here has heard.
+     */
+    const upgradedSamples = name === "Pronunciation"
+      ? undefined
+      : usableUpgrades(source.upgradedSamples, scored, transcriptHaystack);
     return {
       criterion: name,
-      band: band(source.band),
+      band: scored,
       reliability,
       summary: source.summary,
       evidence: evidence.length ? evidence : [source.summary],
+      upgradedSamples,
       nextStep: source.nextStep,
     };
   });
@@ -512,9 +610,17 @@ async function handleRecording(request: Request, userId: string) {
     }, 502);
   }
 
+  /*
+   * Every transcript in this submission, normalized once. Used to verify that
+   * a quoted "original" in an upgraded sample really was said by the student.
+   */
+  const transcriptHaystack = normalizeForMatch(
+    usable.map((item) => item.transcript).join(" ")
+  );
+
   let criteria: AiCriterionScore[];
   try {
-    criteria = criteriaFrom(evaluation);
+    criteria = criteriaFrom(evaluation, transcriptHaystack);
   } catch (error) {
     console.error("[evaluate] incomplete feedback criteria", error);
     return reply({
@@ -553,7 +659,21 @@ async function handleRecording(request: Request, userId: string) {
     };
   });
 
-  const overallBand = band(evaluation.overallBand);
+  /*
+   * Overall band, computed here rather than trusted from the model.
+   *
+   * IELTS averages the four equally weighted criteria and reports to the
+   * nearest half band, so this value CAN end in .5 even though no individual
+   * criterion ever does. That is what a real test report does, and matching it
+   * is what keeps this estimate comparable to the real thing.
+   *
+   * Pronunciation is usually unrated here because a transcript cannot evidence
+   * it, so the average is taken over the criteria we could actually rate.
+   */
+  const ratedBands = criteria
+    .map((item) => item.band)
+    .filter((value): value is number => value !== null);
+  const overallBand = ratedBands.length > 0 ? overallSpeakingBand(ratedBands) : null;
   const totalWords = usable.reduce((sum, item) => sum + item.words.length, 0);
   const reliability = reliabilityFromWordCount(totalWords);
 
@@ -563,8 +683,8 @@ async function handleRecording(request: Request, userId: string) {
     failedAnswers: failures.length > 0 ? failures : undefined,
     overallBand,
     overallRange: overallBand === null ? undefined : {
-      low: Math.max(0, overallBand - 0.5),
-      high: Math.min(9, overallBand + 0.5),
+      low: Math.max(MIN_BAND, overallBand - 0.5),
+      high: Math.min(MAX_BAND, overallBand + 0.5),
     },
     criteria,
     grammarCorrections: evaluation.grammarCorrections,
