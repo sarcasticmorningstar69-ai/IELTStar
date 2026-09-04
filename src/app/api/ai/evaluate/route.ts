@@ -85,18 +85,15 @@ const analysisSchema = z.object({
 }).strict();
 
 const chatSchema = z.object({
-  mode: z.string().max(64).optional(),
-  action: z.string().max(64).optional(),
-  text: z.string().trim().max(2000).optional(),
-  question: z.string().trim().max(2000).optional(),
+  mode: z.string().max(128).optional(),
+  action: z.string().max(128).optional(),
+  text: z.string().max(5000).optional(),
+  question: z.string().max(5000).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  correctedText: z.string().trim().max(5000).optional(),
-  pageTitle: z.string().trim().max(200).optional(),
-  recentMessages: z.array(z.object({
-    sender: z.string().max(20),
-    text: z.string().trim().min(1).max(2000),
-  }).strip()).max(8).optional(),
-}).strip();
+  correctedText: z.string().max(10000).optional(),
+  pageTitle: z.string().max(500).optional(),
+  recentMessages: z.array(z.any()).max(20).optional(),
+}).passthrough();
 
 const correctionSchema = z.object({
   original: z.string().trim().min(1).max(500),
@@ -714,6 +711,7 @@ async function handleChat(request: Request, userId: string) {
   }
   const checked = chatSchema.safeParse(rawBody);
   if (!checked.success) {
+    console.error("[evaluate] chatSchema parse failed:", JSON.stringify(checked.error.issues));
     return reply({ code: "INVALID_CHAT_REQUEST", message: "The question was invalid." }, 400);
   }
   const body = checked.data;
@@ -739,10 +737,17 @@ async function handleChat(request: Request, userId: string) {
     return reply({ code: quota.reason, message: quotaMessage(quota) }, quotaHttpStatus(quota.reason));
   }
 
-  const history = (body.recentMessages || []).map((message) => ({
-    role: message.sender === "stella" ? ("assistant" as const) : ("user" as const),
-    content: message.sender === "stella" ? message.text : wrapMessageAsData(message.text),
-  }));
+  const history = (body.recentMessages || [])
+    .filter((m): m is { sender?: string; text?: string } => typeof m === "object" && m !== null)
+    .filter((m) => typeof m.text === "string" && m.text.trim().length > 0)
+    .slice(-8)
+    .map((message) => {
+      const text = (message.text || "").trim().slice(0, 3000);
+      return {
+        role: message.sender === "stella" ? ("assistant" as const) : ("user" as const),
+        content: message.sender === "stella" ? text : wrapMessageAsData(text),
+      };
+    });
   const pageTitle = (body.pageTitle || (typeof body.metadata?.pageTitle === "string" ? body.metadata.pageTitle : "")).trim();
   const context = pageTitle
     ? wrapMessageAsData(`Current IELTS study page: ${pageTitle}`) + "\n\n"
