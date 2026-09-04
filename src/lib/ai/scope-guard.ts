@@ -123,11 +123,25 @@ export const STELLA_SCOPE_RULE = [
   "only on the rubric and the evidence in the transcript.",
 ].join("\n");
 
-/** Chat replies are short by design; this also removes room for code. */
+/**
+ * Chat replies are short by design; this also removes room for code.
+ * Do not raise this to "make Stella more helpful" in chat — it is one of the
+ * three scope layers described at the top of this file.
+ */
 export const MAX_CHAT_OUTPUT_TOKENS = 500;
 
-/** Structured feedback needs room for the JSON payload. */
-export const MAX_ANALYSIS_OUTPUT_TOKENS = 2500;
+/**
+ * Ceiling for one structured analysis, covering all answers in a submission.
+ *
+ * This is a limit, not a budget: providers bill only for tokens generated, so
+ * a short Part 1 answer still costs a fraction of a cent. It has to be large
+ * because a full mock returns four criteria plus per-answer notes for up to 20
+ * recordings inside a single JSON object — and a truncated object fails schema
+ * validation, which shows the student an error instead of their feedback.
+ *
+ * Must stay at or below MAX_COMPLETION_TOKENS in openrouter-client.ts.
+ */
+export const MAX_ANALYSIS_OUTPUT_TOKENS = 14000;
 
 function stripDelimiters(value: string): string {
   return value.replace(/<\/?student-(?:transcript|message)>/gi, "");
