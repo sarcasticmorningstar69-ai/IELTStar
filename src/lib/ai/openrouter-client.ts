@@ -29,10 +29,18 @@ const DEFAULT_API_BASE = "https://openrouter.ai/api/v1";
  *
  * This is a safety limit, not a budget: providers bill only for tokens actually
  * generated, so a high ceiling costs nothing on short answers. It exists to
- * stop a runaway response, and it must stay comfortably above the largest
- * legitimate analysis or the JSON arrives truncated and fails validation.
+ * stop a runaway response.
+ *
+ * It must leave room for TWO things, not one. Reasoning models count their
+ * internal reasoning tokens as completion tokens, so with `reasoning.effort`
+ * set to medium a hard mock can burn a large share of the cap before the first
+ * character of JSON is emitted. Sizing this to the JSON alone is how you get a
+ * truncated object on exactly the submissions that matter most.
+ *
+ * Keep this comfortably above MAX_ANALYSIS_OUTPUT_TOKENS in scope-guard.ts,
+ * and below the model's own max output (Grok 4.6: 65,536).
  */
-const MAX_COMPLETION_TOKENS = 16000;
+const MAX_COMPLETION_TOKENS = 32000;
 
 export interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
