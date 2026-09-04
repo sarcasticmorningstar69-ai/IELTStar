@@ -139,9 +139,15 @@ export const MAX_CHAT_OUTPUT_TOKENS = 500;
  * recordings inside a single JSON object — and a truncated object fails schema
  * validation, which shows the student an error instead of their feedback.
  *
+ * Sized for the worst case, not the average one. A 20-minute mock is roughly
+ * 2,500 spoken words; a weaker candidate can generate a long list of grammar
+ * corrections, each carrying a quote, a rewrite and an explanation. That list
+ * is the part that grows without a natural bound. Reasoning tokens also count
+ * against the same cap on a reasoning model.
+ *
  * Must stay at or below MAX_COMPLETION_TOKENS in openrouter-client.ts.
  */
-export const MAX_ANALYSIS_OUTPUT_TOKENS = 14000;
+export const MAX_ANALYSIS_OUTPUT_TOKENS = 24000;
 
 function stripDelimiters(value: string): string {
   return value.replace(/<\/?student-(?:transcript|message)>/gi, "");
