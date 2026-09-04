@@ -10,7 +10,7 @@ import {
   type AiProviderStatus,
   type AiReliability,
 } from "@/lib/ai/types";
-import { callOpenRouter } from "@/lib/ai/openrouter-client";
+import { DEFAULT_FEEDBACK_MODEL, callOpenRouter } from "@/lib/ai/openrouter-client";
 import { transcribeWithDeepgram } from "@/lib/ai/deepgram-client";
 import { consumeQuota, quotaMessage } from "@/lib/ai/quota";
 import {
@@ -146,7 +146,7 @@ function providers(): AiProviderStatus & { openrouter: boolean } {
     glm: false,
     openrouter: Boolean(process.env.OPENROUTER_API_KEY),
     transcriptionModel: process.env.DEEPGRAM_MODEL || "nova-3",
-    feedbackModel: process.env.OPENROUTER_MODEL || "meta/muse-spark-1.3-contributor",
+    feedbackModel: process.env.OPENROUTER_MODEL || DEFAULT_FEEDBACK_MODEL,
   };
 }
 
@@ -485,6 +485,7 @@ async function handleRecording(request: Request, userId: string) {
         `This submission contains ${usable.length} separate recorded answers from one IELTS speaking test.`,
         "Judge the four criteria across ALL answers together, weighting sustained performance over any single answer.",
         'Additionally return an "answerNotes" array with one object per recording, using the exact "recordingId" values above and the keys "summary", "strengths", "priorities" and "grammarCorrections".',
+        "Give each answer its own substantive note: what that specific answer did well, what held it back, and the grammar points found in it.",
         'Every "grammarCorrections" entry must quote wording that genuinely appears in that answer\'s transcript.',
         "Never rewrite, re-punctuate or paraphrase a transcript. The transcript is evidence, not a draft.",
       ].join(" ")
