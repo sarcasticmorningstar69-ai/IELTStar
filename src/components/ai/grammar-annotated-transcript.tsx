@@ -24,6 +24,11 @@ interface GrammarAnnotatedTranscriptProps {
   onOpenCorrection?: () => void;
   /** True when the student typed their own version of this transcript. */
   isStudentEdited?: boolean;
+  /**
+   * Older name for `isStudentEdited`, kept so existing screens keep compiling.
+   * It never meant "verified" and is no longer displayed that way.
+   */
+  isVerified?: boolean;
 }
 
 export function GrammarAnnotatedTranscript({
@@ -35,10 +40,12 @@ export function GrammarAnnotatedTranscript({
   isRunning = false,
   onOpenCorrection,
   isStudentEdited = false,
+  isVerified = false,
 }: GrammarAnnotatedTranscriptProps) {
   const [activeTab, setActiveTab] = React.useState<"sync" | "grammar">("sync");
   const [selectedError, setSelectedError] = React.useState<AiGrammarCorrection | null>(null);
 
+  const studentEdited = isStudentEdited || isVerified;
   const hasCorrections = grammarCorrections.length > 0;
 
   const renderedAnnotatedContent = React.useMemo(() => {
@@ -117,7 +124,7 @@ export function GrammarAnnotatedTranscript({
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-brand-bright" />
           <h4 className="text-sm font-bold text-foreground">Transcript &amp; grammar notes</h4>
-          {isStudentEdited && (
+          {studentEdited && (
             <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning">
               <Info className="h-3 w-3" /> Your version · not re-checked against the audio
             </span>
