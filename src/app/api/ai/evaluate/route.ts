@@ -4,6 +4,8 @@ import { getVerifiedUser, unauthenticated } from "@/lib/supabase/server";
 import {
   IELTS_CRITERIA,
   type AiAnalysisResult,
+  type AiAnswerAnalysis,
+  type AiAnswerFailure,
   type AiCriterionScore,
   type AiProviderStatus,
   type AiReliability,
@@ -35,14 +37,25 @@ const AUDIO_TYPES = new Set([
   "audio/mp4",
   "audio/mpeg",
 ]);
+
+/** One mock is many answers, but never an unbounded number of them. */
+const MAX_ANSWERS = 20;
+/** Keep provider load predictable: at most three transcriptions in flight. */
+const TRANSCRIBE_CONCURRENCY = 3;
+/** Audio field naming: audio:<recordingId>, so mapping never relies on order. */
+const AUDIO_FIELD_PREFIX = "audio:";
+const MAX_AUDIO_MB = Math.round(MAX_AUDIO_BYTES / (1024 * 1024));
+const MAX_AUDIO_MINUTES = Math.round(MAX_AUDIO_SECONDS / 60);
+
 const surfaces = [
   "part1", "part2", "part3", "full-mock", "topic-wheel", "technique",
   "tip", "problem", "recordings", "general",
 ] as const;
 const reliabilitySchema = z.enum(["high", "medium", "low", "insufficient"]);
+const idSchema = z.string().min(1).max(128).regex(/^[A-Za-z0-9_-]+$/);
 
 const answerSchema = z.object({
-  recordingId: z.string().min(1).max(128).regex(/^[A-Za-z0-9_-]+$/),
+  recordingId: idSchema,
   part: z.number().int().min(1).max(3),
   questionLabel: z.string().trim().min(1).max(500),
   topicId: z.string().max(128).optional(),
@@ -56,8 +69,9 @@ const analysisSchema = z.object({
   surface: z.enum(surfaces),
   mockId: z.string().max(128).optional(),
   sessionId: z.string().max(128).optional(),
+  analysisRequestId: idSchema.optional(),
   scope: z.enum(["entire-mock", "selected-answers"]),
-  answers: z.array(answerSchema).min(1).max(20),
+  answers: z.array(answerSchema).min(1).max(MAX_ANSWERS),
 }).strict();
 
 const chatSchema = z.object({
@@ -88,17 +102,39 @@ const criterionSchema = z.object({
   reliability: reliabilitySchema.optional(),
 }).strip();
 
+/**
+ * Per-answer examiner notes. `recordingId` is how a note gets attached to the
+ * right audio player on screen. The model never returns transcript text here:
+ * anything it sends that looks like a transcript is ignored.
+ */
+const answerNoteSchema = z.object({
+  recordingId: z.string().trim().min(1).max(128),
+  summary: z.string().trim().min(1).max(2000).optional(),
+  strengths: z.array(z.string().trim().min(1).max(700)).max(6).optional(),
+  priorities: z.array(z.string().trim().min(1).max(700)).max(6).optional(),
+  grammarCorrections: z.array(correctionSchema).max(15).optional(),
+}).strip();
+
 const evaluationSchema = z.object({
   overallBand: z.number().finite().min(0).max(9).nullable(),
   criteria: z.array(criterionSchema).length(4),
   grammarCorrections: z.array(correctionSchema).max(30).default([]),
+  answerNotes: z.array(answerNoteSchema).max(MAX_ANSWERS).optional(),
   strengths: z.array(z.string().trim().min(1).max(700)).min(1).max(8),
   priorities: z.array(z.string().trim().min(1).max(700)).min(1).max(8),
   reliability: reliabilitySchema.optional(),
 }).strip();
 
 type Evaluation = z.infer<typeof evaluationSchema>;
+type AnswerInput = z.infer<typeof answerSchema>;
 type CriterionName = (typeof IELTS_CRITERIA)[number];
+
+type TranscribedAnswer = {
+  answer: AnswerInput;
+  transcript: string;
+  words: Awaited<ReturnType<typeof transcribeWithDeepgram>>["words"];
+  events: Awaited<ReturnType<typeof transcribeWithDeepgram>>["events"];
+};
 
 function reply(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: HEADERS });
@@ -164,6 +200,34 @@ function criteriaFrom(evaluation: Evaluation): AiCriterionScore[] {
   });
 }
 
+/** Run `task` over `items` with a hard ceiling on concurrent work. */
+async function mapWithLimit<T, R>(
+  items: T[],
+  limit: number,
+  task: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+  const workerCount = Math.max(1, Math.min(limit, items.length));
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      for (;;) {
+        const index = cursor;
+        cursor += 1;
+        if (index >= items.length) return;
+        results[index] = await task(items[index], index);
+      }
+    })
+  );
+  return results;
+}
+
+function reliabilityFromWordCount(count: number): AiReliability {
+  if (count >= 20) return "medium";
+  if (count >= 8) return "low";
+  return "insufficient";
+}
+
 export async function GET() {
   return reply(providers());
 }
@@ -221,62 +285,214 @@ async function handleRecording(request: Request, userId: string) {
     return reply({ code: "INVALID_METADATA", message: "Recording details are invalid." }, 400);
   }
   const metadata = checked.data;
-  const files = form.getAll("audio").filter((entry): entry is File => entry instanceof File);
+  const answers = metadata.answers;
 
-  if (files.length !== 1 || metadata.answers.length !== 1) {
+  // ---- Deterministic audio-to-answer mapping ------------------------------
+  const declared = new Set<string>();
+  for (const answer of answers) {
+    if (declared.has(answer.recordingId)) {
+      return reply({
+        code: "DUPLICATE_RECORDING_ID",
+        message: "Each recording can only be sent once in a request.",
+      }, 400);
+    }
+    declared.add(answer.recordingId);
+  }
+
+  const filesById = new Map<string, File>();
+  const unknownIds: string[] = [];
+  for (const [key, value] of form.entries()) {
+    if (!(value instanceof File)) continue;
+    if (!key.startsWith(AUDIO_FIELD_PREFIX)) continue;
+    const recordingId = key.slice(AUDIO_FIELD_PREFIX.length);
+    if (!declared.has(recordingId)) {
+      unknownIds.push(recordingId);
+      continue;
+    }
+    if (filesById.has(recordingId)) {
+      return reply({
+        code: "DUPLICATE_RECORDING_FILE",
+        message: "The same recording was uploaded twice. Please try again.",
+      }, 400);
+    }
+    filesById.set(recordingId, value);
+  }
+
+  if (unknownIds.length > 0) {
     return reply({
-      code: "MULTI_RECORDING_PENDING",
-      message: "Stella cannot safely analyse multiple recordings in one request yet. Choose one answer for now.",
-    }, 501);
+      code: "UNKNOWN_RECORDING_ID",
+      message: "The upload contained a recording that was not part of this submission.",
+    }, 400);
   }
 
-  const audio = files[0];
-  const audioType = (audio.type || "").toLowerCase();
-  if (!AUDIO_TYPES.has(audioType)) {
-    return reply({ code: "UNSUPPORTED_AUDIO_TYPE", message: "This recording format is not supported." }, 415);
-  }
-  if (audio.size <= 0 || audio.size > MAX_AUDIO_BYTES) {
-    return reply({ code: "RECORDING_TOO_LARGE", message: "The recording is empty or exceeds the 10 MB limit." }, 413);
+  // Backwards compatibility: a single answer may still be posted as "audio".
+  if (filesById.size === 0 && answers.length === 1) {
+    const legacy = form.getAll("audio").filter((entry): entry is File => entry instanceof File);
+    if (legacy.length === 1) filesById.set(answers[0].recordingId, legacy[0]);
   }
 
-  const seconds = Math.ceil(metadata.answers[0].duration);
-  if (seconds > MAX_AUDIO_SECONDS) {
+  const missing = answers
+    .filter((answer) => !filesById.has(answer.recordingId))
+    .map((answer) => answer.recordingId);
+  if (missing.length > 0) {
     return reply({
-      code: "RECORDING_TOO_LONG",
-      message: "Choose a recording that is 20 minutes or shorter.",
+      code: "MISSING_AUDIO",
+      message: "Some recordings did not finish uploading. Please retry them.",
+      recordingIds: missing,
+    }, 400);
+  }
+
+  // ---- Size, format and duration limits -----------------------------------
+  let totalBytes = 0;
+  let totalSeconds = 0;
+  for (const answer of answers) {
+    const file = filesById.get(answer.recordingId) as File;
+    const type = (file.type || "").toLowerCase();
+    if (!AUDIO_TYPES.has(type)) {
+      return reply({
+        code: "UNSUPPORTED_AUDIO_TYPE",
+        message: "One of these recordings is in a format Stella cannot read.",
+        recordingIds: [answer.recordingId],
+      }, 415);
+    }
+    if (file.size <= 0) {
+      return reply({
+        code: "EMPTY_RECORDING",
+        message: "One of these recordings is empty. Please record it again.",
+        recordingIds: [answer.recordingId],
+      }, 400);
+    }
+    totalBytes += file.size;
+    totalSeconds += answer.duration;
+  }
+
+  if (totalBytes > MAX_AUDIO_BYTES) {
+    return reply({
+      code: "RECORDING_TOO_LARGE",
+      message: `This submission is larger than the ${MAX_AUDIO_MB} MB limit. Please analyse fewer answers at a time.`,
     }, 413);
   }
 
-  const quota = await consumeQuota(userId, { seconds });
+  const seconds = Math.ceil(totalSeconds);
+  if (seconds > MAX_AUDIO_SECONDS) {
+    return reply({
+      code: "RECORDING_TOO_LONG",
+      message: `A submission can include up to ${MAX_AUDIO_MINUTES} minutes of speaking in total.`,
+    }, 413);
+  }
+
+  // ---- Quota: charged once per submission, retry-safe ----------------------
+  const isFullMock = metadata.scope === "entire-mock";
+  const quota = await consumeQuota(userId, {
+    seconds,
+    analyses: 1,
+    fullMocks: isFullMock ? 1 : 0,
+    idempotencyKey: metadata.analysisRequestId ?? null,
+  });
   if (!quota.allowed) {
-    return reply({ code: quota.reason, message: quotaMessage(quota) }, quotaHttpStatus(quota.reason));
+    return reply(
+      { code: quota.reason, message: quotaMessage(quota) },
+      quotaHttpStatus(quota.reason)
+    );
   }
 
-  let transcription: Awaited<ReturnType<typeof transcribeWithDeepgram>>;
-  try {
-    transcription = await transcribeWithDeepgram(await audio.arrayBuffer(), audioType);
-  } catch (error) {
-    console.error("[evaluate] transcription provider failed", error);
+  // ---- Transcription: one Deepgram call per recording ---------------------
+  type Outcome =
+    | { ok: true; value: TranscribedAnswer }
+    | { ok: false; failure: AiAnswerFailure };
+
+  const outcomes = await mapWithLimit<AnswerInput, Outcome>(
+    answers,
+    TRANSCRIBE_CONCURRENCY,
+    async (answer) => {
+      const file = filesById.get(answer.recordingId) as File;
+      const type = (file.type || "").toLowerCase();
+      try {
+        const transcription = await transcribeWithDeepgram(
+          await file.arrayBuffer(),
+          type
+        );
+        const transcript = transcription.transcript.trim();
+        if (!transcript) {
+          return {
+            ok: false,
+            failure: {
+              recordingId: answer.recordingId,
+              questionLabel: answer.questionLabel,
+              code: "EMPTY_TRANSCRIPT",
+              message: "Stella couldn't hear enough speech in this answer.",
+            },
+          };
+        }
+        return {
+          ok: true,
+          value: {
+            answer,
+            transcript,
+            words: transcription.words,
+            events: transcription.events,
+          },
+        };
+      } catch (error) {
+        console.error("[evaluate] transcription provider failed", error);
+        return {
+          ok: false,
+          failure: {
+            recordingId: answer.recordingId,
+            questionLabel: answer.questionLabel,
+            code: "TRANSCRIPTION_FAILED",
+            message: "Stella couldn't transcribe this answer. Your recording is safe.",
+          },
+        };
+      }
+    }
+  );
+
+  const usable = outcomes
+    .filter((outcome): outcome is { ok: true; value: TranscribedAnswer } => outcome.ok)
+    .map((outcome) => outcome.value);
+  const failures = outcomes
+    .filter((outcome): outcome is { ok: false; failure: AiAnswerFailure } => !outcome.ok)
+    .map((outcome) => outcome.failure);
+
+  if (usable.length === 0) {
+    const allEmpty = failures.every((failure) => failure.code === "EMPTY_TRANSCRIPT");
     return reply({
-      code: "TRANSCRIPTION_FAILED",
-      message: "Stella couldn't transcribe this recording. Your recording is safe—please try again.",
-    }, 502);
+      code: allEmpty ? "EMPTY_TRANSCRIPT" : "TRANSCRIPTION_FAILED",
+      message: allEmpty
+        ? "Stella couldn't hear enough speech to analyse. Check your microphone and try again."
+        : "Stella couldn't transcribe these recordings. Your recordings are safe \u2014 please retry.",
+      failedAnswers: failures,
+    }, allEmpty ? 422 : 502);
   }
 
-  const transcript = transcription.transcript.trim();
-  if (!transcript) {
-    return reply({
-      code: "EMPTY_TRANSCRIPT",
-      message: "Stella couldn't hear enough speech to analyse. Check your microphone and try again.",
-    }, 422);
-  }
+  // ---- Examiner pass over every transcript in one request -----------------
+  const transcriptBlocks = usable.map((item, index) => [
+    wrapMessageAsData(
+      [
+        `Answer ${index + 1} of ${usable.length}`,
+        `Recording ID: ${item.answer.recordingId}`,
+        `IELTS speaking part: ${item.answer.part}`,
+        `Question: ${item.answer.questionLabel}`,
+        `Spoken duration (seconds): ${Math.round(item.answer.duration)}`,
+      ].join("\n")
+    ),
+    wrapTranscriptAsData(item.transcript),
+  ].join("\n")).join("\n\n");
 
-  const answer = metadata.answers[0];
-  const prompt = [
-    wrapMessageAsData(`IELTS speaking part: ${answer.part}\nQuestion: ${answer.questionLabel}`),
-    wrapTranscriptAsData(transcript),
-    EVALUATION_JSON_SCHEMA_PROMPT,
-  ].join("\n\n");
+  const multiAnswerRule = usable.length > 1
+    ? [
+        `This submission contains ${usable.length} separate recorded answers from one IELTS speaking test.`,
+        "Judge the four criteria across ALL answers together, weighting sustained performance over any single answer.",
+        'Additionally return an "answerNotes" array with one object per recording, using the exact "recordingId" values above and the keys "summary", "strengths", "priorities" and "grammarCorrections".',
+        'Every "grammarCorrections" entry must quote wording that genuinely appears in that answer\'s transcript.',
+        "Never rewrite, re-punctuate or paraphrase a transcript. The transcript is evidence, not a draft.",
+      ].join(" ")
+    : "";
+
+  const prompt = [transcriptBlocks, multiAnswerRule, EVALUATION_JSON_SCHEMA_PROMPT]
+    .filter(Boolean)
+    .join("\n\n");
 
   let evaluation: Evaluation;
   try {
@@ -291,7 +507,7 @@ async function handleRecording(request: Request, userId: string) {
     console.error("[evaluate] feedback provider returned an invalid result", error);
     return reply({
       code: "FEEDBACK_FAILED",
-      message: "Stella couldn't produce reliable feedback for this recording. Please try again.",
+      message: "Stella couldn't produce reliable feedback for this submission. Please try again.",
     }, 502);
   }
 
@@ -302,25 +518,48 @@ async function handleRecording(request: Request, userId: string) {
     console.error("[evaluate] incomplete feedback criteria", error);
     return reply({
       code: "FEEDBACK_INCOMPLETE",
-      message: "Stella couldn't produce complete feedback for this recording. Please try again.",
+      message: "Stella couldn't produce complete feedback for this submission. Please try again.",
     }, 502);
   }
 
+  const notesById = new Map(
+    (evaluation.answerNotes || []).map((note) => [note.recordingId, note])
+  );
+
+  const analysedAnswers: AiAnswerAnalysis[] = usable.map((item) => {
+    const note = notesById.get(item.answer.recordingId);
+    // With a single answer the top-level corrections belong to it. With several,
+    // only per-answer notes may be attached, so no answer inherits another's.
+    const corrections = note?.grammarCorrections
+      ?? (usable.length === 1 ? evaluation.grammarCorrections : []);
+    return {
+      recordingId: item.answer.recordingId,
+      part: item.answer.part,
+      questionLabel: item.answer.questionLabel,
+      transcript: item.transcript,
+      words: item.words,
+      events: item.events,
+      grammarCorrections: corrections,
+      durationSeconds: Math.round(item.answer.duration),
+      summary: note?.summary,
+      strengths: note?.strengths,
+      priorities: note?.priorities,
+      audioQuality: {
+        usable: true,
+        reliability: reliabilityFromWordCount(item.words.length),
+        issues: [],
+      },
+    };
+  });
+
   const overallBand = band(evaluation.overallBand);
-  const reliability: AiReliability = transcription.words.length >= 20
-    ? "medium"
-    : transcription.words.length >= 8 ? "low" : "insufficient";
+  const totalWords = usable.reduce((sum, item) => sum + item.words.length, 0);
+  const reliability = reliabilityFromWordCount(totalWords);
+
   const result: AiAnalysisResult = {
-    kind: metadata.scope === "entire-mock" ? "full-mock-estimate" : "practice-estimate",
-    answers: [{
-      recordingId: answer.recordingId,
-      questionLabel: answer.questionLabel,
-      transcript,
-      words: transcription.words,
-      events: transcription.events,
-      grammarCorrections: evaluation.grammarCorrections,
-      audioQuality: { usable: true, reliability, issues: [] },
-    }],
+    kind: isFullMock ? "full-mock-estimate" : "practice-estimate",
+    answers: analysedAnswers,
+    failedAnswers: failures.length > 0 ? failures : undefined,
     overallBand,
     overallRange: overallBand === null ? undefined : {
       low: Math.max(0, overallBand - 0.5),
