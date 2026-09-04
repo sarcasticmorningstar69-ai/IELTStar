@@ -173,8 +173,10 @@ function TypewriterText({
 
   const onTickRef = React.useRef(onTick);
   const onDoneRef = React.useRef(onDone);
-  onTickRef.current = onTick;
-  onDoneRef.current = onDone;
+  React.useEffect(() => {
+    onTickRef.current = onTick;
+    onDoneRef.current = onDone;
+  });
 
   React.useEffect(() => {
     if (!shouldReveal) {
