@@ -124,11 +124,10 @@ export const STELLA_SCOPE_RULE = [
 ].join("\n");
 
 /**
- * Chat replies are short by design; this also removes room for code.
- * Do not raise this to "make Stella more helpful" in chat — it is one of the
- * three scope layers described at the top of this file.
+ * Ceiling for chat replies. Sized to accommodate reasoning models (like Grok 4.6)
+ * which count internal reasoning tokens toward completion tokens before emitting text.
  */
-export const MAX_CHAT_OUTPUT_TOKENS = 500;
+export const MAX_CHAT_OUTPUT_TOKENS = 4000;
 
 /**
  * Ceiling for one structured analysis, covering all answers in a submission.

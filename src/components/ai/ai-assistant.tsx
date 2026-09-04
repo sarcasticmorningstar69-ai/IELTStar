@@ -851,6 +851,8 @@ export function AiAssistant() {
         body: JSON.stringify({
           action: "chat",
           text: q,
+          question: q,
+          pageTitle: title,
           metadata,
           recentMessages: getSlidingWindowContext(messages, 6),
         }),

@@ -86,7 +86,10 @@ const analysisSchema = z.object({
 
 const chatSchema = z.object({
   mode: z.string().max(64).optional(),
-  question: z.string().trim().min(1).max(2000).optional(),
+  action: z.string().max(64).optional(),
+  text: z.string().trim().max(2000).optional(),
+  question: z.string().trim().max(2000).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   correctedText: z.string().trim().max(5000).optional(),
   pageTitle: z.string().trim().max(200).optional(),
   recentMessages: z.array(z.object({
@@ -716,7 +719,7 @@ async function handleChat(request: Request, userId: string) {
     }, 422);
   }
 
-  const question = body.question || "";
+  const question = (body.question || body.text || "").trim();
   const scope = prescreenStudentMessage(question);
   if (!scope.allowed) {
     return reply({ code: `OUT_OF_SCOPE_${scope.reason || "REQUEST"}`, message: scope.message }, 400);
@@ -734,8 +737,9 @@ async function handleChat(request: Request, userId: string) {
     role: message.sender === "stella" ? ("assistant" as const) : ("user" as const),
     content: message.sender === "stella" ? message.text : wrapMessageAsData(message.text),
   }));
-  const context = body.pageTitle
-    ? wrapMessageAsData(`Current IELTS study page: ${body.pageTitle}`) + "\n\n"
+  const pageTitle = (body.pageTitle || (typeof body.metadata?.pageTitle === "string" ? body.metadata.pageTitle : "")).trim();
+  const context = pageTitle
+    ? wrapMessageAsData(`Current IELTS study page: ${pageTitle}`) + "\n\n"
     : "";
 
   try {
@@ -747,7 +751,7 @@ async function handleChat(request: Request, userId: string) {
       systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
       maxTokens: MAX_CHAT_OUTPUT_TOKENS,
     });
-    return reply({ answer: text, message: text });
+    return reply({ answer: text, message: text, reply: text });
   } catch (error) {
     console.error("[evaluate] chat provider failed", error);
     return reply({ code: "CHAT_FAILED", message: "Stella couldn't answer just now. Please try again." }, 502);
