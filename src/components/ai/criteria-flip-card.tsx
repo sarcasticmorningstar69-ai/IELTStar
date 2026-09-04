@@ -10,7 +10,7 @@
 import * as React from "react";
 import type { AiCriterionScore, AiReliability, IeltsCriterion } from "@/lib/ai/types";
 import { cn } from "@/lib/utils";
-import { Sparkles, CheckCircle2, Volume2, BookOpen, Activity, Lock, Eye } from "lucide-react";
+import { Sparkles, CheckCircle2, Volume2, BookOpen, Activity, Lock, Eye, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const CRITERIA_METADATA: Record<
@@ -87,8 +87,27 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
     setFlipped(next);
   };
 
+  const findScore = React.useCallback(
+    (criterionName: IeltsCriterion) =>
+      criteria.find(
+        (c) =>
+          c.criterion === criterionName ||
+          c.criterion.replace("&", "and") === criterionName.replace("&", "and")
+      ),
+    [criteria]
+  );
+
   const revealedCount = ORDERED_CRITERIA.filter((c) => flipped[c]).length;
   const isAllRevealed = revealedCount === ORDERED_CRITERIA.length;
+
+  /*
+   * Upgrades are only listed for criteria the student has already revealed,
+   * so reading this section cannot give away a score still hidden behind a
+   * card. Criteria with no upgrades simply do not appear.
+   */
+  const upgradeGroups = ORDERED_CRITERIA.filter((name) => flipped[name])
+    .map((name) => ({ name, samples: findScore(name)?.upgradedSamples ?? [] }))
+    .filter((group) => group.samples.length > 0);
 
   return (
     <div className="space-y-4">
@@ -125,11 +144,7 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {ORDERED_CRITERIA.map((criterionName) => {
-          const score = criteria.find(
-            (c) =>
-              c.criterion === criterionName ||
-              c.criterion.replace("&", "and") === criterionName.replace("&", "and")
-          );
+          const score = findScore(criterionName);
 
           const meta = CRITERIA_METADATA[criterionName];
           const Icon = meta.icon;
@@ -137,6 +152,7 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
           // Only this criterion's own band is ever shown. No borrowing, no default.
           const bandNumber = score && score.band != null ? Math.round(score.band) : null;
           const bandLabel = bandNumber === null ? "Not scored" : `Band ${bandNumber}`;
+          const upgradeCount = score?.upgradedSamples?.length ?? 0;
 
           return (
             <div
@@ -246,6 +262,12 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                   {score?.nextStep && (
                     <div className="mt-2 rounded-xl border border-brand-bright/20 bg-brand-soft/50 p-2 text-[11px] leading-snug font-medium text-brand-bright">
                       <strong className="text-foreground">Next step:</strong> {score.nextStep}
+                      {upgradeCount > 0 && (
+                        <span className="text-muted-foreground">
+                          {" "}· {upgradeCount} higher-band example
+                          {upgradeCount === 1 ? "" : "s"} below
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -254,6 +276,77 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
           );
         })}
       </div>
+
+      {/*
+        Higher-band rewrites. Every "original" here is wording the student
+        actually said: the server drops any sample it cannot find in their own
+        transcript, so this section never shows an invented sentence.
+      */}
+      {upgradeGroups.length > 0 && (
+        <div className="space-y-3 rounded-2xl border border-border bg-surface/50 p-4">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
+              <ArrowUpRight className="h-3 w-3" />
+              <span>Say it at a higher band</span>
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Your own sentences, rewritten at the next band up. Same ideas — read
+              them aloud a few times to make the pattern feel natural.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {upgradeGroups.map((group) => {
+              const meta = CRITERIA_METADATA[group.name];
+              return (
+                <div key={group.name} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full border border-border bg-muted/70 px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground uppercase">
+                      {meta.acronym}
+                    </span>
+                    <span className="text-xs font-semibold text-foreground">
+                      {group.name}
+                    </span>
+                  </div>
+
+                  {group.samples.map((sample, index) => (
+                    <div
+                      key={`${group.name}-${index}`}
+                      className="rounded-xl border border-border bg-card p-3 shadow-2xs"
+                    >
+                      <div className="space-y-1.5">
+                        <div>
+                          <div className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+                            You said
+                          </div>
+                          <p className="text-xs leading-relaxed text-muted-foreground italic">
+                            &ldquo;{sample.original}&rdquo;
+                          </p>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-semibold tracking-wide text-brand-bright uppercase">
+                              At Band {sample.targetBand}
+                            </span>
+                          </div>
+                          <p className="text-xs leading-relaxed font-medium text-foreground">
+                            &ldquo;{sample.upgraded}&rdquo;
+                          </p>
+                        </div>
+                      </div>
+
+                      <p className="mt-2 border-t border-border/60 pt-2 text-[11px] leading-snug text-muted-foreground">
+                        {sample.whyBetter}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
