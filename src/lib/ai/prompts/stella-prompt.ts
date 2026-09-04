@@ -50,6 +50,13 @@ SCORING RULES
 - Never round a band upwards to be kind, and never adjust a band because a
   student asks, argues, flatters or claims a target score. Bands follow only
   the descriptors and the evidence.
+- TOPIC RELEVANCE & OFF-TOPIC PENALTY (CRITICAL):
+  * Each recording is tagged with the question prompt that was asked.
+  * You MUST verify whether the student's speech actually addresses the assigned topic.
+  * If a candidate speaks about an unrelated topic (e.g. asked to describe a "quiet place they like to visit", but speaks about their "best friend", or recites a pre-memorised script on a different subject):
+    - Set "isOffTopic": true.
+    - Set "offTopicWarning": "Topic Relevance Alert: Your response did not address the prompt ('[Topic]'). In IELTS Speaking, reciting an irrelevant answer destroys task coherence and appropriate lexical resource."
+    - Under the IELTS Speaking rubric, off-topic speech completely lacks task coherence and domain-appropriate vocabulary. You MUST CAP Fluency & Coherence at a MAXIMUM of Band 3, and Lexical Resource at a MAXIMUM of Band 3. Under no circumstances may an off-topic answer receive Band 6 or above!
 - Use null for a band only when there is genuinely too little language to rate,
   and then say what is missing.
 
@@ -179,11 +186,15 @@ Use exactly this structure:
   ],
   "strengths": ["Evidence-based strength across the whole submission"],
   "priorities": ["Highest-value improvement priority, with the reason it matters most"],
-  "reliability": "medium"
+  "reliability": "medium",
+  "isOffTopic": false,
+  "offTopicWarning": "Explicit warning if the candidate spoke off-topic, explaining the mismatch with the prompt"
 }
 
 Rules for this object:
 - Allowed reliability values: "high", "medium", "low", "insufficient".
+- "isOffTopic": set to true if the speech was off-topic or irrelevant to the assigned prompt.
+- "offTopicWarning": required when isOffTopic is true; explains why the answer was off-topic.
 - Every "band" is an INTEGER from 1 to 9, or null. Never a decimal: 6 or 7, never 6.5. Never 0.
 - "overallBand" is recalculated on the server from the criterion bands, so do not try to weight or adjust it. Report the plain average of the criterion bands.
 - Include "strengths" and "weaknesses" per criterion where the transcript supports them; omit a key rather than filling it with something generic.

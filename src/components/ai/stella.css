@@ -99,44 +99,23 @@
 }
 
 /* -------------------------------------------------------------------------
-   TRANSCRIBING & THINKING - smooth ambient pulse & orbital glow
+   TRANSCRIBING & THINKING - smooth breathing pulse on the profile picture
    ------------------------------------------------------------------------- */
 @keyframes stella-thinking {
-	0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-	50% { transform: translate3d(0, -3%, 0) scale(1.03); }
+	0%, 100% {
+		transform: scale(1);
+		filter: brightness(1);
+	}
+	50% {
+		transform: scale(1.06);
+		filter: brightness(1.1);
+	}
 }
 
 .stella-state-transcribing .stella-body,
 .stella-state-thinking .stella-body {
-	animation: stella-thinking 2.4s ease-in-out infinite;
-}
-
-/* Orbiting luminous dot around the circular profile */
-.stella-orbit {
-	position: absolute;
-	inset: -5px;
-	border-radius: 50%;
-	pointer-events: none;
-	animation: stella-orbit-spin 2.6s linear infinite;
-}
-
-.stella-orbit::after {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 50%;
-	width: 6px;
-	height: 6px;
-	margin-top: -3px;
-	margin-left: -3px;
-	border-radius: 50%;
-	background: var(--brand-bright);
-	box-shadow: 0 0 8px var(--brand-bright);
-	opacity: 0.9;
-}
-
-@keyframes stella-orbit-spin {
-	to { transform: rotate(360deg); }
+	animation: stella-thinking 1.8s ease-in-out infinite;
+	will-change: transform, filter;
 }
 
 /* -------------------------------------------------------------------------

@@ -32,8 +32,10 @@ import type {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CriteriaFlipCards } from "@/components/ai/criteria-flip-card";
+import { FormattedChatMessage } from "@/components/ai/formatted-chat-message";
 import {
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   ChevronDown,
   Gauge,
@@ -597,21 +599,6 @@ export function StellaWorkspaceView({
             mobileTab === "chat" ? "flex" : "hidden lg:flex"
           )}
         >
-          <div className="flex items-center gap-3.5 rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <StellaAvatar state={stellaState} size={54} />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold tracking-tight">Stella speaking coach</p>
-                <span className="text-[10px] font-medium text-muted-foreground">
-                  {STELLA_STATUS_TEXT[stellaState]}
-                </span>
-              </div>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                Discuss your answers, ask for a stronger version, or practise a technique.
-              </p>
-            </div>
-          </div>
-
           {notice && (
             <div
               role="status"
@@ -652,7 +639,7 @@ export function StellaWorkspaceView({
                       message.isCorrection && "border-warning/40 bg-warning/10 text-foreground"
                     )}
                   >
-                    <p className="whitespace-pre-line">{message.text}</p>
+                    <FormattedChatMessage text={message.text} />
                     <div className="mt-1.5 text-right text-[10px] opacity-60">{message.timestamp}</div>
                   </div>
                 </div>
@@ -846,6 +833,18 @@ export function StellaWorkspaceView({
                 </div>
                 {result.reliability && <ReliabilityChip value={result.reliability} />}
               </div>
+
+              {result.offTopicWarning && (
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 text-xs text-rose-300 shadow-sm">
+                  <div className="flex items-center gap-2 font-semibold text-rose-400">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>Topic Relevance Alert</span>
+                  </div>
+                  <p className="mt-1 leading-relaxed text-rose-200/90 break-words">
+                    {result.offTopicWarning}
+                  </p>
+                </div>
+              )}
 
               {hasCriteria && (
                 <CriteriaFlipCards
@@ -1057,7 +1056,7 @@ function AnswerCard({
         )}
       </div>
 
-      <h4 className="mt-2 text-sm leading-snug font-semibold tracking-tight sm:text-base">
+      <h4 className="mt-2 text-sm leading-snug font-semibold tracking-tight sm:text-base break-words [overflow-wrap:anywhere]">
         {answer.label}
       </h4>
 
@@ -1115,13 +1114,13 @@ function AnswerCard({
       )}
 
       {analysis?.summary && (
-        <p className="mt-3 rounded-xl border border-border bg-surface/50 p-3 text-xs leading-relaxed text-foreground/90">
+        <p className="mt-3 rounded-xl border border-border bg-surface/50 p-3 text-xs leading-relaxed text-foreground/90 break-words [overflow-wrap:anywhere]">
           {analysis.summary}
         </p>
       )}
 
       {failure && (
-        <p className="mt-3 rounded-xl border border-warning/30 bg-warning/5 p-3 text-xs leading-relaxed text-warning">
+        <p className="mt-3 rounded-xl border border-warning/30 bg-warning/5 p-3 text-xs leading-relaxed text-warning break-words [overflow-wrap:anywhere]">
           {failure.message}
         </p>
       )}

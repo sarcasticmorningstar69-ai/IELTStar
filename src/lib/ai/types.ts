@@ -196,6 +196,8 @@ export interface AiAnswerAnalysis {
   summary?: string;
   strengths?: string[];
   priorities?: string[];
+  topicRelevance?: "on-topic" | "partially-relevant" | "off-topic";
+  offTopicReason?: string;
 }
 
 /** A recording that could not be analysed, so the student can retry just it. */
@@ -229,6 +231,8 @@ export interface AiAnalysisResult {
   priorities: string[];
   reliability: AiReliability;
   disclaimer: string;
+  isOffTopic?: boolean;
+  offTopicWarning?: string;
 }
 
 export interface AiAnalysisAnswerInput {

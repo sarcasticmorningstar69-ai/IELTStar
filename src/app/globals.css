@@ -489,6 +489,7 @@ html.theme-fading *::after {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   border-radius: 1rem;
+  overflow: hidden;
 }
 
 .criteria-card-front {

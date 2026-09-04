@@ -35,32 +35,23 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 /**
- * Upload an audio blob to Cloudflare R2 in the background using a presigned PUT URL.
+ * Upload an audio blob to Cloudflare R2 in the background via the server-side upload endpoint.
  */
 export async function syncAudioToR2(id: string, blob: Blob, mimeType: string): Promise<string | null> {
   try {
-    const res = await fetch("/api/audio/upload-url", {
+    const formData = new FormData();
+    formData.append("recordingId", id);
+    formData.append("mimeType", mimeType);
+    formData.append("audio", blob, `${id}.webm`);
+
+    const res = await fetch("/api/audio/upload", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recordingId: id, mimeType }),
-    });
+      body: formData,
+    }).catch(() => null);
 
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.configured || !data.presignedUrl) return null;
-
-    const uploadRes = await fetch(data.presignedUrl, {
-      method: "PUT",
-      headers: { "Content-Type": mimeType },
-      body: blob,
-    });
-
-    if (!uploadRes.ok) {
-      console.warn("R2 upload failed with status:", uploadRes.status);
-      return null;
-    }
-
-    return data.key;
+    if (!res || !res.ok) return null;
+    const data = (await res.json().catch(() => null)) as { key?: string } | null;
+    return data?.key ?? null;
   } catch (err) {
     console.debug("Background R2 sync deferred or offline:", err);
     return null;

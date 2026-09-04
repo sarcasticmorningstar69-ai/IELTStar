@@ -157,7 +157,7 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
           return (
             <div
               key={criterionName}
-              className="criteria-flip-card h-[245px] w-full select-none"
+              className="criteria-flip-card h-[280px] min-h-[280px] w-full select-none"
               onClick={() => toggleFlip(criterionName)}
               role="button"
               tabIndex={0}
@@ -174,7 +174,7 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                 {/* ── FRONT ── */}
                 <div
                   className={cn(
-                    "criteria-card-front flex flex-col justify-between border bg-gradient-to-b from-card to-surface p-5 shadow-md transition-all",
+                    "criteria-card-front flex flex-col justify-between overflow-hidden border bg-gradient-to-b from-card to-surface p-5 shadow-md transition-all",
                     meta.glowColor,
                     "hover:scale-[1.01] hover:shadow-lg"
                   )}
@@ -189,8 +189,8 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                   </div>
 
                   <div className="my-auto space-y-1.5 text-center">
-                    <h4 className="text-sm font-bold text-foreground">{criterionName}</h4>
-                    <p className="line-clamp-2 px-2 text-[11px] text-muted-foreground">
+                    <h4 className="text-sm font-bold text-foreground break-words">{criterionName}</h4>
+                    <p className="line-clamp-2 px-2 text-[11px] text-muted-foreground break-words">
                       {meta.description}
                     </p>
                   </div>
@@ -210,66 +210,66 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                 {/* ── BACK ── */}
                 <div
                   className={cn(
-                    "criteria-card-back flex flex-col justify-between border border-brand-bright/35 bg-card p-5 shadow-lg",
+                    "criteria-card-back flex flex-col justify-between overflow-hidden border border-brand-bright/35 bg-card p-4 sm:p-5 shadow-lg",
                     "bg-gradient-to-br from-card via-surface/80 to-brand-soft/30"
                   )}
                 >
-                  <div>
-                    <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-2.5">
-                      <div>
-                        <div className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
-                          {criterionName}
-                        </div>
-                        <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
+                  <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-2.5 shrink-0">
+                    <div>
+                      <div className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
+                        {criterionName}
+                      </div>
+                      <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
+                        <span
+                          className={cn(
+                            "font-mono text-2xl font-black tabular-nums",
+                            bandNumber === null
+                              ? "text-base font-semibold text-muted-foreground"
+                              : "text-brand-bright"
+                          )}
+                        >
+                          {bandLabel}
+                        </span>
+                        {score?.reliability && (
                           <span
                             className={cn(
-                              "font-mono text-2xl font-black tabular-nums",
-                              bandNumber === null
-                                ? "text-base font-semibold text-muted-foreground"
-                                : "text-brand-bright"
+                              "rounded border px-1.5 py-0.5 text-[10px] font-semibold",
+                              score.reliability === "high" &&
+                                "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+                              score.reliability === "medium" &&
+                                "border-border bg-muted/60 text-muted-foreground",
+                              (score.reliability === "low" ||
+                                score.reliability === "insufficient") &&
+                                "border-warning/40 bg-warning/10 text-warning"
                             )}
                           >
-                            {bandLabel}
+                            {RELIABILITY_LABEL[score.reliability]}
                           </span>
-                          {score?.reliability && (
-                            <span
-                              className={cn(
-                                "rounded border px-1.5 py-0.5 text-[10px] font-semibold",
-                                score.reliability === "high" &&
-                                  "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-                                score.reliability === "medium" &&
-                                  "border-border bg-muted/60 text-muted-foreground",
-                                (score.reliability === "low" ||
-                                  score.reliability === "insufficient") &&
-                                  "border-warning/40 bg-warning/10 text-warning"
-                              )}
-                            >
-                              {RELIABILITY_LABEL[score.reliability]}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-soft text-brand-bright">
-                        <Icon className="h-4 w-4" />
+                        )}
                       </div>
                     </div>
-
-                    <p className="mt-2.5 line-clamp-3 text-xs leading-relaxed text-foreground/90">
-                      {score?.summary || "Stella did not return a note for this criterion."}
-                    </p>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-soft text-brand-bright shrink-0">
+                      <Icon className="h-4 w-4" />
+                    </div>
                   </div>
 
-                  {score?.nextStep && (
-                    <div className="mt-2 rounded-xl border border-brand-bright/20 bg-brand-soft/50 p-2 text-[11px] leading-snug font-medium text-brand-bright">
-                      <strong className="text-foreground">Next step:</strong> {score.nextStep}
-                      {upgradeCount > 0 && (
-                        <span className="text-muted-foreground">
-                          {" "}· {upgradeCount} higher-band example
-                          {upgradeCount === 1 ? "" : "s"} below
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <div className="flex-1 overflow-y-auto scrollbar-thin my-2 pr-1 space-y-2">
+                    <p className="text-xs leading-relaxed text-foreground/90 break-words [overflow-wrap:anywhere]">
+                      {score?.summary || "Stella did not return a note for this criterion."}
+                    </p>
+
+                    {score?.nextStep && (
+                      <div className="rounded-xl border border-brand-bright/20 bg-brand-soft/50 p-2 text-[11px] leading-snug font-medium text-brand-bright break-words [overflow-wrap:anywhere]">
+                        <strong className="text-foreground">Next step:</strong> {score.nextStep}
+                        {upgradeCount > 0 && (
+                          <span className="text-muted-foreground">
+                            {" "}· {upgradeCount} higher-band example
+                            {upgradeCount === 1 ? "" : "s"} below
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -319,7 +319,7 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                           <div className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
                             You said
                           </div>
-                          <p className="text-xs leading-relaxed text-muted-foreground italic">
+                          <p className="text-xs leading-relaxed text-muted-foreground italic break-words [overflow-wrap:anywhere]">
                             &ldquo;{sample.original}&rdquo;
                           </p>
                         </div>
@@ -330,13 +330,13 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                               At Band {sample.targetBand}
                             </span>
                           </div>
-                          <p className="text-xs leading-relaxed font-medium text-foreground">
+                          <p className="text-xs leading-relaxed font-medium text-foreground break-words [overflow-wrap:anywhere]">
                             &ldquo;{sample.upgraded}&rdquo;
                           </p>
                         </div>
                       </div>
 
-                      <p className="mt-2 border-t border-border/60 pt-2 text-[11px] leading-snug text-muted-foreground">
+                      <p className="mt-2 border-t border-border/60 pt-2 text-[11px] leading-snug text-muted-foreground break-words [overflow-wrap:anywhere]">
                         {sample.whyBetter}
                       </p>
                     </div>

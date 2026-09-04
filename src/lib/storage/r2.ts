@@ -60,6 +60,25 @@ export async function getAudioUploadUrl(
   return { presignedUrl: await getSignedUrl(r2Client, command, { expiresIn: 300 }), key };
 }
 
+export async function uploadAudioDirect(
+  userId: string,
+  recordingId: string,
+  buffer: Uint8Array | Buffer,
+  mimeType?: string
+): Promise<string | null> {
+  if (!isR2Configured) return null;
+  const key = audioKey(userId, recordingId);
+  await r2Client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      ContentType: normaliseMimeType(mimeType),
+      Body: buffer,
+    })
+  );
+  return key;
+}
+
 export async function getAudioPlaybackUrl(userId: string, recordingId: string): Promise<string | null> {
   if (!isR2Configured) return null;
   return getSignedUrl(r2Client, new GetObjectCommand({

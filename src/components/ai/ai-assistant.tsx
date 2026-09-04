@@ -41,6 +41,7 @@ import {
   WHY_FRAMING,
 } from "@/components/views/learn/learn-shared";
 import { Button } from "@/components/ui/button";
+import { FormattedChatMessage } from "@/components/ai/formatted-chat-message";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
@@ -202,17 +203,18 @@ function TypewriterText({
   }, [tokens, shouldReveal]);
 
   const isTyping = count < tokens.length;
+  const visibleText = isTyping ? tokens.slice(0, count).join("") : text;
 
   return (
-    <p className="whitespace-pre-line">
-      {tokens.slice(0, count).join("")}
+    <div className="relative">
+      <FormattedChatMessage text={visibleText} />
       {isTyping && (
         <span
           aria-hidden="true"
           className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-[2px] rounded-full bg-brand-bright align-middle animate-pulse"
         />
       )}
-    </p>
+    </div>
   );
 }
 
@@ -1212,7 +1214,7 @@ export function AiAssistant() {
                       onTick={() => scrollChatsToBottom(false)}
                     />
                   ) : (
-                    <p className="whitespace-pre-line">{m.text}</p>
+                    <FormattedChatMessage text={m.text} />
                   )}
                   <div className="mt-1 text-[10px] opacity-60 text-right">{m.timestamp}</div>
                 </div>
@@ -1485,7 +1487,7 @@ export function AiAssistant() {
                               onTick={() => scrollChatsToBottom(false)}
                             />
                           ) : (
-                            <p className="whitespace-pre-line">{msg.text}</p>
+                            <FormattedChatMessage text={msg.text} />
                           )}
                           <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                         </div>
@@ -1630,7 +1632,7 @@ export function AiAssistant() {
                               onTick={() => scrollChatsToBottom(false)}
                             />
                           ) : (
-                            <p className="whitespace-pre-line">{msg.text}</p>
+                            <FormattedChatMessage text={msg.text} />
                           )}
                           <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                         </div>

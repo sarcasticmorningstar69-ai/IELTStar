@@ -162,6 +162,8 @@ const evaluationSchema = z.object({
   strengths: z.array(z.string().trim().min(1).max(700)).min(1).max(8),
   priorities: z.array(z.string().trim().min(1).max(700)).min(1).max(8),
   reliability: reliabilitySchema.optional(),
+  isOffTopic: z.boolean().optional(),
+  offTopicWarning: z.string().trim().max(1000).optional(),
 }).strip();
 
 type Evaluation = z.infer<typeof evaluationSchema>;
@@ -676,6 +678,26 @@ async function handleRecording(request: Request, userId: string) {
    * Pronunciation is usually unrated here because a transcript cannot evidence
    * it, so the average is taken over the criteria we could actually rate.
    */
+  // ── Topic Relevance & Off-Topic Enforcement ──
+  const isOffTopic = Boolean(evaluation.isOffTopic);
+  const offTopicWarning = evaluation.offTopicWarning || (
+    isOffTopic
+      ? "Topic Relevance Alert: Your response did not address the required prompt. In official IELTS, an off-topic response heavily penalises Fluency & Coherence and Lexical Resource (maximum Band 3)."
+      : undefined
+  );
+
+  if (isOffTopic) {
+    // Under IELTS rubric, off-topic speech destroys coherence to task and appropriate vocabulary.
+    // Deterministically cap Fluency & Coherence and Lexical Resource at maximum Band 3.
+    for (const item of criteria) {
+      if (item.criterion === "Fluency & Coherence" || item.criterion === "Lexical Resource") {
+        if (item.band !== null && item.band > 3) {
+          item.band = 3;
+        }
+      }
+    }
+  }
+
   const ratedBands = criteria
     .map((item) => item.band)
     .filter((value): value is number => value !== null);
@@ -698,6 +720,8 @@ async function handleRecording(request: Request, userId: string) {
     priorities: evaluation.priorities,
     reliability,
     disclaimer: "This estimate is for practice and self-reflection. Official IELTS examinations are scored under strict certified test conditions.",
+    isOffTopic: isOffTopic || undefined,
+    offTopicWarning,
   };
   return reply(result);
 }

@@ -49,7 +49,6 @@ export function StellaAvatar({
 }: StellaAvatarProps) {
 	const media = STELLA_MEDIA[state] ?? { kind: "coded" as const };
 	const clampedLevel = Math.min(1, Math.max(0, Number.isFinite(level) ? level : 0));
-	const showOrbit = state === "transcribing" || state === "thinking";
 	const showRing = state === "listening";
 
 	const preferred = media.kind === "image" ? media.src : STELLA_ARTWORK;
@@ -91,7 +90,6 @@ export function StellaAvatar({
 			}
 		>
 			{showRing && <span className="stella-ring" aria-hidden="true" />}
-			{showOrbit && <span className="stella-orbit" aria-hidden="true" />}
 			<span className="stella-stage" aria-hidden="true">
 				{media.kind === "video" ? (
 					<video
