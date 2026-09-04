@@ -109,14 +109,38 @@ export interface AiFluencyMetrics {
   repairs: number | null;
 }
 
+/**
+ * A higher-band rewrite of something the student actually said.
+ *
+ * `original` must appear verbatim in that student's transcript. The point is to
+ * show a better way to express THEIR idea, so it stays achievable and honest;
+ * an invented model answer would teach nothing and imply they said something
+ * they did not.
+ */
+export interface AiUpgradedSample {
+  original: string;
+  upgraded: string;
+  /** The band this rewrite illustrates. Always above the criterion band. */
+  targetBand: number;
+  /** Which descriptor feature the rewrite demonstrates. */
+  whyBetter: string;
+}
+
 export interface AiCriterionScore {
   criterion: IeltsCriterion;
+  /**
+   * Whole band only, 1-9, or null when there is too little language to rate.
+   * The official descriptor table has no half levels, so a criterion score is
+   * never a decimal. Only the overall average may end in .5.
+   */
   band: number | null;
   /** Preferred over a single band wherever the evidence is thin. */
   range?: { low: number; high: number };
   reliability?: AiReliability;
   summary: string;
   evidence: string[];
+  /** Higher-band versions of the student's own sentences. */
+  upgradedSamples?: AiUpgradedSample[];
   nextStep: string;
 }
 
@@ -193,6 +217,10 @@ export interface AiAnalysisResult {
   answers: AiAnswerAnalysis[];
   /** Recordings that failed. Present only when at least one failed. */
   failedAnswers?: AiAnswerFailure[];
+  /**
+   * Average of the rated criteria, rounded to the nearest half band exactly as
+   * IELTS reports it. Computed on the server, never taken from the model.
+   */
   overallBand: number | null;
   overallRange?: { low: number; high: number };
   criteria: AiCriterionScore[];
