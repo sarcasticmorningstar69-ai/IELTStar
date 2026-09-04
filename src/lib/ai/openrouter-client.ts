@@ -2,6 +2,29 @@
 
 import { STELLA_SYSTEM_INSTRUCTION } from "./prompts/stella-prompt";
 
+/**
+ * Default feedback model.
+ *
+ * Deliberately NOT a "-contributor" tier. Those tiers are cheaper because the
+ * provider uses the prompts to improve its products, and our prompts contain
+ * students' transcribed speech. Never make a contributor tier the default.
+ *
+ * Gemini 3.8 Flash is generally available (not preview), supports structured
+ * JSON output, and allows large completions — which matters because a full
+ * mock returns per-answer notes for up to 20 recordings in one object.
+ */
+export const DEFAULT_FEEDBACK_MODEL = "google/gemini-3.8-flash";
+
+/**
+ * Hard ceiling on completion length.
+ *
+ * This is a safety limit, not a budget: providers bill only for tokens actually
+ * generated, so a high ceiling costs nothing on short answers. It exists to
+ * stop a runaway response, and it must stay comfortably above the largest
+ * legitimate analysis or the JSON arrives truncated and fails validation.
+ */
+const MAX_COMPLETION_TOKENS = 16000;
+
 export interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -23,12 +46,14 @@ export async function callOpenRouter({
     throw new Error("OPENROUTER_API_KEY is not configured.");
   }
 
-  const model =
-    process.env.OPENROUTER_MODEL || "meta/muse-spark-1.3-contributor";
+  const model = process.env.OPENROUTER_MODEL || DEFAULT_FEEDBACK_MODEL;
   const body: Record<string, unknown> = {
     model,
     messages: [{ role: "system", content: systemPrompt }, ...messages],
-    max_tokens: Math.max(1, Math.min(3000, Math.round(maxTokens))),
+    max_tokens: Math.max(
+      1,
+      Math.min(MAX_COMPLETION_TOKENS, Math.round(maxTokens))
+    ),
     reasoning: { effort: "medium" },
   };
 
@@ -55,17 +80,32 @@ export async function callOpenRouter({
   }
 
   const data: unknown = await response.json();
-  const content =
+  const choice =
     typeof data === "object" &&
     data !== null &&
     "choices" in data &&
-    Array.isArray(data.choices) &&
-    typeof data.choices[0]?.message?.content === "string"
-      ? data.choices[0].message.content.trim()
+    Array.isArray(data.choices)
+      ? data.choices[0]
+      : undefined;
+
+  const content =
+    typeof choice?.message?.content === "string"
+      ? choice.message.content.trim()
       : "";
 
   if (!content) {
     throw new Error("OpenRouter returned no response content.");
+  }
+
+  /*
+   * A truncated completion is worse than a failed one: the JSON parses as
+   * garbage or fails schema validation, and the student sees a generic error.
+   * Surface it explicitly so the caller can report an honest failure.
+   */
+  if (choice?.finish_reason === "length") {
+    throw new Error(
+      "OpenRouter response was cut off before it was complete (token limit reached)."
+    );
   }
 
   return content;
