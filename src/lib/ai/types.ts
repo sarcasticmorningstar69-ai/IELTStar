@@ -143,17 +143,43 @@ export interface AiGrammarCorrection {
   explanation: string;
 }
 
-/** Per-answer result inside a larger analysis. */
+/**
+ * Per-answer result inside a larger analysis.
+ *
+ * `transcript` and `words` are ALWAYS Deepgram's output for this one recording.
+ * The feedback model is an examiner, not a transcriber: it never rewrites,
+ * paraphrases or "tidies up" what the student actually said. A student-typed
+ * correction lives in `studentCorrectedTranscript` and is labelled as such on
+ * screen, so the two are never confused.
+ */
 export interface AiAnswerAnalysis {
   recordingId: string;
+  /** IELTS part this recording belongs to, when known. */
+  part?: number;
   questionLabel: string;
   transcript: string;
+  /** Optional student-supplied correction. Never treated as verified. */
+  studentCorrectedTranscript?: string;
   annotatedTranscript?: string;
   grammarCorrections?: AiGrammarCorrection[];
   words: AiTranscriptWord[];
   events: AiTimestampEvent[];
   audioQuality: AiAudioQuality;
   fluency?: AiFluencyMetrics;
+  /** Duration in seconds, as measured on the device that recorded it. */
+  durationSeconds?: number;
+  /** Examiner comment for this answer only. */
+  summary?: string;
+  strengths?: string[];
+  priorities?: string[];
+}
+
+/** A recording that could not be analysed, so the student can retry just it. */
+export interface AiAnswerFailure {
+  recordingId: string;
+  questionLabel: string;
+  code: "TRANSCRIPTION_FAILED" | "EMPTY_TRANSCRIPT";
+  message: string;
 }
 
 /**
@@ -165,6 +191,8 @@ export type AiEstimateKind = "practice-estimate" | "full-mock-estimate";
 export interface AiAnalysisResult {
   kind: AiEstimateKind;
   answers: AiAnswerAnalysis[];
+  /** Recordings that failed. Present only when at least one failed. */
+  failedAnswers?: AiAnswerFailure[];
   overallBand: number | null;
   overallRange?: { low: number; high: number };
   criteria: AiCriterionScore[];
@@ -192,5 +220,10 @@ export interface AiAnalysisRequest {
   mockId?: string;
   sessionId?: string;
   scope: "entire-mock" | "selected-answers";
+  /**
+   * Stable per-submission id. Sent again unchanged when retrying, so quota is
+   * reserved once per real submission rather than once per network attempt.
+   */
+  analysisRequestId?: string;
   answers: AiAnalysisAnswerInput[];
 }
