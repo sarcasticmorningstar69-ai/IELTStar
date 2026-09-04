@@ -18,7 +18,9 @@ const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/;
 
 export const r2Client = new S3Client({
   region: "auto",
-  endpoint: accountId ? `https://${accountId}.r2.cloudflarestorage.com` : undefined,
+  endpoint: accountId
+    ? "https://" + accountId + ".r2.cloudflarestorage.com"
+    : undefined,
   credentials: { accessKeyId, secretAccessKey },
 });
 
@@ -30,7 +32,7 @@ export function audioKey(userId: string, recordingId: string): string {
   if (!isSafeId(userId) || !isSafeId(recordingId)) {
     throw new Error("Unsafe identifier rejected while building an object key.");
   }
-  return `recordings/${userId}/${recordingId}.webm`;
+  return "recordings/" + userId + "/" + recordingId + ".webm";
 }
 
 export function normaliseMimeType(mimeType?: string | null): string {
