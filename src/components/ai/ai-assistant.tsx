@@ -858,7 +858,13 @@ export function AiAssistant() {
         }),
       });
 
-      if (!res.ok) throw new Error("AI request failed");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        const errorMsg =
+          (typeof errorData?.message === "string" && errorData.message.trim()) ||
+          `Stella was unable to respond (status ${res.status}). Please try again.`;
+        throw new Error(errorMsg);
+      }
       const data = await res.json();
 
       const reply = data.reply || data.answer || data.message || "I've analyzed that for you.";
@@ -871,11 +877,15 @@ export function AiAssistant() {
       setMessages((prev) => [...prev, stellaMsg]);
       saveMessageToConversation(convId, stellaMsg, user?.id);
       setHistoryList(listConversations());
-    } catch {
+    } catch (err: unknown) {
+      const displayError =
+        err instanceof Error && err.message
+          ? err.message
+          : "Stella couldn't answer just now. Please try again.";
       const fallbackMsg: ChatMessageItem = {
         id: `stella-err-${Date.now()}`,
         sender: "stella",
-        text: `Here's what I suggest for "${title}":\n\n1. **Lead with a direct statement** — don't overcomplicate your first sentence.\n2. **Extend with a real contrast or consequence** to showcase complex grammar.\n3. **Keep speaking smoothly** — natural cadence is rated higher than complex pauses.`,
+        text: displayError,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);
