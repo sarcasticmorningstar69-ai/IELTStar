@@ -124,10 +124,20 @@ export const STELLA_SCOPE_RULE = [
 ].join("\n");
 
 /**
- * Ceiling for chat replies. Sized to accommodate reasoning models (like Grok 4.6)
- * which count internal reasoning tokens toward completion tokens before emitting text.
+ * Ceiling for chat replies, and one of the three scope layers above.
+ *
+ * 1,500 tokens is roughly 1,100 words: far more than any coaching answer
+ * needs, and far less than a working essay, article or program. Do not raise
+ * this to "make Stella more helpful" — if answers are getting cut off, the
+ * prompt is rambling, not the cap.
+ *
+ * One genuine reason it was once raised: reasoning models count internal
+ * reasoning tokens as completion tokens, so a small cap can be exhausted
+ * before a single visible character is emitted. That is handled at the call
+ * site instead, by passing `reasoningEffort: "none"` for chat. If you ever
+ * turn reasoning back on for this surface, this number has to move with it.
  */
-export const MAX_CHAT_OUTPUT_TOKENS = 4000;
+export const MAX_CHAT_OUTPUT_TOKENS = 1500;
 
 /**
  * Ceiling for one structured analysis, covering all answers in a submission.
