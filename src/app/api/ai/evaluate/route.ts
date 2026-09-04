@@ -1,17 +1,26 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getVerifiedUser, unauthenticated } from "@/lib/supabase/server";
-import type {
-  AiProviderStatus,
-  AiAnalysisResult,
-  AiAnalysisRequest,
-  AiCriterionScore,
-  AiTimestampEvent,
-  AiTranscriptWord,
-  AiAnswerAnalysis,
-  AiGrammarCorrection,
+import {
+  IELTS_CRITERIA,
+  type AiAnalysisResult,
+  type AiCriterionScore,
+  type AiProviderStatus,
+  type AiReliability,
+  type AiTranscriptWord,
 } from "@/lib/ai/types";
 import { callOpenRouter } from "@/lib/ai/openrouter-client";
 import { transcribeWithDeepgram } from "@/lib/ai/deepgram-client";
+import { consumeQuota, quotaMessage } from "@/lib/ai/quota";
+import {
+  MAX_ANALYSIS_OUTPUT_TOKENS,
+  MAX_CHAT_OUTPUT_TOKENS,
+  STELLA_SCOPE_RULE,
+  prescreenStudentMessage,
+  wrapMessageAsData,
+  wrapTranscriptAsData,
+} from "@/lib/ai/scope-guard";
+import { MAX_AUDIO_BYTES, MAX_AUDIO_SECONDS } from "@/lib/storage/r2";
 import {
   STELLA_SYSTEM_INSTRUCTION,
   EVALUATION_JSON_SCHEMA_PROMPT,
@@ -19,383 +28,521 @@ import {
 
 export const dynamic = "force-dynamic";
 
+const NO_STORE = { "Cache-Control": "no-store" };
+const ALLOWED_AUDIO_TYPES = new Set([
+  "audio/webm",
+  "audio/webm;codecs=opus",
+  "audio/ogg",
+  "audio/mp4",
+  "audio/mpeg",
+]);
+
+const surfaceSchema = z.enum([
+  "part1",
+  "part2",
+  "part3",
+  "full-mock",
+  "topic-wheel",
+  "technique",
+  "tip",
+  "problem",
+  "recordings",
+  "general",
+]);
+
+const answerInputSchema = z
+  .object({
+    recordingId: z.string().min(1).max(128).regex(/^[A-Za-z0-9_-]+$/),
+    part: z.number().int().min(1).max(3),
+    questionLabel: z.string().trim().min(1).max(500),
+    topicId: z.string().max(128).optional(),
+    questionId: z.string().max(128).optional(),
+    duration: z.number().finite().positive().max(MAX_AUDIO_SECONDS),
+    startOffset: z.number().finite().min(0).optional(),
+  })
+  .strict();
+
+const analysisRequestSchema = z
+  .object({
+    mode: z.literal("mock-analysis"),
+    surface: surfaceSchema,
+    mockId: z.string().max(128).optional(),
+    sessionId: z.string().max(128).optional(),
+    scope: z.enum(["entire-mock", "selected-answers"]),
+    answers: z.array(answerInputSchema).min(1).max(20),
+  })
+  .strict();
+
+const recentMessageSchema = z
+  .object({
+    sender: z.string().max(20),
+    text: z.string().trim().min(1).max(2000),
+  })
+  .strip();
+
+const chatRequestSchema = z
+  .object({
+    mode: z.string().max(64).optional(),
+    question: z.string().trim().min(1).max(2000).optional(),
+    correctedText: z.string().trim().max(5000).optional(),
+    pageTitle: z.string().trim().max(200).optional(),
+    recentMessages: z.array(recentMessageSchema).max(8).optional(),
+  })
+  .strip();
+
+const grammarCorrectionSchema = z
+  .object({
+    original: z.string().trim().min(1).max(500),
+    corrected: z.string().trim().min(1).max(500),
+    explanation: z.string().trim().min(1).max(1200),
+  })
+  .strip();
+
+const modelCriterionSchema = z
+  .object({
+    criterion: z.string().trim().min(1).max(100),
+    band: z.number().finite().min(0).max(9).nullable(),
+    summary: z.string().trim().min(1).max(2000),
+    evidence: z.array(z.string().trim().min(1).max(700)).max(8).optional(),
+    strengths: z.array(z.string().trim().min(1).max(700)).max(8).optional(),
+    weaknesses: z.array(z.string().trim().min(1).max(700)).max(8).optional(),
+    nextStep: z.string().trim().min(1).max(1200),
+    reliability: z.enum(["high", "medium", "low", "insufficient"]).optional(),
+  })
+  .strip();
+
+const modelEvaluationSchema = z
+  .object({
+    overallBand: z.number().finite().min(0).max(9).nullable(),
+    criteria: z.array(modelCriterionSchema).min(4).max(4),
+    grammarCorrections: z.array(grammarCorrectionSchema).max(30).default([]),
+    strengths: z.array(z.string().trim().min(1).max(700)).min(1).max(8),
+    priorities: z.array(z.string().trim().min(1).max(700)).min(1).max(8),
+    reliability: z.enum(["high", "medium", "low", "insufficient"]).optional(),
+  })
+  .strip();
+
+type ModelEvaluation = z.infer<typeof modelEvaluationSchema>;
+type CriterionName = (typeof IELTS_CRITERIA)[number];
+
+function json(body: unknown, status = 200) {
+  return NextResponse.json(body, { status, headers: NO_STORE });
+}
+
 function providerStatus(): AiProviderStatus & { openrouter: boolean } {
   return {
     deepgram: Boolean(process.env.DEEPGRAM_API_KEY),
-    glm: Boolean(process.env.GLM_API_KEY),
+    glm: false,
     openrouter: Boolean(process.env.OPENROUTER_API_KEY),
     transcriptionModel: process.env.DEEPGRAM_MODEL || "nova-3",
-    feedbackModel: process.env.OPENROUTER_MODEL || "meta/muse-spark-1.3-contributor",
+    feedbackModel:
+      process.env.OPENROUTER_MODEL || "meta/muse-spark-1.3-contributor",
   };
+}
+
+function quotaStatus(reason: string): number {
+  return reason === "QUOTA_BACKEND_UNAVAILABLE" ||
+    reason === "QUOTA_CHECK_FAILED"
+    ? 503
+    : 429;
+}
+
+function cleanModelJson(raw: string): unknown {
+  const trimmed = raw.trim();
+  const withoutFence = trimmed
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/i, "");
+  return JSON.parse(withoutFence);
+}
+
+function criterionName(value: string): CriterionName | null {
+  const lower = value.toLowerCase();
+  if (lower.includes("fluency") && lower.includes("coherence")) {
+    return "Fluency & Coherence";
+  }
+  if (lower.includes("lexical")) return "Lexical Resource";
+  if (lower.includes("grammatical")) {
+    return "Grammatical Range & Accuracy";
+  }
+  if (lower.includes("pronunciation")) return "Pronunciation";
+  return null;
+}
+
+function roundedBand(value: number | null): number | null {
+  if (value === null) return null;
+  return Math.max(0, Math.min(9, Math.round(value * 2) / 2));
+}
+
+function buildCriteria(evaluation: ModelEvaluation): AiCriterionScore[] {
+  return IELTS_CRITERIA.map((requiredName) => {
+    const source = evaluation.criteria.find(
+      (entry) => criterionName(entry.criterion) === requiredName
+    );
+    if (!source) {
+      throw new Error(`Model response omitted ${requiredName}.`);
+    }
+
+    const evidence = [
+      ...(source.evidence || []),
+      ...(source.strengths || []),
+      ...(source.weaknesses || []).map((item) => `Needs work: ${item}`),
+    ].slice(0, 8);
+
+    const reliability: AiReliability =
+      requiredName === "Pronunciation"
+        ? "low"
+        : source.reliability === "high"
+          ? "medium"
+          : source.reliability || "medium";
+
+    return {
+      criterion: requiredName,
+      band: roundedBand(source.band),
+      reliability,
+      summary: source.summary,
+      evidence: evidence.length > 0 ? evidence : [source.summary],
+      nextStep: source.nextStep,
+    };
+  });
 }
 
 export async function GET() {
-  return NextResponse.json(providerStatus(), {
-    headers: { "Cache-Control": "no-store" },
-  });
-}
-
-function generateSimulatedAnalysis(req: AiAnalysisRequest): AiAnalysisResult {
-  const isFullMock = req.scope === "entire-mock";
-
-  const answers: AiAnswerAnalysis[] = (req.answers && req.answers.length > 0
-    ? req.answers
-    : [{ recordingId: "rec-preview", part: 2, questionLabel: "Topic Wheel Prompt", duration: 45 }]
-  ).map((ans, idx) => {
-    const dur = Math.max(12, ans.duration || 35);
-    const label = ans.questionLabel || `Question ${idx + 1}`;
-
-    let text = "";
-    if (label.toLowerCase().includes("work") || label.toLowerCase().includes("study")) {
-      text =
-        "Well, currently I am studying computer science at university. To be honest, I find it quite demanding yet truly fascinating, especially when we develop software solutions that solve real-world problems. Sometimes the coursework can be overwhelming, but I genuinely enjoy collaborating with peers on complex programming assignments.";
-    } else if (label.toLowerCase().includes("hometown") || label.toLowerCase().includes("live")) {
-      text =
-        "I come from a vibrant city situated in the northern province. What I appreciate most about my hometown is the seamless blend of historical heritage and contemporary infrastructure. There are bustling local markets alongside serene public parks where residents often gather in the evenings.";
-    } else if (ans.part === 2 || label.toLowerCase().includes("describe") || label.toLowerCase().includes("topic")) {
-      text =
-        "I would like to talk about an unforgettable experience that took place a couple of years ago. It happened during my trip to the coastal region with several close friends. We decided to embark on a hiking excursion early in the morning. The scenery was absolutely breathtaking, with picturesque panoramic views overlooking the ocean. Looking back, that journey not only helped me unwind from academic pressure, but it also taught me the true value of perseverance and teamwork.";
-    } else {
-      text =
-        "From my perspective, this is an intriguing question with several valid angles. On the one hand, many individuals prioritize immediate convenience and efficiency in their day-to-day routines. On the other hand, there are distinct societal advantages when people invest time in fostering long-term interpersonal relationships and sustainable community habits.";
-    }
-
-    const wordsRaw = text.split(/\s+/);
-    const wordDuration = dur / (wordsRaw.length + 2);
-    let curTime = 0.8;
-
-    const words: AiTranscriptWord[] = wordsRaw.map((w, wIdx) => {
-      const cleanWord = w.replace(/[^a-zA-Z'-]/g, "");
-      const start = parseFloat(curTime.toFixed(2));
-      curTime += wordDuration;
-      const end = parseFloat(curTime.toFixed(2));
-      const confidence = wIdx % 7 === 0 ? 0.72 : 0.96;
-      return { word: cleanWord || w, start, end, confidence };
-    });
-
-    const events: AiTimestampEvent[] = [
-      {
-        start: 2.1,
-        end: 4.8,
-        criterion: "Lexical Resource",
-        type: "vocabulary",
-        comment: `Sophisticated idiomatic collocation: "${wordsRaw.slice(3, 8).join(" ")}"`,
-        reliability: "high",
-      },
-      {
-        start: Math.max(5.0, dur * 0.4),
-        end: Math.max(6.5, dur * 0.4 + 1.5),
-        criterion: "Fluency & Coherence",
-        type: "coherence",
-        comment: "Smooth discourse marker transition ('On the other hand...')",
-        reliability: "high",
-      },
-      {
-        start: Math.max(8.0, dur * 0.75),
-        end: Math.max(9.2, dur * 0.75 + 1.2),
-        criterion: "Grammatical Range & Accuracy",
-        type: "grammar",
-        comment: `Complex subordinate clause: "${wordsRaw.slice(Math.floor(wordsRaw.length * 0.6), Math.floor(wordsRaw.length * 0.6) + 5).join(" ")}"`,
-        reliability: "high",
-      },
-    ];
-
-    const grammarCorrections: AiGrammarCorrection[] = [
-      {
-        original: "took place a couple years ago",
-        corrected: "took place a couple of years ago",
-        explanation: "In standard British English, the preposition 'of' is required after 'a couple' before a noun phrase.",
-      },
-      {
-        original: "helped me to unwind from pressure",
-        corrected: "helped me unwind from academic pressure",
-        explanation: "The bare infinitive 'unwind' following 'helped me' produces a more natural, idiomatic flow.",
-      },
-    ];
-
-    return {
-      recordingId: ans.recordingId,
-      questionLabel: label,
-      transcript: text,
-      words,
-      events,
-      grammarCorrections,
-      audioQuality: {
-        usable: true,
-        reliability: "high",
-        snrDb: 24,
-        clippingDetected: false,
-        backgroundNoise: "quiet",
-        issues: [],
-      },
-      fluency: {
-        wordsPerMinute: Math.round((wordsRaw.length / dur) * 60),
-        articulationRate: Math.round((wordsRaw.length / (dur * 0.85)) * 60),
-        meanLengthOfRun: 8,
-        silentPauses: 2,
-        filledPauses: 1,
-        pausesInsideClauses: 1,
-        repetitions: 0,
-        repairs: 0,
-      },
-    };
-  });
-
-  const criteria: AiCriterionScore[] = [
-    {
-      criterion: "Fluency & Coherence",
-      band: 7,
-      summary:
-        "Maintains a natural flow with minimal hesitation. Uses discourse markers smoothly to connect ideas logically across sentences.",
-      evidence: [
-        "Consistent rhythm without distracting silent pauses.",
-        "Effective signposting using 'To be honest' and 'Looking back'.",
-      ],
-      nextStep: "Practice holding the floor using transitional phrases like 'What strikes me most about this is...'",
-    },
-    {
-      criterion: "Lexical Resource",
-      band: 7,
-      summary:
-        "Demonstrates a versatile vocabulary with accurate collocations and topic-specific terminology.",
-      evidence: [
-        "Natural use of high-band expressions such as 'picturesque panoramic views' and 'contemporary infrastructure'.",
-        "Clear ability to paraphrase unfamiliar terms without hesitation.",
-      ],
-      nextStep: "Incorporate more idiomatic adverb-adjective collocations like 'remarkably transformative' or 'deeply compelling'.",
-    },
-    {
-      criterion: "Grammatical Range & Accuracy",
-      band: 7,
-      summary:
-        "Displays a strong grasp of both simple and complex sentence structures with high accuracy.",
-      evidence: [
-        "Well-controlled complex conditional clauses and concession sentences.",
-        "Consistent tense consistency throughout narrative turns.",
-      ],
-      nextStep: "Experiment with inverted conditionals (e.g. 'Had I known earlier...') to push Grammatical Range into Band 8.",
-    },
-    {
-      criterion: "Pronunciation",
-      band: 7,
-      summary:
-        "Clear, easily intelligible speech with expressive intonation that enhances communicative effect.",
-      evidence: [
-        "Correct word stress on multisyllabic terms like 'contemporary' and 'perseverance'.",
-        "Natural pitch variation marking the end of sentences.",
-      ],
-      nextStep: "Focus on thought-group chunking and subtle linking across word boundaries.",
-    },
-  ];
-
-  return {
-    kind: isFullMock ? "full-mock-estimate" : "practice-estimate",
-    answers,
-    overallBand: 7,
-    overallRange: { low: 7, high: 7 },
-    criteria,
-    grammarCorrections: [
-      {
-        original: "took place a couple years ago",
-        corrected: "took place a couple of years ago",
-        explanation: "Include 'of' after 'a couple' before plural noun phrases in formal IELTS speaking.",
-      },
-      {
-        original: "it helped me to unwind",
-        corrected: "it helped me unwind",
-        explanation: "Using the bare infinitive after 'help' provides a smoother, more native cadence.",
-      },
-    ],
-    strengths: [
-      "Willingness to produce extended responses with sustained development of ideas.",
-      "Effective use of sophisticated vocabulary suited to the topic.",
-      "Clear intelligible pronunciation with communicative rhythm.",
-    ],
-    priorities: [
-      "Minimize mid-utterance pauses by practicing filler transitions like 'What strikes me most is...'",
-      "Broaden grammatical range with passive reporting and complex adverbial clauses.",
-    ],
-    reliability: "high",
-    disclaimer: "This estimate is for practice and self-reflection. Official IELTS examinations are scored under strict certified test conditions.",
-  };
+  return json(providerStatus());
 }
 
 export async function POST(request: Request) {
   const user = await getVerifiedUser(request);
   if (!user) {
-    return unauthenticated("Please sign in or create an account to use Stella AI analysis and coaching.");
+    return unauthenticated(
+      "Please sign in or create an account to use Stella AI analysis and coaching."
+    );
   }
 
   const contentType = request.headers.get("content-type") || "";
 
-  // 1. Multipart Audio / Answer Analysis Request
   if (contentType.includes("multipart/form-data")) {
-    try {
-      const formData = await request.formData();
-      const metaRaw = formData.get("metadata");
-      const metadata: AiAnalysisRequest = metaRaw
-        ? JSON.parse(metaRaw.toString())
-        : { mode: "mock-analysis", surface: "general", scope: "selected-answers", answers: [] };
-
-      const audioFile = formData.get("audio") as File | null;
-      let transcribedText = "";
-      let words: AiTranscriptWord[] = [];
-      let events: AiTimestampEvent[] = [];
-
-      // If audio file is provided and Deepgram is configured, transcribe with Deepgram Nova-3
-      if (audioFile && process.env.DEEPGRAM_API_KEY) {
-        try {
-          const buffer = await audioFile.arrayBuffer();
-          const dgResult = await transcribeWithDeepgram(buffer, audioFile.type || "audio/webm");
-          transcribedText = dgResult.transcript;
-          words = dgResult.words;
-          events = dgResult.events;
-        } catch (dgErr) {
-          console.error("[Deepgram Live Failed, Falling Back]", dgErr);
-        }
-      }
-
-      // If OpenRouter is configured with Meta Muse Spark 1.3 Contributor, run live AI evaluation
-      if (process.env.OPENROUTER_API_KEY) {
-        try {
-          const baseAnalysis = generateSimulatedAnalysis(metadata);
-          const answerText = transcribedText || baseAnalysis.answers[0]?.transcript || "";
-          const questionLabel = metadata.answers?.[0]?.questionLabel || "IELTS Speaking Prompt";
-
-          const evaluationPrompt = `The candidate gave the following spoken IELTS answer for the question "${questionLabel}":
----
-${answerText}
----
-${EVALUATION_JSON_SCHEMA_PROMPT}`;
-
-          const openRouterRaw = await callOpenRouter({
-            messages: [{ role: "user", content: evaluationPrompt }],
-            systemPrompt: STELLA_SYSTEM_INSTRUCTION,
-            maxTokens: 2000,
-          });
-
-          // Extract JSON from model output
-          const jsonMatch = openRouterRaw.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            if (parsed.overallBand && parsed.criteria) {
-              const liveResult: AiAnalysisResult = {
-                kind: metadata.scope === "entire-mock" ? "full-mock-estimate" : "practice-estimate",
-                answers: [
-                  {
-                    recordingId: metadata.answers?.[0]?.recordingId || "live-rec",
-                    questionLabel,
-                    transcript: answerText,
-                    words: words.length > 0 ? words : baseAnalysis.answers[0]?.words || [],
-                    events: events.length > 0 ? events : baseAnalysis.answers[0]?.events || [],
-                    grammarCorrections: parsed.grammarCorrections || baseAnalysis.grammarCorrections,
-                    audioQuality: baseAnalysis.answers[0]?.audioQuality || {
-                      snrDb: 25,
-                      clippingDetected: false,
-                      backgroundNoise: "quiet",
-                    },
-                    fluency: baseAnalysis.answers[0]?.fluency,
-                  },
-                ],
-                overallBand: parsed.overallBand,
-                overallRange: { low: parsed.overallBand, high: parsed.overallBand },
-                criteria: parsed.criteria,
-                grammarCorrections: parsed.grammarCorrections || baseAnalysis.grammarCorrections,
-                strengths: parsed.strengths || baseAnalysis.strengths,
-                priorities: parsed.priorities || baseAnalysis.priorities,
-                reliability: "high",
-                disclaimer: "This estimate is for practice and self-reflection. Official IELTS examinations are scored under strict certified test conditions.",
-              };
-              return NextResponse.json(liveResult);
-            }
-          }
-        } catch (evalErr) {
-          console.error("[OpenRouter Live Evaluation Failed, Using Fallback]", evalErr);
-        }
-      }
-
-      const result = generateSimulatedAnalysis(metadata);
-      return NextResponse.json(result);
-    } catch (err) {
-      console.error("[Evaluate Request Error]", err);
-      return NextResponse.json(
-        { message: "Failed to process audio analysis request." },
-        { status: 400 }
+    const status = providerStatus();
+    if (!status.deepgram || !status.openrouter) {
+      return json(
+        {
+          code: "AI_NOT_CONFIGURED",
+          message:
+            "Stella's recording analysis is not available yet. Please try again later.",
+        },
+        503
       );
     }
+
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return json(
+        { code: "INVALID_FORM", message: "The recording request was invalid." },
+        400
+      );
+    }
+
+    const metaRaw = formData.get("metadata");
+    if (typeof metaRaw !== "string") {
+      return json(
+        { code: "INVALID_METADATA", message: "Recording details are missing." },
+        400
+      );
+    }
+
+    let rawMetadata: unknown;
+    try {
+      rawMetadata = JSON.parse(metaRaw);
+    } catch {
+      return json(
+        { code: "INVALID_METADATA", message: "Recording details are invalid." },
+        400
+      );
+    }
+
+    const metadataResult = analysisRequestSchema.safeParse(rawMetadata);
+    if (!metadataResult.success) {
+      return json(
+        { code: "INVALID_METADATA", message: "Recording details are invalid." },
+        400
+      );
+    }
+    const metadata = metadataResult.data;
+
+    const audioEntries = formData
+      .getAll("audio")
+      .filter((entry): entry is File => entry instanceof File);
+
+    if (audioEntries.length !== 1 || metadata.answers.length !== 1) {
+      return json(
+        {
+          code: "MULTI_RECORDING_PENDING",
+          message:
+            "Stella cannot safely analyse multiple recordings in one request yet. Choose one answer for now.",
+        },
+        501
+      );
+    }
+
+    const audioFile = audioEntries[0];
+    const audioType = (audioFile.type || "").toLowerCase();
+    if (!ALLOWED_AUDIO_TYPES.has(audioType)) {
+      return json(
+        {
+          code: "UNSUPPORTED_AUDIO_TYPE",
+          message: "This recording format is not supported.",
+        },
+        415
+      );
+    }
+    if (audioFile.size <= 0 || audioFile.size > MAX_AUDIO_BYTES) {
+      return json(
+        {
+          code: "RECORDING_TOO_LARGE",
+          message: "The recording is empty or exceeds the 10 MB limit.",
+        },
+        413
+      );
+    }
+
+    const declaredSeconds = Math.ceil(metadata.answers[0].duration);
+    if (declaredSeconds > MAX_AUDIO_SECONDS) {
+      return json(
+        {
+          code: "RECORDING_TOO_LONG",
+          message: "Choose a recording that is five minutes or shorter.",
+        },
+        413
+      );
+    }
+
+    const quota = await consumeQuota(user.id, { seconds: declaredSeconds });
+    if (!quota.allowed) {
+      return json(
+        { code: quota.reason, message: quotaMessage(quota) },
+        quotaStatus(quota.reason)
+      );
+    }
+
+    let transcription: Awaited<ReturnType<typeof transcribeWithDeepgram>>;
+    try {
+      const buffer = await audioFile.arrayBuffer();
+      transcription = await transcribeWithDeepgram(buffer, audioType);
+    } catch (error) {
+      console.error("[evaluate] transcription provider failed", error);
+      return json(
+        {
+          code: "TRANSCRIPTION_FAILED",
+          message:
+            "Stella couldn't transcribe this recording. Your recording is safe—please try again.",
+        },
+        502
+      );
+    }
+
+    const transcript = transcription.transcript.trim();
+    if (!transcript) {
+      return json(
+        {
+          code: "EMPTY_TRANSCRIPT",
+          message:
+            "Stella couldn't hear enough speech to analyse. Check your microphone and try again.",
+        },
+        422
+      );
+    }
+
+    const answer = metadata.answers[0];
+    const evaluationPrompt = [
+      `IELTS speaking part: ${answer.part}`,
+      `Question: ${answer.questionLabel}`,
+      wrapTranscriptAsData(transcript),
+      EVALUATION_JSON_SCHEMA_PROMPT,
+    ].join("\n\n");
+
+    let parsed: ModelEvaluation;
+    try {
+      const raw = await callOpenRouter({
+        messages: [{ role: "user", content: evaluationPrompt }],
+        systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
+        maxTokens: MAX_ANALYSIS_OUTPUT_TOKENS,
+        jsonMode: true,
+      });
+      parsed = modelEvaluationSchema.parse(cleanModelJson(raw));
+    } catch (error) {
+      console.error("[evaluate] feedback provider returned an invalid result", error);
+      return json(
+        {
+          code: "FEEDBACK_FAILED",
+          message:
+            "Stella couldn't produce reliable feedback for this recording. Please try again.",
+        },
+        502
+      );
+    }
+
+    let criteria: AiCriterionScore[];
+    try {
+      criteria = buildCriteria(parsed);
+    } catch (error) {
+      console.error("[evaluate] incomplete feedback criteria", error);
+      return json(
+        {
+          code: "FEEDBACK_INCOMPLETE",
+          message:
+            "Stella couldn't produce complete feedback for this recording. Please try again.",
+        },
+        502
+      );
+    }
+
+    const overallBand = roundedBand(parsed.overallBand);
+    const words: AiTranscriptWord[] = transcription.words;
+    const reliability: AiReliability =
+      words.length >= 20 ? "medium" : words.length >= 8 ? "low" : "insufficient";
+
+    const result: AiAnalysisResult = {
+      kind:
+        metadata.scope === "entire-mock"
+          ? "full-mock-estimate"
+          : "practice-estimate",
+      answers: [
+        {
+          recordingId: answer.recordingId,
+          questionLabel: answer.questionLabel,
+          transcript,
+          words,
+          events: transcription.events,
+          grammarCorrections: parsed.grammarCorrections,
+          audioQuality: {
+            usable: true,
+            reliability,
+            issues: [],
+          },
+        },
+      ],
+      overallBand,
+      overallRange:
+        overallBand === null
+          ? undefined
+          : {
+              low: Math.max(0, overallBand - 0.5),
+              high: Math.min(9, overallBand + 0.5),
+            },
+      criteria,
+      grammarCorrections: parsed.grammarCorrections,
+      strengths: parsed.strengths,
+      priorities: parsed.priorities,
+      reliability,
+      disclaimer:
+        "This estimate is for practice and self-reflection. Official IELTS examinations are scored under strict certified test conditions.",
+    };
+
+    return json(result);
   }
 
-  // 2. JSON Request (Interactive Stella Chat / Coaching / Follow-up)
+  if (!contentType.includes("application/json")) {
+    return json(
+      { code: "UNSUPPORTED_CONTENT_TYPE", message: "Unsupported request format." },
+      415
+    );
+  }
+
+  let rawBody: unknown;
   try {
-    const body = await request.json();
-    const { mode, question, correctedText, pageTitle, recentMessages } = body;
-
-    // Transcript correction re-check
-    if (mode === "transcript-recheck" || correctedText) {
-      return NextResponse.json({
-        answer: `I've updated the transcript with your correction: "${correctedText}". After re-checking your audio against this revised wording, your pronunciation and lexical marks are confirmed with higher reliability.`,
-        rechecked: true,
-        updatedWords: correctedText,
-      });
-    }
-
-    // Interactive conversational chat with Stella powered by OpenRouter (Meta Muse Spark 1.3 Contributor)
-    if (process.env.OPENROUTER_API_KEY && question) {
-      try {
-        const history = Array.isArray(recentMessages)
-          ? recentMessages.map((m: { sender: string; text: string }) => ({
-              role: m.sender === "stella" ? ("assistant" as const) : ("user" as const),
-              content: m.text,
-            }))
-          : [];
-
-        const promptWithContext = pageTitle
-          ? `[Current Study Topic: "${pageTitle}"]\n${question}`
-          : question;
-
-        const responseText = await callOpenRouter({
-          messages: [...history, { role: "user", content: promptWithContext }],
-          systemPrompt: STELLA_SYSTEM_INSTRUCTION,
-          maxTokens: 2000,
-        });
-
-        return NextResponse.json({
-          answer: responseText,
-          message: responseText,
-        });
-      } catch (orErr) {
-        console.error("[OpenRouter Chat Failed, Falling back]", orErr);
-      }
-    }
-
-    // Fallback if OpenRouter is unavailable
-    const q = (question || "").toLowerCase();
-    let reply = "";
-
-    if (q.includes("model answer") || q.includes("band 8") || q.includes("band 9")) {
-      reply =
-        "Here is a Band 8+ model response for this question:\n\n\"Undoubtedly, what captivates me most is the multifaceted nature of this subject. While conventional perspectives often emphasize routine predictability, I tend to subscribe to the notion that deliberate innovation drives genuine fulfillment. In my personal experience, striking that harmonious balance has proven remarkably transformative.\"\n\nNotice the use of topic collocations like 'multifaceted nature', 'subscribe to the notion', and natural cadence.";
-    } else if (q.includes("fluency") || q.includes("pause") || q.includes("hesitation")) {
-      reply =
-        "To improve your Fluency & Coherence score to Band 8:\n\n1. **Use signposting phrases** instead of silent pauses: 'What immediately springs to mind is...', 'To put it in perspective...'\n2. **Extend your answers using the AREA formula**: Answer, Reason, Example, Alternative.\n3. **Maintain steady breath cadence** rather than rushing and then abruptly stopping.";
-    } else if (q.includes("vocabulary") || q.includes("words") || q.includes("lexical")) {
-      reply =
-        "Here are three vocabulary upgrades tailored to your answer:\n\n• Instead of *'very interesting'*, use **'thoroughly captivating'** or **'intellectually stimulating'**.\n• Instead of *'big problem'*, use **'formidable hurdle'** or **'pressing challenge'**.\n• Instead of *'in my opinion'*, use **'from my vantage point'** or **'I am inclined to believe'**.";
-    } else if (q.includes("pronunciation") || q.includes("accent")) {
-      reply =
-        "In IELTS speaking, having an accent is completely fine as long as your speech is clear! To elevate your Pronunciation to Band 8:\n\n• Focus on **sentence stress**: emphasize nouns and verbs rather than prepositions.\n• Practice **linking**: connect consonant-to-vowel boundaries smoothly (e.g. *'blend_of'*, *'most_of_all'*).\n• Pay attention to intonation at the end of sentences—let your pitch drop slightly on statements.";
-    } else {
-      reply = `Looking closely at your performance on "${pageTitle || "this question"}", your core communication is solid. To push your score from Band 7 into Band 8, maintain an even rhythm, extend your examples by 1-2 sentences with concrete details, and use more nuanced discourse markers. What specific aspect would you like to practice next?`;
-    }
-
-    return NextResponse.json({
-      answer: reply,
-      message: reply,
-    });
+    rawBody = await request.json();
   } catch {
-    return NextResponse.json(
-      { message: "Could not handle conversation request." },
-      { status: 400 }
+    return json(
+      { code: "INVALID_JSON", message: "The request was invalid." },
+      400
+    );
+  }
+
+  const bodyResult = chatRequestSchema.safeParse(rawBody);
+  if (!bodyResult.success) {
+    return json(
+      { code: "INVALID_CHAT_REQUEST", message: "The question was invalid." },
+      400
+    );
+  }
+  const body = bodyResult.data;
+
+  if (body.mode === "transcript-recheck" || body.correctedText) {
+    return json(
+      {
+        code: "AUDIO_RECHECK_REQUIRED",
+        message:
+          "A transcript correction needs the original audio to be analysed again. This option is not available yet.",
+      },
+      422
+    );
+  }
+
+  const question = body.question || "";
+  const scope = prescreenStudentMessage(question);
+  if (!scope.allowed) {
+    return json(
+      { code: `OUT_OF_SCOPE_${scope.reason || "REQUEST"}`, message: scope.message },
+      400
+    );
+  }
+
+  if (!process.env.OPENROUTER_API_KEY) {
+    return json(
+      {
+        code: "AI_NOT_CONFIGURED",
+        message: "Stella is not available yet. Please try again later.",
+      },
+      503
+    );
+  }
+
+  const quota = await consumeQuota(user.id, { messages: 1 });
+  if (!quota.allowed) {
+    return json(
+      { code: quota.reason, message: quotaMessage(quota) },
+      quotaStatus(quota.reason)
+    );
+  }
+
+  const history = (body.recentMessages || []).map((message) => ({
+    role:
+      message.sender === "stella"
+        ? ("assistant" as const)
+        : ("user" as const),
+    content:
+      message.sender === "stella"
+        ? message.text
+        : wrapMessageAsData(message.text),
+  }));
+
+  const context = body.pageTitle
+    ? `Current IELTS study page: ${body.pageTitle}\n\n`
+    : "";
+
+  try {
+    const responseText = await callOpenRouter({
+      messages: [
+        ...history,
+        {
+          role: "user",
+          content: `${context}${wrapMessageAsData(question)}`,
+        },
+      ],
+      systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
+      maxTokens: MAX_CHAT_OUTPUT_TOKENS,
+    });
+
+    return json({ answer: responseText, message: responseText });
+  } catch (error) {
+    console.error("[evaluate] chat provider failed", error);
+    return json(
+      {
+        code: "CHAT_FAILED",
+        message: "Stella couldn't answer just now. Please try again.",
+      },
+      502
     );
   }
 }

@@ -32,6 +32,11 @@ const TIMELINE_OPTIONS = [
   { id: "flexible", label: "Just Practicing" },
 ];
 
+const GENERIC_SIGN_IN_ERROR =
+  "The email or password is incorrect. Please check both and try again.";
+const GENERIC_RESET_MESSAGE =
+  "If an account exists for that email, a password reset link has been sent.";
+
 export function AuthModal() {
   const {
     authModalOpen,
@@ -77,20 +82,13 @@ export function AuthModal() {
     try {
       if (tab === "signin") {
         const { error } = await signInWithEmail(email.trim(), password);
-        if (error) {
-          if (error.message?.toLowerCase().includes("email not confirmed")) {
-            throw new Error(
-              "Account registered, but email confirmation is active in your Supabase project. Turn off 'Confirm email' in Supabase Dashboard -> Auth -> Providers -> Email for instant logins."
-            );
-          }
-          throw error;
-        }
+        if (error) throw new Error(GENERIC_SIGN_IN_ERROR);
       } else if (tab === "signup") {
         if (!email.trim() || !password) {
           throw new Error("Please fill in all required fields.");
         }
-        if (password.length < 6) {
-          throw new Error("Password must be at least 6 characters.");
+        if (password.length < 8) {
+          throw new Error("Password must be at least 8 characters.");
         }
         const { error, needsEmailVerification } = await signUpWithEmail(
           email.trim(),
@@ -106,16 +104,20 @@ export function AuthModal() {
           return;
         }
 
-        // Transition immediately to the interactive Rotary Target Band step
         setTab("target-band");
       } else if (tab === "forgot") {
         if (!email.trim()) throw new Error("Please enter your email address.");
-        const { error } = await resetPassword(email.trim());
-        if (error) throw error;
-        setSuccessMsg("Password reset link has been sent to your email.");
+        // Always use the same response so this form cannot reveal whether an
+        // email address is registered. Supabase may also deliberately return a
+        // successful response for unknown addresses.
+        await resetPassword(email.trim());
+        setSuccessMsg(GENERIC_RESET_MESSAGE);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Authentication failed. Please try again.";
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Authentication failed. Please try again.";
       setErrorMsg(msg);
     } finally {
       setLoading(false);
@@ -132,7 +134,8 @@ export function AuthModal() {
       });
       closeAuthModal();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to save target score.";
+      const msg =
+        err instanceof Error ? err.message : "Failed to save target score.";
       setErrorMsg(msg);
     } finally {
       setLoading(false);
@@ -145,12 +148,8 @@ export function AuthModal() {
     try {
       const { error } = await signInWithGoogle();
       if (error) throw error;
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Google sign-in is not enabled yet in your Supabase dashboard.";
-      setErrorMsg(msg);
+    } catch {
+      setErrorMsg("Google sign-in could not start. Please try again.");
       setGoogleLoading(false);
     }
   };
@@ -169,7 +168,6 @@ export function AuthModal() {
           tab === "target-band" ? "max-w-[460px]" : "max-w-[440px]"
         )}
       >
-        {/* Close Button */}
         <button
           type="button"
           onClick={closeAuthModal}
@@ -179,9 +177,6 @@ export function AuthModal() {
           <X className="h-4 w-4" />
         </button>
 
-        {/* ------------------------------------------------------------- */}
-        {/* ROTARY SPINNER TARGET BAND ONBOARDING STEP                    */}
-        {/* ------------------------------------------------------------- */}
         {tab === "target-band" ? (
           <div className="flex flex-col items-center animate-in fade-in-50 zoom-in-95 duration-200 text-center">
             <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft shadow-inner">
@@ -207,15 +202,10 @@ export function AuthModal() {
               </div>
             )}
 
-            {/* Rotary Band Wheel Spinner */}
             <div className="mt-4 w-full">
-              <BandWheelPicker
-                value={targetBand}
-                onChange={setTargetBand}
-              />
+              <BandWheelPicker value={targetBand} onChange={setTargetBand} />
             </div>
 
-            {/* Exam timeline */}
             <div className="mt-4 w-full space-y-1.5">
               <Label className="text-xs font-semibold text-foreground flex items-center justify-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-brand-bright" />
@@ -243,7 +233,6 @@ export function AuthModal() {
               </div>
             </div>
 
-            {/* Save Target Button */}
             <Button
               type="button"
               onClick={handleSaveTargetBand}
@@ -261,11 +250,7 @@ export function AuthModal() {
             </Button>
           </div>
         ) : (
-          /* ------------------------------------------------------------- */
-          /* STANDARD SIGN IN / CREATE ACCOUNT / FORGOT PASSWORD VIEWS    */
-          /* ------------------------------------------------------------- */
           <>
-            {/* Header Branding */}
             <div className="flex flex-col items-center text-center">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft shadow-inner">
                 <StarMark size={32} />
@@ -276,13 +261,15 @@ export function AuthModal() {
                 {tab === "forgot" && "Reset your password"}
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                {tab === "signin" && "Sign in to sync your practice, streak, and recordings across devices."}
-                {tab === "signup" && "Save your band scores and practice seamlessly on mobile and desktop."}
-                {tab === "forgot" && "Enter your email and we will send you a secure recovery link."}
+                {tab === "signin" &&
+                  "Sign in to sync your practice, streak, and recordings across devices."}
+                {tab === "signup" &&
+                  "Save your band scores and practice seamlessly on mobile and desktop."}
+                {tab === "forgot" &&
+                  "Enter your email and we will send you a secure recovery link."}
               </p>
             </div>
 
-            {/* Cross-device sync badge */}
             <div className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-brand-bright/20 bg-brand-soft/60 px-3 py-1.5 text-[11px] font-medium text-brand-bright">
               <Laptop className="h-3.5 w-3.5" />
               <span>Desktop</span>
@@ -291,12 +278,15 @@ export function AuthModal() {
               <span>Mobile Sync</span>
             </div>
 
-            {/* Tab switchers */}
             {tab !== "forgot" && (
               <div className="mt-5 grid grid-cols-2 rounded-xl border border-border bg-muted/40 p-1 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => { setTab("signin"); setErrorMsg(""); setSuccessMsg(""); }}
+                  onClick={() => {
+                    setTab("signin");
+                    setErrorMsg("");
+                    setSuccessMsg("");
+                  }}
                   className={cn(
                     "rounded-lg py-2 transition-all",
                     tab === "signin"
@@ -308,7 +298,11 @@ export function AuthModal() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setTab("signup"); setErrorMsg(""); setSuccessMsg(""); }}
+                  onClick={() => {
+                    setTab("signup");
+                    setErrorMsg("");
+                    setSuccessMsg("");
+                  }}
                   className={cn(
                     "rounded-lg py-2 transition-all",
                     tab === "signup"
@@ -321,7 +315,6 @@ export function AuthModal() {
               </div>
             )}
 
-            {/* Error / Success Alerts */}
             {errorMsg && (
               <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
@@ -336,7 +329,6 @@ export function AuthModal() {
               </div>
             )}
 
-            {/* Google OAuth Button */}
             {tab !== "forgot" && (
               <div className="mt-4">
                 <Button
@@ -382,11 +374,12 @@ export function AuthModal() {
               </div>
             )}
 
-            {/* Email & Password Form */}
             <form onSubmit={handleSubmit} className="space-y-3.5">
               {tab === "signup" && (
                 <div>
-                  <Label className="text-xs font-medium text-foreground">Your Name</Label>
+                  <Label className="text-xs font-medium text-foreground">
+                    Your Name
+                  </Label>
                   <div className="relative mt-1">
                     <UserIcon className="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -401,7 +394,9 @@ export function AuthModal() {
               )}
 
               <div>
-                <Label className="text-xs font-medium text-foreground">Email Address</Label>
+                <Label className="text-xs font-medium text-foreground">
+                  Email Address
+                </Label>
                 <div className="relative mt-1">
                   <Mail className="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -418,11 +413,17 @@ export function AuthModal() {
               {tab !== "forgot" && (
                 <div>
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-medium text-foreground">Password</Label>
+                    <Label className="text-xs font-medium text-foreground">
+                      Password
+                    </Label>
                     {tab === "signin" && (
                       <button
                         type="button"
-                        onClick={() => { setTab("forgot"); setErrorMsg(""); setSuccessMsg(""); }}
+                        onClick={() => {
+                          setTab("forgot");
+                          setErrorMsg("");
+                          setSuccessMsg("");
+                        }}
                         className="text-[11px] text-brand-bright hover:underline"
                       >
                         Forgot password?
@@ -434,7 +435,9 @@ export function AuthModal() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       required
-                      placeholder={tab === "signup" ? "At least 6 characters" : "••••••••"}
+                      placeholder={
+                        tab === "signup" ? "At least 8 characters" : "••••••••"
+                      }
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="rounded-xl pr-10 pl-10 text-xs"
@@ -443,8 +446,13 @@ export function AuthModal() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -469,7 +477,11 @@ export function AuthModal() {
               {tab === "forgot" && (
                 <button
                   type="button"
-                  onClick={() => { setTab("signin"); setErrorMsg(""); setSuccessMsg(""); }}
+                  onClick={() => {
+                    setTab("signin");
+                    setErrorMsg("");
+                    setSuccessMsg("");
+                  }}
                   className="mt-2 block w-full text-center text-xs text-muted-foreground hover:text-foreground"
                 >
                   Back to Sign In
@@ -478,7 +490,8 @@ export function AuthModal() {
             </form>
 
             <p className="mt-5 text-center text-[10px] text-muted-foreground">
-              By continuing, you agree to IELTStar&apos;s Terms of Service and Privacy Policy.
+              By continuing, you agree to IELTStar&apos;s Terms of Service and
+              Privacy Policy.
             </p>
           </>
         )}
