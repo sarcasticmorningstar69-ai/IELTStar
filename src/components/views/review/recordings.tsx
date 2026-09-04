@@ -6,6 +6,7 @@
  */
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
+import { useAuth } from "@/lib/auth/auth-context";
 import {
   useProgress,
   type RecordingMeta,
@@ -270,6 +271,7 @@ export function RecordingsView() {
   const deleteRecordings = useProgress((s) => s.deleteRecordings);
   const navigate = useApp((s) => s.navigate);
   const { toast } = useToast();
+  const { user, openAuthModal } = useAuth();
 
   const [selectMode, setSelectMode] = React.useState(false);
   const [selected, setSelected] = React.useState<Set<string>>(() => new Set());
@@ -352,6 +354,10 @@ export function RecordingsView() {
 
   /** Send a whole session or mock to Stella from its group header. */
   const analyseCluster = (cluster: SessionCluster) => {
+    if (!user) {
+      openAuthModal("signup");
+      return;
+    }
     const isMock = cluster.session?.type === "full-mock";
     navigate({
       name: "analysis",

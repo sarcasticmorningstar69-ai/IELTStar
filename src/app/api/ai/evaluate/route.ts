@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getVerifiedUser, unauthenticated } from "@/lib/supabase/server";
 import type {
   AiProviderStatus,
   AiAnalysisResult,
@@ -220,6 +221,11 @@ function generateSimulatedAnalysis(req: AiAnalysisRequest): AiAnalysisResult {
 }
 
 export async function POST(request: Request) {
+  const user = await getVerifiedUser(request);
+  if (!user) {
+    return unauthenticated("Please sign in or create an account to use Stella AI analysis and coaching.");
+  }
+
   const contentType = request.headers.get("content-type") || "";
 
   // 1. Multipart Audio / Answer Analysis Request

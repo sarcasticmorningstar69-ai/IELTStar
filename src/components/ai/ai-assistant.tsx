@@ -547,7 +547,7 @@ export function AiAssistant() {
   const [loading, setLoading] = React.useState(false);
   const [stellaState, setStellaState] = React.useState<StellaState>("idle");
   const [messages, setMessages] = React.useState<ChatItem[]>([]);
-  const { user } = useAuth();
+  const { user, session, authModalOpen, openAuthModal } = useAuth();
   const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
   const [isPrivacyNoticeOpen, setIsPrivacyNoticeOpen] = React.useState(false);
   const [activeConversationId, setActiveConversationIdState] = React.useState<string | null>(null);
@@ -804,6 +804,10 @@ export function AiAssistant() {
   }, []);
 
   const submitQuestion = async (customText?: string) => {
+    if (!user) {
+      openAuthModal("signup");
+      return;
+    }
     const q = (customText || question).trim();
     if (!q || loading) return;
 
@@ -836,9 +840,14 @@ export function AiAssistant() {
         question: q,
       };
 
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const res = await fetch("/api/ai/evaluate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           action: "chat",
           text: q,
@@ -891,21 +900,29 @@ export function AiAssistant() {
       />
 
       {/* ── FLOATING PILL BUTTON ── */}
-      <button
-        ref={buttonRef}
-        type="button"
-        className="stella-pill-btn"
-        style={{
-          opacity: stellaMode === "closed" ? 1 : 0,
-          pointerEvents: stellaMode === "closed" ? "auto" : "none",
-          transform: stellaMode === "closed" ? "scale(1)" : "scale(0.84)",
-        }}
-        onClick={openDrawer}
-        aria-label="Ask Stella about this page"
-      >
-        <StellaAvatar state="idle" size={32} frame={false} quiet />
-        <span className="text-sm font-semibold tracking-wide whitespace-nowrap">Ask Stella</span>
-      </button>
+      {!authModalOpen && (
+        <button
+          ref={buttonRef}
+          type="button"
+          className="stella-pill-btn"
+          style={{
+            opacity: stellaMode === "closed" ? 1 : 0,
+            pointerEvents: stellaMode === "closed" ? "auto" : "none",
+            transform: stellaMode === "closed" ? "scale(1)" : "scale(0.84)",
+          }}
+          onClick={() => {
+            if (!user) {
+              openAuthModal("signup");
+              return;
+            }
+            openDrawer();
+          }}
+          aria-label="Ask Stella about this page"
+        >
+          <StellaAvatar state="idle" size={32} frame={false} quiet />
+          <span className="text-sm font-semibold tracking-wide whitespace-nowrap">Ask Stella</span>
+        </button>
+      )}
 
       {/* ── CORNER DRAWER CARD ── */}
       <div
@@ -976,6 +993,26 @@ export function AiAssistant() {
             onCloseHistory={() => setIsHistoryOpen(false)}
             onOpenPrivacyNotice={() => setIsPrivacyNoticeOpen(true)}
           />
+        ) : !user ? (
+          <div className="flex flex-1 flex-col items-center justify-center p-6 text-center bg-card">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft border border-brand-bright/20 shadow-inner">
+              <StellaAvatar state="idle" size={32} frame={false} quiet />
+            </div>
+            <h3 className="text-sm font-semibold text-foreground">Sign In to Ask Stella</h3>
+            <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed max-w-xs">
+              Stella provides real-time IELTS feedback, Band 8+ vocabulary alternatives, and grammar drills. Create a free account or sign in to start chatting.
+            </p>
+            <Button
+              size="sm"
+              className="mt-4 w-full font-medium"
+              onClick={() => {
+                close();
+                openAuthModal("signup");
+              }}
+            >
+              Sign In / Create Account
+            </Button>
+          </div>
         ) : (
           <>
             {/* Chat Stream */}
@@ -1200,6 +1237,26 @@ export function AiAssistant() {
                 onCloseHistory={() => setIsHistoryOpen(false)}
                 onOpenPrivacyNotice={() => setIsPrivacyNoticeOpen(true)}
               />
+            ) : !user ? (
+              <div className="flex flex-1 flex-col items-center justify-center p-8 text-center bg-card">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-soft border border-brand-bright/20 shadow-inner">
+                  <StellaAvatar state="idle" size={40} frame={false} quiet />
+                </div>
+                <h3 className="text-base font-bold text-foreground">Sign In to Practice with Stella</h3>
+                <p className="mt-2 text-xs text-muted-foreground leading-relaxed max-w-sm">
+                  Stella provides real-time IELTS feedback, Band 8+ vocabulary alternatives, and grammar drills. Create a free account or sign in to start chatting.
+                </p>
+                <Button
+                  size="default"
+                  className="mt-5 font-semibold shadow-sm"
+                  onClick={() => {
+                    close();
+                    openAuthModal("signup");
+                  }}
+                >
+                  Sign In / Create Account
+                </Button>
+              </div>
             ) : (
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Chat Stream */}
@@ -1299,6 +1356,26 @@ export function AiAssistant() {
                   onCloseHistory={() => setIsHistoryOpen(false)}
                   onOpenPrivacyNotice={() => setIsPrivacyNoticeOpen(true)}
                 />
+              ) : !user ? (
+                <div className="flex flex-1 flex-col items-center justify-center p-8 text-center bg-card">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-soft border border-brand-bright/20 shadow-inner">
+                    <StellaAvatar state="idle" size={40} frame={false} quiet />
+                  </div>
+                  <h3 className="text-base font-bold text-foreground">Sign In to Practice with Stella</h3>
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed max-w-sm">
+                    Stella evaluates YouTube mock candidate answers, highlights grammatical errors, and provides Band 9 model answers. Create a free account to unlock this coaching.
+                  </p>
+                  <Button
+                    size="default"
+                    className="mt-5 font-semibold shadow-sm"
+                    onClick={() => {
+                      close();
+                      openAuthModal("signup");
+                    }}
+                  >
+                    Sign In / Create Account
+                  </Button>
+                </div>
               ) : (
                 <div className="flex flex-col h-full overflow-hidden">
                 {/* Chat Stream with Candidate Feedback */}

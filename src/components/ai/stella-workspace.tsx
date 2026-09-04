@@ -15,6 +15,7 @@
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
 import { useProgress, type RecordingMeta } from "@/lib/store/progress";
+import { useAuth } from "@/lib/auth/auth-context";
 import { getAudio, getAudioURL, computePeaks } from "@/lib/storage/audio-db";
 import { formatTime, StaticWaveform } from "@/components/audio/audio-ui";
 import { StellaAvatar } from "@/components/ai/stella-avatar";
@@ -99,6 +100,7 @@ export function StellaWorkspaceView({
   const back = useApp((s) => s.back);
   const mocks = useProgress((s) => s.mocks);
   const recordings = useProgress((s) => s.recordings);
+  const { user, session, openAuthModal } = useAuth();
 
   const mock = React.useMemo(
     () => (mockId ? mocks.find((m) => m.id === mockId) : undefined),
@@ -285,7 +287,16 @@ export function StellaWorkspaceView({
         form.append("audio", item.blob, `ieltstar-answer-${index + 1}.webm`);
       });
 
-      const response = await fetch("/api/ai/evaluate", { method: "POST", body: form });
+      const headers: Record<string, string> = {};
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
+      const response = await fetch("/api/ai/evaluate", {
+        method: "POST",
+        headers,
+        body: form,
+      });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message || "Stella cannot analyse this yet.");
@@ -312,10 +323,10 @@ export function StellaWorkspaceView({
   }, [answers, mock, mockId, sessionId, isFullMock]);
 
   React.useEffect(() => {
-    if (startedRef.current || !answers.length) return;
+    if (!user || startedRef.current || !answers.length) return;
     startedRef.current = true;
     void runAnalysis();
-  }, [answers.length, runAnalysis]);
+  }, [user, answers.length, runAnalysis]);
 
   React.useEffect(() => {
     if (!running) return;
@@ -468,9 +479,14 @@ export function StellaWorkspaceView({
     setChatMessages((prev) => [...prev, userMsg]);
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch("/api/ai/evaluate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           mode: "transcript-recheck",
           correctedText,
@@ -520,9 +536,14 @@ export function StellaWorkspaceView({
     setChatLoading(true);
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch("/api/ai/evaluate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           mode: "context-chat",
           question: text,
@@ -557,6 +578,39 @@ export function StellaWorkspaceView({
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [chatMessages, isWrongOpen]);
+
+  if (!user) {
+    return (
+      <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-4 text-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-soft border border-brand-bright/20 shadow-lg">
+          <StellaAvatar state="idle" size={48} />
+        </div>
+        <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          Sign In for Stella AI Analysis
+        </h2>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+          Stella evaluates your IELTS speaking recordings with Deepgram speech recognition and official Cambridge band scoring criteria. Create a free account or sign in to view your complete analysis.
+        </p>
+        <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <Button
+            size="lg"
+            className="w-full font-semibold shadow-sm sm:w-auto cursor-pointer"
+            onClick={() => openAuthModal("signup")}
+          >
+            Create Account / Sign In
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full sm:w-auto cursor-pointer"
+            onClick={back}
+          >
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!answers.length) {
     return (

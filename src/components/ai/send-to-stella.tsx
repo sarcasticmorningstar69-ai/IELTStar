@@ -13,6 +13,7 @@
  */
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
+import { useAuth } from "@/lib/auth/auth-context";
 import type { RecordingMeta } from "@/lib/store/progress";
 import { formatTime } from "@/components/audio/audio-ui";
 import { StellaAvatar } from "@/components/ai/stella-avatar";
@@ -34,6 +35,7 @@ export function SendToStella({
   blurb?: string;
 }) {
   const navigate = useApp((s) => s.navigate);
+  const { user, openAuthModal } = useAuth();
   const [picking, setPicking] = React.useState(false);
   const [selected, setSelected] = React.useState<Set<string>>(() => new Set());
 
@@ -44,6 +46,10 @@ export function SendToStella({
 
   const open = (ids: string[]) => {
     if (!ids.length) return;
+    if (!user) {
+      openAuthModal("signup");
+      return;
+    }
     navigate({ name: "analysis", recordingIds: ids, mockId, sessionId, heading });
   };
 
@@ -201,12 +207,17 @@ export function AnalyseAnswerLink({
   sessionId?: string;
 }) {
   const navigate = useApp((s) => s.navigate);
+  const { user, openAuthModal } = useAuth();
   return (
     <button
       type="button"
-      onClick={() =>
-        navigate({ name: "analysis", recordingIds: [recordingId], mockId, sessionId })
-      }
+      onClick={() => {
+        if (!user) {
+          openAuthModal("signup");
+          return;
+        }
+        navigate({ name: "analysis", recordingIds: [recordingId], mockId, sessionId });
+      }}
       className="inline-flex items-center gap-1.5 text-[11px] font-medium text-brand-bright underline-offset-4 hover:underline"
     >
       <Sparkles className="h-3 w-3" />

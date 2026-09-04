@@ -12,6 +12,7 @@ import {
 } from "@/lib/data/topic-wheel";
 import { useApp } from "@/lib/store/app";
 import { useProgress } from "@/lib/store/progress";
+import { useAuth } from "@/lib/auth/auth-context";
 import { micManager } from "@/lib/audio/microphone";
 import { SegmentRecorder } from "@/lib/audio/recorder";
 import { AudioPlayer, formatTime } from "@/components/audio/audio-ui";
@@ -124,6 +125,7 @@ export function TopicWheelView() {
   const saveRecording = useProgress((s) => s.saveRecording);
   const deleteRecording = useProgress((s) => s.deleteRecording);
   const addSeconds = useProgress((s) => s.addSeconds);
+  const { user, openAuthModal } = useAuth();
 
   const [index, setIndex] = React.useState(0);
   const [spinning, setSpinning] = React.useState(false);
@@ -297,6 +299,10 @@ export function TopicWheelView() {
    * missing and offers to start recording.
    */
   const openStella = () => {
+    if (!user) {
+      openAuthModal("signup");
+      return;
+    }
     if (recordingId) {
       navigate({
         name: "analysis",
