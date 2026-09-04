@@ -10,8 +10,12 @@ import { createBrowserClient } from "@supabase/ssr";
  * this data, so configuration mistakes must be noisy.
  */
 function readConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    "https://itasbwvtdngcnwtntvch.supabase.co";
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0YXNid3Z0ZG5nY253dG50dmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNTgzNjMsImV4cCI6MjEwMzYzNDM2M30.M6rO9H5k7c3BLnt0FhWfrMPMiklz8hK7i5gMg3wD09s";
 
   if (!url || !key) {
     throw new Error(

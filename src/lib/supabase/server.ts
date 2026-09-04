@@ -6,8 +6,12 @@ import {
 } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://itasbwvtdngcnwtntvch.supabase.co";
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0YXNid3Z0ZG5nY253dG50dmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNTgzNjMsImV4cCI6MjEwMzYzNDM2M30.M6rO9H5k7c3BLnt0FhWfrMPMiklz8hK7i5gMg3wD09s";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
