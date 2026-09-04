@@ -1,35 +1,18 @@
 "use client";
 
-/**
- * MediaRecorder wrapper with cross-browser format detection.
- * Never assumes webm/opus — Safari gets mp4/AAC when that's what it supports.
- */
-
 export function pickMimeType(): string {
   if (typeof MediaRecorder === "undefined") return "";
   const candidates = [
-    "audio/webm;codecs=opus",
-    "audio/webm",
-    "audio/mp4;codecs=mp4a.40.2",
-    "audio/mp4",
-    "audio/ogg;codecs=opus",
-    "audio/aac",
+    "audio/webm;codecs=opus", "audio/webm", "audio/mp4;codecs=mp4a.40.2",
+    "audio/mp4", "audio/ogg;codecs=opus", "audio/aac",
   ];
-  for (const c of candidates) {
-    try {
-      if (MediaRecorder.isTypeSupported(c)) return c;
-    } catch {
-      /* keep trying */
-    }
+  for (const candidate of candidates) {
+    try { if (MediaRecorder.isTypeSupported(candidate)) return candidate; } catch {}
   }
   return "";
 }
 
-export interface RecordingResult {
-  blob: Blob;
-  mimeType: string;
-  duration: number;
-}
+export interface RecordingResult { blob: Blob; mimeType: string; duration: number }
 
 export class SegmentRecorder {
   private recorder: MediaRecorder | null = null;
@@ -39,15 +22,9 @@ export class SegmentRecorder {
   private stopping = false;
   mimeType = "";
 
-  get recording(): boolean {
-    return !!this.recorder && this.recorder.state === "recording";
-  }
-
-  get paused(): boolean {
-    return !!this.recorder && this.recorder.state === "paused";
-  }
-
-  get elapsed(): number {
+  get recording() { return !!this.recorder && this.recorder.state === "recording"; }
+  get paused() { return !!this.recorder && this.recorder.state === "paused"; }
+  get elapsed() {
     if (!this.startedAt) return 0;
     const end = this.recording || this.paused ? Date.now() : this.endedAt || Date.now();
     return Math.max(0, (end - this.startedAt) / 1000);
@@ -57,20 +34,16 @@ export class SegmentRecorder {
     if (this.recorder) return false;
     try {
       this.mimeType = pickMimeType();
-      // 48 kbps is clear for speech and keeps a 20-minute mock near 7.2 MB,
-      // safely below the 10 MB upload ceiling even with container overhead.
-      const opts: MediaRecorderOptions = this.mimeType
-        ? { mimeType: this.mimeType, audioBitsPerSecond: 48000 }
+      const options: MediaRecorderOptions = this.mimeType
+        ? { mimeType: this.mimeType, audioBitsPerSecond: 64000 }
         : {};
-      this.recorder = new MediaRecorder(stream, opts);
+      this.recorder = new MediaRecorder(stream, options);
       this.chunks = [];
       this.stopping = false;
-      this.recorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) this.chunks.push(e.data);
+      this.recorder.ondataavailable = (event) => {
+        if (event.data?.size > 0) this.chunks.push(event.data);
       };
-      this.recorder.onerror = () => {
-        this.recorder = null;
-      };
+      this.recorder.onerror = () => { this.recorder = null; };
       this.startedAt = Date.now();
       this.recorder.start(1000);
       return true;
@@ -80,50 +53,31 @@ export class SegmentRecorder {
     }
   }
 
-  pause() {
-    try {
-      if (this.recorder?.state === "recording") this.recorder.pause();
-    } catch {
-      /* ignore */
-    }
-  }
-
-  resume() {
-    try {
-      if (this.recorder?.state === "paused") this.recorder.resume();
-    } catch {
-      /* ignore */
-    }
-  }
+  pause() { try { if (this.recorder?.state === "recording") this.recorder.pause(); } catch {} }
+  resume() { try { if (this.recorder?.state === "paused") this.recorder.resume(); } catch {} }
 
   async stop(): Promise<RecordingResult | null> {
-    const rec = this.recorder;
-    if (!rec) return null;
-    if (this.stopping) return null;
+    const recorder = this.recorder;
+    if (!recorder || this.stopping) return null;
     this.stopping = true;
     this.endedAt = Date.now();
     return new Promise((resolve) => {
       const finish = () => {
         try {
-          const type = this.chunks.length ? this.chunks[0].type || this.mimeType : this.mimeType;
-          const blob = new Blob(this.chunks, { type: type || "audio/webm" });
+          const type = this.chunks[0]?.type || this.mimeType || "audio/webm";
+          const blob = new Blob(this.chunks, { type });
           const duration = Math.max(0, (this.endedAt - this.startedAt) / 1000);
           this.recorder = null;
           this.stopping = false;
-          resolve({ blob, mimeType: type || "audio/webm", duration });
+          resolve({ blob, mimeType: type, duration });
         } catch {
           this.recorder = null;
           this.stopping = false;
           resolve(null);
         }
       };
-      rec.onstop = finish;
-      try {
-        if (rec.state !== "inactive") rec.stop();
-        else finish();
-      } catch {
-        finish();
-      }
+      recorder.onstop = finish;
+      try { recorder.state !== "inactive" ? recorder.stop() : finish(); } catch { finish(); }
     });
   }
 
@@ -133,26 +87,19 @@ export class SegmentRecorder {
         this.recorder.onstop = null;
         this.recorder.stop();
       }
-    } catch {
-      /* ignore */
-    }
+    } catch {}
     this.recorder = null;
     this.stopping = false;
   }
 }
 
-/**
- * Master recorder for the Full Mock: one continuous recording for the whole
- * session. Segment boundaries are tracked as wall-clock offsets so the
- * timeline can seek the master recording to any question.
- */
 export class MasterRecorder {
   private rec: SegmentRecorder | null = null;
   private clockStart = 0;
   private pausedTotal = 0;
   private pauseStartedAt = 0;
 
-  async start(stream: MediaStream): Promise<boolean> {
+  async start(stream: MediaStream) {
     this.rec = new SegmentRecorder();
     const ok = this.rec.start(stream);
     if (ok) {
@@ -162,33 +109,25 @@ export class MasterRecorder {
     }
     return ok;
   }
-
   pause() {
     this.rec?.pause();
-    if (this.pauseStartedAt === 0) this.pauseStartedAt = Date.now();
+    if (!this.pauseStartedAt) this.pauseStartedAt = Date.now();
   }
-
   resume() {
-    if (this.pauseStartedAt > 0) {
+    if (this.pauseStartedAt) {
       this.pausedTotal += Date.now() - this.pauseStartedAt;
       this.pauseStartedAt = 0;
     }
     this.rec?.resume();
   }
-
-  get running(): boolean {
-    return !!this.rec && (this.rec.recording || this.rec.paused);
-  }
-
-  /** current position inside the master recording, in seconds */
-  now(): number {
+  get running() { return !!this.rec && (this.rec.recording || this.rec.paused); }
+  now() {
     if (!this.clockStart) return 0;
-    const now = this.pauseStartedAt > 0 ? this.pauseStartedAt : Date.now();
+    const now = this.pauseStartedAt || Date.now();
     return Math.max(0, (now - this.clockStart - this.pausedTotal) / 1000);
   }
-
-  async stop(): Promise<RecordingResult | null> {
-    if (this.pauseStartedAt > 0) {
+  async stop() {
+    if (this.pauseStartedAt) {
       this.pausedTotal += Date.now() - this.pauseStartedAt;
       this.pauseStartedAt = 0;
     }
@@ -197,7 +136,6 @@ export class MasterRecorder {
     this.clockStart = 0;
     return result || null;
   }
-
   abort() {
     this.rec?.abort();
     this.rec = null;
