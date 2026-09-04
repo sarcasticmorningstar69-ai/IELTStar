@@ -122,9 +122,12 @@ export async function callOpenRouter({
     ),
   };
 
-  if (reasoningEffort !== "none") {
-    body.reasoning = { effort: reasoningEffort };
-  }
+  // Support both OpenRouter ({ reasoning: { effort } }) and OpenAI/TeamORouter ({ reasoning_effort }) schemas.
+  // For reasoning-enforcing models like Grok 4.6, 'low' keeps latency to a minimum without
+  // letting the provider default to 35s+ deep reasoning passes.
+  const targetEffort = reasoningEffort === "none" ? "low" : reasoningEffort;
+  body.reasoning_effort = targetEffort;
+  body.reasoning = { effort: targetEffort };
 
   if (jsonMode) {
     body.response_format = { type: "json_object" };
