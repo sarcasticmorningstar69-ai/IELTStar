@@ -15,11 +15,11 @@ export const isR2Configured = Boolean(
   accountId && accessKeyId && secretAccessKey
 );
 
-/** Hard ceiling on a single recording. ~10 MB is around 50 minutes of Opus speech. */
+/** Hard ceiling on a single recording. 10 MB comfortably covers a 20-minute Opus mock. */
 export const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
 
-/** Hard ceiling on a single recording's duration, enforced before transcription. */
-export const MAX_AUDIO_SECONDS = 5 * 60;
+/** One complete IELTS mock can run beyond the nominal test time with transitions. */
+export const MAX_AUDIO_SECONDS = 20 * 60;
 
 const ALLOWED_MIME_TYPES = new Set([
   "audio/webm",
@@ -34,29 +34,15 @@ export const r2Client = new S3Client({
   endpoint: accountId
     ? "https://" + accountId + ".r2.cloudflarestorage.com"
     : undefined,
-  credentials: {
-    accessKeyId,
-    secretAccessKey,
-  },
+  credentials: { accessKeyId, secretAccessKey },
 });
 
-/**
- * Identifiers that are safe to interpolate into an object key. Rejects "..",
- * slashes and anything else that could escape the caller's own prefix.
- */
 const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/;
 
 export function isSafeId(value: string): boolean {
   return SAFE_ID.test(value);
 }
 
-/**
- * Build the object key for a recording.
- *
- * Ownership is enforced structurally: the key always contains the *verified*
- * user id, so a caller cannot address another student's audio no matter what
- * recording id they supply. Never build a key from a client-supplied path.
- */
 export function audioKey(userId: string, recordingId: string): string {
   if (!isSafeId(userId) || !isSafeId(recordingId)) {
     throw new Error("Unsafe identifier rejected while building an object key.");
@@ -69,13 +55,6 @@ export function normaliseMimeType(mimeType?: string | null): string {
   return "audio/webm";
 }
 
-/**
- * Pre-signed PUT URL so the browser uploads straight to R2 without the audio
- * passing through the Worker.
- *
- * When `contentLength` is supplied it is bound into the signature, so the
- * client cannot upload something larger than it declared.
- */
 export async function getAudioUploadUrl(
   userId: string,
   recordingId: string,
@@ -105,31 +84,19 @@ export async function getAudioUploadUrl(
     ...(contentLength !== undefined ? { ContentLength: contentLength } : {}),
   });
 
-  const presignedUrl = await getSignedUrl(r2Client, command, {
-    expiresIn: 300,
-  });
+  const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: 300 });
   return { presignedUrl, key };
 }
 
-/**
- * Pre-signed GET URL for playback.
- *
- * There is deliberately no public-CDN branch here. Serving these objects from
- * a public R2 bucket URL would make every student's voice recording readable
- * by anyone who can guess a key, which is exactly what the user-scoped key and
- * the auth check on the route exist to prevent. Keep the bucket private.
- */
 export async function getAudioPlaybackUrl(
   userId: string,
   recordingId: string
 ): Promise<string | null> {
   if (!isR2Configured) return null;
-
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: audioKey(userId, recordingId),
   });
-
   return await getSignedUrl(r2Client, command, { expiresIn: 3600 });
 }
 
