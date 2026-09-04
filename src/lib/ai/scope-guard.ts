@@ -137,7 +137,7 @@ export const STELLA_SCOPE_RULE = [
  * site instead, by passing `reasoningEffort: "none"` for chat. If you ever
  * turn reasoning back on for this surface, this number has to move with it.
  */
-export const MAX_CHAT_OUTPUT_TOKENS = 1500;
+export const MAX_CHAT_OUTPUT_TOKENS = 3000;
 
 /**
  * Ceiling for one structured analysis, covering all answers in a submission.

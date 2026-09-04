@@ -85,14 +85,14 @@ const analysisSchema = z.object({
 }).strict();
 
 const chatSchema = z.object({
-  mode: z.string().max(128).optional(),
-  action: z.string().max(128).optional(),
-  text: z.string().max(5000).optional(),
-  question: z.string().max(5000).optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-  correctedText: z.string().max(10000).optional(),
-  pageTitle: z.string().max(500).optional(),
-  recentMessages: z.array(z.any()).max(20).optional(),
+  mode: z.any().optional(),
+  action: z.any().optional(),
+  text: z.any().optional(),
+  question: z.any().optional(),
+  metadata: z.any().optional(),
+  correctedText: z.any().optional(),
+  pageTitle: z.any().optional(),
+  recentMessages: z.any().optional(),
 }).passthrough();
 
 const correctionSchema = z.object({
@@ -723,7 +723,8 @@ async function handleChat(request: Request, userId: string) {
     }, 422);
   }
 
-  const question = (body.question || body.text || "").trim();
+  const rawQuestion = body.question ?? body.text ?? "";
+  const question = (typeof rawQuestion === "string" ? rawQuestion : String(rawQuestion || "")).trim();
   const scope = prescreenStudentMessage(question);
   if (!scope.allowed) {
     return reply({ code: `OUT_OF_SCOPE_${scope.reason || "REQUEST"}`, message: scope.message }, 400);
@@ -737,18 +738,25 @@ async function handleChat(request: Request, userId: string) {
     return reply({ code: quota.reason, message: quotaMessage(quota) }, quotaHttpStatus(quota.reason));
   }
 
-  const history = (body.recentMessages || [])
-    .filter((m): m is { sender?: string; text?: string } => typeof m === "object" && m !== null)
+  const rawHistory = Array.isArray(body.recentMessages) ? body.recentMessages : [];
+  const history = rawHistory
+    .filter((m): m is { sender?: unknown; text?: unknown } => typeof m === "object" && m !== null)
     .filter((m) => typeof m.text === "string" && m.text.trim().length > 0)
     .slice(-8)
     .map((message) => {
-      const text = (message.text || "").trim().slice(0, 3000);
+      const text = String(message.text || "").trim().slice(0, 3000);
       return {
         role: message.sender === "stella" ? ("assistant" as const) : ("user" as const),
         content: message.sender === "stella" ? text : wrapMessageAsData(text),
       };
     });
-  const pageTitle = (body.pageTitle || (typeof body.metadata?.pageTitle === "string" ? body.metadata.pageTitle : "")).trim();
+  const rawPageTitle =
+    typeof body.pageTitle === "string"
+      ? body.pageTitle
+      : typeof (body.metadata as Record<string, unknown>)?.pageTitle === "string"
+        ? (body.metadata as Record<string, unknown>).pageTitle
+        : "";
+  const pageTitle = String(rawPageTitle || "").trim().slice(0, 500);
   const context = pageTitle
     ? wrapMessageAsData(`Current IELTS study page: ${pageTitle}`) + "\n\n"
     : "";

@@ -170,11 +170,11 @@ export async function callOpenRouter({
   }
 
   /*
-   * A truncated completion is worse than a failed one: the JSON parses as
-   * garbage or fails schema validation, and the student sees a generic error.
-   * Surface it explicitly so the caller can report an honest failure.
+   * For structured JSON evaluations, a truncated completion breaks JSON parsing
+   * or schema validation, so fail explicitly. For free-form chat, return whatever
+   * content was generated rather than throwing away a complete coaching reply.
    */
-  if (choice?.finish_reason === "length") {
+  if (jsonMode && choice?.finish_reason === "length") {
     throw new Error(
       "The feedback response was cut off before it was complete (token limit reached)."
     );
