@@ -57,8 +57,10 @@ export class SegmentRecorder {
     if (this.recorder) return false;
     try {
       this.mimeType = pickMimeType();
+      // 48 kbps is clear for speech and keeps a 20-minute mock near 7.2 MB,
+      // safely below the 10 MB upload ceiling even with container overhead.
       const opts: MediaRecorderOptions = this.mimeType
-        ? { mimeType: this.mimeType, audioBitsPerSecond: 96000 }
+        ? { mimeType: this.mimeType, audioBitsPerSecond: 48000 }
         : {};
       this.recorder = new MediaRecorder(stream, opts);
       this.chunks = [];
