@@ -47,7 +47,7 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Send,
+  ArrowUp,
   X,
   Zap,
 } from "lucide-react";
@@ -735,9 +735,9 @@ export function StellaWorkspaceView({
               type="submit"
               size="sm"
               disabled={chatLoading || !chatInput.trim()}
-              className="h-9 gap-1.5 px-4"
+              className="h-9 gap-1.5 px-4 cursor-pointer"
             >
-              <Send className="h-3.5 w-3.5" />
+              <ArrowUp className="h-4 w-4 stroke-[2.5]" />
               <span>Send</span>
             </Button>
           </form>

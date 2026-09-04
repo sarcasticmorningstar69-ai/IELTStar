@@ -60,7 +60,7 @@ import {
 import {
   Maximize2,
   Minimize2,
-  Send,
+  ArrowUp,
   X,
   BookOpen,
   Sparkles,
@@ -1267,7 +1267,7 @@ export function AiAssistant() {
                   className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none focus:border-brand-bright disabled:opacity-60"
                 />
                 <Button type="submit" size="sm" disabled={loading || !question.trim()} className="h-8 px-3 cursor-pointer">
-                  {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                  {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <ArrowUp className="h-3.5 w-3.5 stroke-[2.5]" />}
                 </Button>
               </form>
             </div>
@@ -1544,7 +1544,7 @@ export function AiAssistant() {
                       className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground disabled:opacity-60"
                     />
                     <Button type="submit" size="sm" disabled={loading || !question.trim()} className="gap-1.5 h-9 px-4 cursor-pointer">
-                      {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <ArrowUp className="h-3.5 w-3.5 stroke-[2.5]" />}
                       <span>{loading ? "Reasoning..." : "Send"}</span>
                     </Button>
                   </form>
@@ -1683,7 +1683,7 @@ export function AiAssistant() {
                       className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground disabled:opacity-60"
                     />
                     <Button type="submit" size="sm" disabled={loading || !question.trim()} className="gap-1.5 h-9 px-4 cursor-pointer">
-                      {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <ArrowUp className="h-3.5 w-3.5 stroke-[2.5]" />}
                       <span>Send</span>
                     </Button>
                   </form>

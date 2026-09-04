@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useApp } from "@/lib/store/app";
 import { PageHeader, SectionCard } from "@/components/shared/page-kit";
-import { MorphingMockAura } from "@/components/shared/morphing-shapes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CONTENT_STATS } from "@/lib/data/content";
@@ -41,7 +40,6 @@ const PARTS = [
 
 export function PracticeHubView() {
   const navigate = useApp((s) => s.navigate);
-  const [mockHovered, setMockHovered] = React.useState(false);
 
   return (
     <div className="fade-up space-y-6">
@@ -89,14 +87,9 @@ export function PracticeHubView() {
             navigate({ name: "mock-config" });
           }
         }}
-        onMouseEnter={() => setMockHovered(true)}
-        onMouseLeave={() => setMockHovered(false)}
         aria-label="Start Full Speaking Mock"
         className="card-lift group relative block w-full cursor-pointer overflow-hidden rounded-3xl border border-brand-bright/35 bg-gradient-to-br from-brand-soft/80 via-card to-card p-6 text-left sm:p-8 shadow-sm"
       >
-        <div className="pointer-events-none absolute -right-6 -bottom-8">
-          <MorphingMockAura isHovered={mockHovered} size={250} />
-        </div>
         <div className="relative">
           <div className="flex flex-wrap items-center gap-3">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md transition-transform duration-300 group-hover:scale-105">
