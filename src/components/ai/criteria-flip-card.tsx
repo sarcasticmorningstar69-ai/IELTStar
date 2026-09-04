@@ -1,7 +1,14 @@
 "use client";
 
+/**
+ * The four IELTS criteria as reveal cards.
+ *
+ * A card only ever shows what Stella actually returned. If a criterion has no
+ * band or no summary, the card says so — it never borrows the overall band,
+ * never falls back to Band 7, and never claims a score is "verified".
+ */
 import * as React from "react";
-import type { AiCriterionScore, IeltsCriterion } from "@/lib/ai/types";
+import type { AiCriterionScore, AiReliability, IeltsCriterion } from "@/lib/ai/types";
 import { cn } from "@/lib/utils";
 import { Sparkles, CheckCircle2, Volume2, BookOpen, Activity, Lock, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -53,20 +60,23 @@ const ORDERED_CRITERIA: IeltsCriterion[] = [
   "Pronunciation",
 ];
 
+const RELIABILITY_LABEL: Record<AiReliability, string> = {
+  high: "Strong evidence",
+  medium: "Reasonable evidence",
+  low: "Weak evidence",
+  insufficient: "Not enough to judge",
+};
+
 interface CriteriaFlipCardsProps {
   criteria: AiCriterionScore[];
   overallBand: number | null;
 }
 
 export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsProps) {
-  // Permanently tracks flipped state for each criterion
   const [flipped, setFlipped] = React.useState<Record<string, boolean>>({});
 
   const toggleFlip = (criterion: string) => {
-    setFlipped((prev) => ({
-      ...prev,
-      [criterion]: true, // Once flipped, stays flipped face-up forever!
-    }));
+    setFlipped((prev) => ({ ...prev, [criterion]: true }));
   };
 
   const revealAll = () => {
@@ -82,37 +92,38 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
 
   return (
     <div className="space-y-4">
-      {/* Header with Surprise Reveal Action */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div>
-          <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
             <Sparkles className="h-3 w-3" />
-            <span>IELTS Band Assessment • Surprise Reveal</span>
+            <span>
+              IELTS band assessment
+              {overallBand !== null && ` • overall Band ${overallBand}`}
+            </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Tap each card to reveal your official rubric band scores &amp; examiner feedback.
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Tap each card to reveal the band and the examiner note for that criterion.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <span className="text-xs text-muted-foreground">
-            {revealedCount}/{ORDERED_CRITERIA.length} Revealed
+            {revealedCount}/{ORDERED_CRITERIA.length} revealed
           </span>
           <Button
             size="sm"
             variant={isAllRevealed ? "outline" : "default"}
             onClick={revealAll}
             disabled={isAllRevealed}
-            className="text-xs h-8 px-3 gap-1.5 cursor-pointer rounded-xl font-semibold shadow-xs"
+            className="h-8 cursor-pointer gap-1.5 rounded-xl px-3 text-xs font-semibold shadow-xs"
           >
             <Eye className="h-3.5 w-3.5" />
-            <span>{isAllRevealed ? "All Scores Revealed" : "Reveal All Scores ✨"}</span>
+            <span>{isAllRevealed ? "All scores revealed" : "Reveal all scores"}</span>
           </Button>
         </div>
       </div>
 
-      {/* 4 Cards 3D Perspective Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {ORDERED_CRITERIA.map((criterionName) => {
           const score = criteria.find(
             (c) =>
@@ -123,7 +134,9 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
           const meta = CRITERIA_METADATA[criterionName];
           const Icon = meta.icon;
           const isFlipped = Boolean(flipped[criterionName]);
-          const bandNumber = score?.band != null ? Math.round(score.band) : overallBand || 7;
+          // Only this criterion's own band is ever shown. No borrowing, no default.
+          const bandNumber = score && score.band != null ? Math.round(score.band) : null;
+          const bandLabel = bandNumber === null ? "Not scored" : `Band ${bandNumber}`;
 
           return (
             <div
@@ -132,29 +145,26 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
               onClick={() => toggleFlip(criterionName)}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  toggleFlip(criterionName);
-                }
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") toggleFlip(criterionName);
               }}
-              title={isFlipped ? `${criterionName}: Band ${bandNumber}` : `Tap to reveal ${criterionName} score`}
+              title={
+                isFlipped
+                  ? `${criterionName}: ${bandLabel}`
+                  : `Tap to reveal ${criterionName}`
+              }
             >
-              <div
-                className={cn(
-                  "criteria-card-inner",
-                  isFlipped && "is-flipped"
-                )}
-              >
-                {/* ── FRONT SIDE (Mystery Secret Card) ── */}
+              <div className={cn("criteria-card-inner", isFlipped && "is-flipped")}>
+                {/* ── FRONT ── */}
                 <div
                   className={cn(
-                    "criteria-card-front border bg-gradient-to-b from-card to-surface p-5 shadow-md flex flex-col justify-between transition-all",
+                    "criteria-card-front flex flex-col justify-between border bg-gradient-to-b from-card to-surface p-5 shadow-md transition-all",
                     meta.glowColor,
-                    "hover:shadow-lg hover:scale-[1.01]"
+                    "hover:scale-[1.01] hover:shadow-lg"
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface border border-border shadow-xs">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface shadow-xs">
                       <Icon className="h-5 w-5 text-brand-bright" />
                     </div>
                     <span className="rounded-full border border-border bg-muted/70 px-2.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground uppercase">
@@ -162,31 +172,29 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                     </span>
                   </div>
 
-                  <div className="space-y-1.5 text-center my-auto">
-                    <h4 className="text-sm font-bold text-foreground">
-                      {criterionName}
-                    </h4>
-                    <p className="text-[11px] text-muted-foreground line-clamp-2 px-2">
+                  <div className="my-auto space-y-1.5 text-center">
+                    <h4 className="text-sm font-bold text-foreground">{criterionName}</h4>
+                    <p className="line-clamp-2 px-2 text-[11px] text-muted-foreground">
                       {meta.description}
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-border/50 flex items-center justify-between text-[11px]">
-                    <span className="inline-flex items-center gap-1 text-muted-foreground font-medium">
+                  <div className="flex items-center justify-between border-t border-border/50 pt-2 text-[11px]">
+                    <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
                       <Lock className="h-3 w-3 opacity-60" />
-                      <span>Secret Score</span>
+                      <span>Hidden score</span>
                     </span>
-                    <span className="rounded-lg bg-brand-soft px-2.5 py-1 text-[11px] font-semibold text-brand-bright shadow-2xs inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-brand-soft px-2.5 py-1 text-[11px] font-semibold text-brand-bright shadow-2xs">
                       <Sparkles className="h-3 w-3" />
-                      <span>Tap to Reveal</span>
+                      <span>Tap to reveal</span>
                     </span>
                   </div>
                 </div>
 
-                {/* ── BACK SIDE (Revealed Examiner Face — Stays Face Up!) ── */}
+                {/* ── BACK ── */}
                 <div
                   className={cn(
-                    "criteria-card-back border border-brand-bright/35 bg-card p-5 shadow-lg flex flex-col justify-between",
+                    "criteria-card-back flex flex-col justify-between border border-brand-bright/35 bg-card p-5 shadow-lg",
                     "bg-gradient-to-br from-card via-surface/80 to-brand-soft/30"
                   )}
                 >
@@ -196,13 +204,33 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                         <div className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
                           {criterionName}
                         </div>
-                        <div className="mt-0.5 flex items-baseline gap-2">
-                          <span className="font-mono text-2xl font-black text-brand-bright tabular-nums">
-                            Band {bandNumber}
+                        <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
+                          <span
+                            className={cn(
+                              "font-mono text-2xl font-black tabular-nums",
+                              bandNumber === null
+                                ? "text-base font-semibold text-muted-foreground"
+                                : "text-brand-bright"
+                            )}
+                          >
+                            {bandLabel}
                           </span>
-                          <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                            ✓ Verified
-                          </span>
+                          {score?.reliability && (
+                            <span
+                              className={cn(
+                                "rounded border px-1.5 py-0.5 text-[10px] font-semibold",
+                                score.reliability === "high" &&
+                                  "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+                                score.reliability === "medium" &&
+                                  "border-border bg-muted/60 text-muted-foreground",
+                                (score.reliability === "low" ||
+                                  score.reliability === "insufficient") &&
+                                  "border-warning/40 bg-warning/10 text-warning"
+                              )}
+                            >
+                              {RELIABILITY_LABEL[score.reliability]}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-soft text-brand-bright">
@@ -210,15 +238,14 @@ export function CriteriaFlipCards({ criteria, overallBand }: CriteriaFlipCardsPr
                       </div>
                     </div>
 
-                    <p className="mt-2.5 text-xs text-foreground/90 leading-relaxed line-clamp-3">
-                      {score?.summary ||
-                        `Demonstrates sustained control consistent with Band ${bandNumber} performance under Cambridge rubrics.`}
+                    <p className="mt-2.5 line-clamp-3 text-xs leading-relaxed text-foreground/90">
+                      {score?.summary || "Stella did not return a note for this criterion."}
                     </p>
                   </div>
 
                   {score?.nextStep && (
-                    <div className="mt-2 rounded-xl border border-brand-bright/20 bg-brand-soft/50 p-2 text-[11px] text-brand-bright font-medium leading-snug">
-                      <strong className="text-foreground">Examiner Tip:</strong> {score.nextStep}
+                    <div className="mt-2 rounded-xl border border-brand-bright/20 bg-brand-soft/50 p-2 text-[11px] leading-snug font-medium text-brand-bright">
+                      <strong className="text-foreground">Next step:</strong> {score.nextStep}
                     </div>
                   )}
                 </div>
