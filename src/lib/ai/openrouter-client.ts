@@ -1,4 +1,10 @@
-/** OpenRouter client for Stella. The selected model is configured server-side. */
+/**
+ * Feedback model client for Stella.
+ *
+ * Speaks the OpenAI-compatible chat-completions protocol, so it works with
+ * OpenRouter or any other gateway exposing the same shape. Both the gateway
+ * and the model are server-side configuration — never sent from the browser.
+ */
 
 import { STELLA_SYSTEM_INSTRUCTION } from "./prompts/stella-prompt";
 
@@ -9,11 +15,14 @@ import { STELLA_SYSTEM_INSTRUCTION } from "./prompts/stella-prompt";
  * provider uses the prompts to improve its products, and our prompts contain
  * students' transcribed speech. Never make a contributor tier the default.
  *
- * Gemini 3.8 Flash is generally available (not preview), supports structured
- * JSON output, and allows large completions — which matters because a full
- * mock returns per-answer notes for up to 20 recordings in one object.
+ * Grok 4.6 is a flagship-class reasoning model. Band judgements need
+ * consistency across four criteria and up to 20 answers in one object, which
+ * is exactly where stronger reasoning shows up. Override with OPENROUTER_MODEL.
  */
-export const DEFAULT_FEEDBACK_MODEL = "google/gemini-3.8-flash";
+export const DEFAULT_FEEDBACK_MODEL = "x-ai/grok-4.6";
+
+/** Default gateway. Override with OPENROUTER_BASE_URL for another provider. */
+const DEFAULT_API_BASE = "https://openrouter.ai/api/v1";
 
 /**
  * Hard ceiling on completion length.
@@ -28,6 +37,30 @@ const MAX_COMPLETION_TOKENS = 16000;
 export interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
   content: string;
+}
+
+/**
+ * Resolve the chat-completions endpoint.
+ *
+ * Student transcripts travel over this connection, so plain HTTP is refused
+ * outright rather than downgraded with a warning.
+ */
+function resolveEndpoint(): string {
+  const configured = (process.env.OPENROUTER_BASE_URL || "").trim();
+  const base = (configured || DEFAULT_API_BASE).replace(/\/+$/, "");
+
+  let parsed: URL;
+  try {
+    parsed = new URL(base);
+  } catch {
+    throw new Error("OPENROUTER_BASE_URL is not a valid URL.");
+  }
+  if (parsed.protocol !== "https:") {
+    throw new Error("OPENROUTER_BASE_URL must use HTTPS.");
+  }
+
+  // Accept either ".../v1" or a full ".../v1/chat/completions".
+  return base.endsWith("/chat/completions") ? base : `${base}/chat/completions`;
 }
 
 export async function callOpenRouter({
@@ -47,6 +80,18 @@ export async function callOpenRouter({
   }
 
   const model = process.env.OPENROUTER_MODEL || DEFAULT_FEEDBACK_MODEL;
+
+  if (model.endsWith("-contributor")) {
+    /*
+     * Contributor tiers are explicitly used by the provider to improve their
+     * products, and every prompt here contains a student's transcribed speech.
+     * Fail loudly at call time rather than leak quietly for months.
+     */
+    throw new Error(
+      "Refusing to send student speech to a '-contributor' model tier, which trains on prompts. Set OPENROUTER_MODEL to a non-training model."
+    );
+  }
+
   const body: Record<string, unknown> = {
     model,
     messages: [{ role: "system", content: systemPrompt }, ...messages],
@@ -61,7 +106,7 @@ export async function callOpenRouter({
     body.response_format = { type: "json_object" };
   }
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const response = await fetch(resolveEndpoint(), {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -75,8 +120,8 @@ export async function callOpenRouter({
 
   if (!response.ok) {
     // Do not log the provider body: it may echo student content or account data.
-    console.error("[OpenRouter] request failed", response.status);
-    throw new Error(`OpenRouter request failed with status ${response.status}.`);
+    console.error("[feedback] request failed", response.status);
+    throw new Error(`Feedback request failed with status ${response.status}.`);
   }
 
   const data: unknown = await response.json();
@@ -94,7 +139,7 @@ export async function callOpenRouter({
       : "";
 
   if (!content) {
-    throw new Error("OpenRouter returned no response content.");
+    throw new Error("The feedback provider returned no response content.");
   }
 
   /*
@@ -104,7 +149,7 @@ export async function callOpenRouter({
    */
   if (choice?.finish_reason === "length") {
     throw new Error(
-      "OpenRouter response was cut off before it was complete (token limit reached)."
+      "The feedback response was cut off before it was complete (token limit reached)."
     );
   }
 
