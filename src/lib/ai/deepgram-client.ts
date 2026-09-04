@@ -1,6 +1,8 @@
 /**
- * Deepgram Transcription Client for IELTStar
- * Powered by Deepgram Nova-3 with word-level timestamps & filler words
+ * Deepgram transcription client for IELTStar.
+ *
+ * Deepgram is the ONLY source of transcript text in this codebase. The feedback
+ * model marks the answer; it never rewrites what the student said.
  */
 
 import type { AiTranscriptWord, AiTimestampEvent } from "./types";
@@ -10,6 +12,11 @@ export interface DeepgramTranscriptionResult {
   words: AiTranscriptWord[];
   events: AiTimestampEvent[];
 }
+
+const DEEPGRAM_ENDPOINT = "https://api.deepgram.com/v1/listen";
+
+/** Pause longer than this between two words is reported as a hesitation. */
+const PAUSE_THRESHOLD_SECONDS = 1.0;
 
 export async function transcribeWithDeepgram(
   audioBuffer: Buffer | ArrayBuffer,
@@ -21,21 +28,26 @@ export async function transcribeWithDeepgram(
   }
 
   const model = process.env.DEEPGRAM_MODEL || "nova-3";
-  const url = `https://api.deepgram.com/v1/listen?model=${model}&smart_format=true&punctuate=true&filler_words=true&words=true`;
+  const url = new URL(DEEPGRAM_ENDPOINT);
+  url.searchParams.set("model", model);
+  url.searchParams.set("smart_format", "true");
+  url.searchParams.set("punctuate", "true");
+  url.searchParams.set("filler_words", "true");
+  url.searchParams.set("words", "true");
 
-  const response = await fetch(url, {
+  const response = await fetch(url.toString(), {
     method: "POST",
     headers: {
-      "Authorization": `Token ${apiKey}`,
+      Authorization: `Token ${apiKey}`,
       "Content-Type": contentType,
     },
     body: new Blob([audioBuffer as unknown as BlobPart], { type: contentType }),
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error("[Deepgram Error]", response.status, errorText);
-    throw new Error(`Deepgram transcription failed (${response.status}): ${errorText}`);
+    // Never log the response body: it can contain transcript fragments.
+    console.error("[deepgram] transcription request failed", response.status);
+    throw new Error(`Deepgram transcription failed (${response.status}).`);
   }
 
   const data = await response.json();
@@ -59,13 +71,13 @@ export async function transcribeWithDeepgram(
     confidence: w.confidence,
   }));
 
-  // Identify hesitations / pauses from word gaps (> 1.0s gap)
+  // Identify hesitations from gaps between words.
   const events: AiTimestampEvent[] = [];
   for (let i = 1; i < words.length; i++) {
     const prev = words[i - 1];
     const curr = words[i];
     const gap = curr.start - prev.end;
-    if (gap > 1.0) {
+    if (gap > PAUSE_THRESHOLD_SECONDS) {
       events.push({
         start: prev.end,
         end: curr.start,
