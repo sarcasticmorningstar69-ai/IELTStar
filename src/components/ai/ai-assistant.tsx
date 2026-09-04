@@ -71,6 +71,7 @@ import {
   Plus,
   Trash2,
   ShieldCheck,
+  LoaderCircle,
 } from "lucide-react";
 
 function formatRelativeTime(dateStr: string): string {
@@ -568,6 +569,16 @@ export function AiAssistant() {
     }
   }, [view]);
 
+  // Auto-scroll chat containers to latest message or reasoning state
+  React.useEffect(() => {
+    const containers = [chatScrollRef.current, drawerChatScrollRef.current];
+    for (const el of containers) {
+      if (el) {
+        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      }
+    }
+  }, [messages, loading]);
+
   // Mobile segmented tab for full-window mode ("left" vs "right")
   const [mobileFullTab, setMobileFullTab] = React.useState<"left" | "right">("left");
 
@@ -1047,9 +1058,19 @@ export function AiAssistant() {
                 </div>
               ))}
               {loading && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground p-1">
-                  <StellaAvatar state="thinking" size={20} frame={false} />
-                  <span>Stella is thinking...</span>
+                <div className="flex gap-2 items-start p-1 animate-pulse">
+                  <div className="mt-0.5 shrink-0">
+                    <StellaAvatar state="thinking" size={20} frame={false} />
+                  </div>
+                  <div className="rounded-xl border border-brand-bright/25 bg-brand-soft/40 px-3 py-2 text-[11px] text-foreground/90">
+                    <div className="font-semibold text-brand-bright flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-brand-bright animate-ping" />
+                      <span>Stella is reasoning...</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                      Drafting IELTS advice with Grok 4.6 (~10–15s)
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -1079,11 +1100,12 @@ export function AiAssistant() {
                   type="text"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="Ask Stella about this page..."
-                  className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none focus:border-brand-bright"
+                  placeholder={loading ? "Stella is reasoning..." : "Ask Stella about this page..."}
+                  disabled={loading}
+                  className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none focus:border-brand-bright disabled:opacity-60"
                 />
                 <Button type="submit" size="sm" disabled={loading || !question.trim()} className="h-8 px-3 cursor-pointer">
-                  <Send className="h-3.5 w-3.5" />
+                  {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                 </Button>
               </form>
             </div>
@@ -1303,9 +1325,19 @@ export function AiAssistant() {
                     );
                   })}
                   {loading && (
-                    <div className="flex items-center gap-2.5 text-xs text-muted-foreground p-2">
-                      <StellaAvatar state="thinking" size={26} frame={false} />
-                      <span>Stella is thinking...</span>
+                    <div className="flex gap-2.5 items-start animate-pulse">
+                      <div className="mt-0.5 shrink-0">
+                        <StellaAvatar state="thinking" size={26} frame={false} />
+                      </div>
+                      <div className="rounded-2xl border border-brand-bright/30 bg-brand-soft/40 px-4 py-3 text-xs shadow-xs text-foreground/90 space-y-1">
+                        <div className="flex items-center gap-2 font-medium text-brand-bright">
+                          <span className="inline-block h-2 w-2 rounded-full bg-brand-bright animate-ping" />
+                          <span>Stella is analyzing &amp; reasoning...</span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">
+                          Grok 4.6 is reasoning through Band 8–9 descriptors (takes ~10–15s).
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1337,12 +1369,13 @@ export function AiAssistant() {
                       type="text"
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      placeholder={`Ask Stella about ${title}...`}
-                      className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground"
+                      placeholder={loading ? "Stella is reasoning and drafting advice..." : `Ask Stella about ${title}...`}
+                      disabled={loading}
+                      className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground disabled:opacity-60"
                     />
                     <Button type="submit" size="sm" disabled={loading || !question.trim()} className="gap-1.5 h-9 px-4 cursor-pointer">
-                      <Send className="h-3.5 w-3.5" />
-                      <span>Send</span>
+                      {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      <span>{loading ? "Thinking..." : "Send"}</span>
                     </Button>
                   </form>
                 </div>
