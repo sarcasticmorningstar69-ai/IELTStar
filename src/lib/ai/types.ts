@@ -233,6 +233,59 @@ export interface AiAnalysisResult {
   disclaimer: string;
   isOffTopic?: boolean;
   offTopicWarning?: string;
+  deepDive?: AiDeepDiveAnalysis;
+}
+
+export interface AiInteractiveVocabItem {
+  phrase: string;
+  originalUtterance?: string;
+  level: "B2" | "C1" | "C2";
+  definition: string;
+  exampleSentence: string;
+  nuanceExplanation: string;
+  fromProgram?: boolean;
+}
+
+export interface AiGrammarDeepCategory {
+  category: string;
+  verdict: string;
+  detailedBreakdown: string;
+  observedFlaws: Array<{
+    original: string;
+    explanation: string;
+    upgradedVersion: string;
+  }>;
+  advancedPatternsToAdopt: Array<{
+    pattern: string;
+    example: string;
+  }>;
+}
+
+export interface AiDeepDiveAnalysis {
+  active: boolean;
+  vocabularyMastery: {
+    overview: string;
+    repetitiveWords: Array<{
+      word: string;
+      countApprox?: string;
+      alternatives: string[];
+    }>;
+    interactiveSuggestions: AiInteractiveVocabItem[];
+    collocationsAndIdioms: Array<{
+      idiom: string;
+      context: string;
+      bandLevel: string;
+    }>;
+  };
+  grammarDissection: {
+    overview: string;
+    categories: AiGrammarDeepCategory[];
+  };
+  discourseFluencyTactics: {
+    fillerAnalysis: string;
+    topicDevelopment: string;
+    examinerPerception: string;
+  };
 }
 
 export interface AiAnalysisAnswerInput {
@@ -258,4 +311,5 @@ export interface AiAnalysisRequest {
    */
   analysisRequestId?: string;
   answers: AiAnalysisAnswerInput[];
+  deepDive?: boolean;
 }

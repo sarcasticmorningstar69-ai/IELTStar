@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CriteriaFlipCards } from "@/components/ai/criteria-flip-card";
 import { FormattedChatMessage } from "@/components/ai/formatted-chat-message";
+import { DeepDivePanel } from "@/components/ai/deep-dive-panel";
 import {
   AlertCircle,
   AlertTriangle,
@@ -48,6 +49,7 @@ import {
   RotateCcw,
   Send,
   X,
+  Zap,
 } from "lucide-react";
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
@@ -219,9 +221,16 @@ export function StellaWorkspaceView({
     return map;
   }, [failures]);
 
+  const [deepDiveMode, setDeepDiveMode] = React.useState(false);
+  const [deepDiveRunning, setDeepDiveRunning] = React.useState(false);
+
   const runAnalysis = React.useCallback(
-    async (onlyRecordingIds?: string[]) => {
+    async (onlyRecordingIds?: string[], forceDeepDive?: boolean) => {
       if (!answers.length || inFlightRef.current) return;
+
+      const isDeep = forceDeepDive !== undefined ? forceDeepDive : deepDiveMode;
+      if (forceDeepDive !== undefined) setDeepDiveMode(forceDeepDive);
+      setDeepDiveRunning(isDeep);
 
       const selected = onlyRecordingIds
         ? answers.filter((r) => onlyRecordingIds.includes(r.id))
@@ -280,6 +289,7 @@ export function StellaWorkspaceView({
               startOffset: segment?.startOffset,
             };
           }),
+          deepDive: isDeep,
         };
 
         const form = new FormData();
@@ -363,9 +373,10 @@ export function StellaWorkspaceView({
       } finally {
         inFlightRef.current = false;
         setUploadRatio(0);
+        setDeepDiveRunning(false);
       }
     },
-    [answers, isFullMock, mock, mockId, session?.access_token, sessionId]
+    [answers, isFullMock, mock, mockId, session?.access_token, sessionId, deepDiveMode]
   );
 
   React.useEffect(() => {
@@ -400,6 +411,35 @@ export function StellaWorkspaceView({
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+
+      const evaluationContext = {
+        prompt: heading || "IELTS speaking practice",
+        overallBand: result?.overallBand,
+        isOffTopic: result?.isOffTopic,
+        offTopicWarning: result?.offTopicWarning,
+        criteria: result?.criteria?.map((c) => ({
+          criterion: c.criterion,
+          band: c.band,
+          summary: c.summary,
+          evidence: c.evidence,
+          nextStep: c.nextStep,
+        })),
+        answers: answers.map((a) => {
+          const analysis = analysisByRecording.get(a.id);
+          return {
+            part: a.part,
+            question: a.label,
+            transcript: analysis?.transcript || "",
+          };
+        }),
+        deepDive: result?.deepDive
+          ? {
+              vocabHighlights: result.deepDive.vocabularyMastery.interactiveSuggestions.map((v) => v.phrase),
+              grammarHighlights: result.deepDive.grammarDissection.categories.map((g) => g.category),
+            }
+          : undefined,
+      };
+
       const response = await fetch("/api/ai/evaluate", {
         method: "POST",
         headers,
@@ -407,6 +447,11 @@ export function StellaWorkspaceView({
           mode: "context-chat",
           question: text,
           pageTitle: heading || "IELTS speaking practice",
+          evaluationContext,
+          recentMessages: chatMessages.slice(-6).map((m) => ({
+            sender: m.sender,
+            text: m.text,
+          })),
         }),
       });
       const data = (await response.json()) as Record<string, unknown>;
@@ -720,7 +765,13 @@ export function StellaWorkspaceView({
                     {Math.round(uploadRatio * 100)}%
                   </span>
                 )}
-                {stage === "reviewing" && <span>Stella is transcribing and reviewing…</span>}
+                {stage === "reviewing" && (
+                  <span>
+                    {deepDiveRunning
+                      ? "Stella is running forensic deep reasoning (2–4 minutes)…"
+                      : "Stella is transcribing and reviewing…"}
+                  </span>
+                )}
               </div>
               <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
                 <div
@@ -770,17 +821,28 @@ export function StellaWorkspaceView({
           )}
 
           {!running && !result && failures.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border p-6 text-center">
+            <div className="rounded-2xl border border-dashed border-border p-6 text-center space-y-3">
               <p className="text-xs text-muted-foreground">
                 No analysis yet for this submission.
               </p>
-              <Button
-                size="sm"
-                className="mt-3 h-8 cursor-pointer text-xs"
-                onClick={() => void runAnalysis()}
-              >
-                Analyse with Stella
-              </Button>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 cursor-pointer text-xs"
+                  onClick={() => void runAnalysis(undefined, false)}
+                >
+                  Standard Analysis
+                </Button>
+                <Button
+                  size="sm"
+                  className="h-8 cursor-pointer gap-1.5 bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
+                  onClick={() => void runAnalysis(undefined, true)}
+                >
+                  <Zap className="h-3.5 w-3.5 fill-current" />
+                  <span>100K-Lumen Deep Dive (High Reasoning)</span>
+                </Button>
+              </div>
             </div>
           )}
 
@@ -857,6 +919,36 @@ export function StellaWorkspaceView({
                 />
               )}
 
+              {result.deepDive && (
+                <DeepDivePanel
+                  deepDive={result.deepDive}
+                  onAskStella={(promptText) => {
+                    void handleSendChat(promptText);
+                    setMobileTab("chat");
+                  }}
+                />
+              )}
+
+              {!result.deepDive && !running && (
+                <div className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-brand/10 to-amber-500/10 p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 text-xs font-bold text-amber-400">
+                    <Zap className="h-4 w-4" />
+                    <span>Want an exhaustive, forensic linguistic analysis?</span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Activate the 100K-lumen Deep Dive to get high-reasoning vocabulary replacements from our curriculum and category-by-category grammar dissection.
+                  </p>
+                  <Button
+                    size="sm"
+                    className="mt-3 cursor-pointer gap-1.5 bg-amber-500 text-black hover:bg-amber-400 font-semibold text-xs"
+                    onClick={() => void runAnalysis(undefined, true)}
+                  >
+                    <Zap className="h-3.5 w-3.5 fill-current" />
+                    <span>Run 100K-Lumen Deep Dive Diagnostic</span>
+                  </Button>
+                </div>
+              )}
+
               {result.strengths.length > 0 && (
                 <div className="rounded-xl border border-border bg-surface/50 p-3.5">
                   <div className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
@@ -931,13 +1023,14 @@ function AnswerCard({
   const [duration, setDuration] = React.useState<number | null>(null);
   const [speedIdx, setSpeedIdx] = React.useState(1);
   const [expanded, setExpanded] = React.useState(false);
-  const [editing, setEditing] = React.useState(false);
+const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState("");
 
   const transcriptId = `transcript-${answer.id}`;
   const transcript = analysis?.transcript || "";
   const words = analysis?.words || [];
   const paragraphs = React.useMemo(() => toParagraphs(transcript), [transcript]);
+  const [transcriptView, setTranscriptView] = React.useState<"text" | "interactive">("text");
 
   React.useEffect(() => {
     let revoke: string | null = null;
@@ -1150,21 +1243,57 @@ function AnswerCard({
         </button>
 
         {expanded && transcript && (
-          <div id={transcriptId} className="mt-3 space-y-4">
-            <div className="rounded-xl border border-border/70 bg-surface/40 p-4">
-              <div className="mb-2 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                Transcript · speech recognition
-              </div>
-              <div className="space-y-2.5 text-sm leading-relaxed text-foreground/90">
-                {paragraphs.map((paragraph, i) => (
-                  <p key={i} className="break-words whitespace-pre-line">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </div>
-
+          <div id={transcriptId} className="mt-3 space-y-3">
             {words.length > 0 && (
+              <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
+                <div className="inline-flex rounded-lg border border-border/80 bg-surface/80 p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setTranscriptView("text")}
+                    className={cn(
+                      "rounded-md px-2.5 py-1 text-xs font-medium transition-all",
+                      transcriptView === "text"
+                        ? "bg-brand text-primary-foreground font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Full Transcript
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTranscriptView("interactive")}
+                    className={cn(
+                      "rounded-md px-2.5 py-1 text-xs font-medium transition-all",
+                      transcriptView === "interactive"
+                        ? "bg-brand text-primary-foreground font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Interactive Follow-Along
+                  </button>
+                </div>
+                {transcriptView === "interactive" && (
+                  <span className="text-[10px] text-muted-foreground">
+                    Tap a word to jump audio
+                  </span>
+                )}
+              </div>
+            )}
+
+            {transcriptView === "text" || words.length === 0 ? (
+              <div className="rounded-xl border border-border/70 bg-surface/40 p-4">
+                <div className="mb-2 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                  Transcript · speech recognition
+                </div>
+                <div className="space-y-2.5 text-sm leading-relaxed text-foreground/90">
+                  {paragraphs.map((paragraph, i) => (
+                    <p key={i} className="break-words whitespace-pre-line">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            ) : (
               <div className="rounded-xl border border-border/70 bg-surface/40 p-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <div className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
