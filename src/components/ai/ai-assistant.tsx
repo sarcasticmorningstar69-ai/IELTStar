@@ -90,6 +90,130 @@ function formatRelativeTime(dateStr: string): string {
   }
 }
 
+/**
+ * Waiting-state copy.
+ *
+ * Deliberately never names the model or the gateway. Stella is the coach the
+ * student talks to; which provider is behind her is server-side configuration
+ * that changes, and the system prompt forbids her from naming it. Also no
+ * duration promises here — nothing in the app measures how long a reply takes,
+ * and a long transcript takes far longer than a one-line question.
+ */
+const REASONING_PHRASES = [
+  "Stella is reasoning",
+  "Stella is triangulating",
+  "Stella is reckoning",
+  "Stella is weighing the descriptors",
+  "Stella is joining the dots",
+  "Stella is choosing her words",
+  "Stella is double-checking herself",
+];
+
+const REASONING_PHRASE_INTERVAL_MS = 1900;
+
+function useReasoningPhrase(active: boolean): string {
+  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!active) {
+      setIndex(0);
+      return;
+    }
+    const id = window.setInterval(() => {
+      setIndex((prev) => (prev + 1) % REASONING_PHRASES.length);
+    }, REASONING_PHRASE_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [active]);
+
+  return REASONING_PHRASES[index] ?? REASONING_PHRASES[0];
+}
+
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(query.matches);
+    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  return reduced;
+}
+
+/** Words revealed per tick, and the gap between ticks. */
+const TYPEWRITER_WORDS_PER_TICK = 2;
+const TYPEWRITER_TICK_MS = 26;
+
+/**
+ * Reveals text word by word instead of dropping a wall of text in one frame.
+ *
+ * Only ever used for a reply that has just arrived — reopening a conversation
+ * shows history instantly, because re-typing messages a student has already
+ * read is a delay pretending to be a feature. Honours prefers-reduced-motion.
+ */
+function TypewriterText({
+  text,
+  animateReveal,
+  onTick,
+  onDone,
+}: {
+  text: string;
+  animateReveal: boolean;
+  onTick?: () => void;
+  onDone?: () => void;
+}) {
+  const reduced = usePrefersReducedMotion();
+  // Keep trailing whitespace attached so newlines survive the join.
+  const tokens = React.useMemo(() => text.match(/\S+\s*/g) ?? [], [text]);
+  const shouldReveal = animateReveal && !reduced && tokens.length > 1;
+  const [count, setCount] = React.useState(() => (shouldReveal ? 0 : tokens.length));
+
+  const onTickRef = React.useRef(onTick);
+  const onDoneRef = React.useRef(onDone);
+  onTickRef.current = onTick;
+  onDoneRef.current = onDone;
+
+  React.useEffect(() => {
+    if (!shouldReveal) {
+      setCount(tokens.length);
+      return;
+    }
+
+    setCount(0);
+    let shown = 0;
+    const id = window.setInterval(() => {
+      shown += TYPEWRITER_WORDS_PER_TICK;
+      if (shown >= tokens.length) {
+        setCount(tokens.length);
+        window.clearInterval(id);
+        onDoneRef.current?.();
+      } else {
+        setCount(shown);
+      }
+      onTickRef.current?.();
+    }, TYPEWRITER_TICK_MS);
+
+    return () => window.clearInterval(id);
+  }, [tokens, shouldReveal]);
+
+  const isTyping = count < tokens.length;
+
+  return (
+    <p className="whitespace-pre-line">
+      {tokens.slice(0, count).join("")}
+      {isTyping && (
+        <span
+          aria-hidden="true"
+          className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-[2px] rounded-full bg-brand-bright align-middle animate-pulse"
+        />
+      )}
+    </p>
+  );
+}
+
 export function openStella(opts: { mode?: "drawer" | "full-window" } = { mode: "drawer" }) {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("stella:open", { detail: opts }));
@@ -548,6 +672,8 @@ export function AiAssistant() {
   const [loading, setLoading] = React.useState(false);
   const [stellaState, setStellaState] = React.useState<StellaState>("idle");
   const [messages, setMessages] = React.useState<ChatItem[]>([]);
+  /** Id of the one message currently allowed to reveal itself word by word. */
+  const [revealMessageId, setRevealMessageId] = React.useState<string | null>(null);
   const { user, session, authModalOpen, openAuthModal } = useAuth();
   const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
   const [isPrivacyNoticeOpen, setIsPrivacyNoticeOpen] = React.useState(false);
@@ -555,6 +681,8 @@ export function AiAssistant() {
   const [historyList, setHistoryList] = React.useState<ConversationSummary[]>([]);
   const chatScrollRef = React.useRef<HTMLDivElement>(null);
   const drawerChatScrollRef = React.useRef<HTMLDivElement>(null);
+
+  const reasoningPhrase = useReasoningPhrase(loading);
 
   // YouTube mock detection & selected video state
   const isVideoMock = view.name === "video" || view.name === "videos";
@@ -569,15 +697,19 @@ export function AiAssistant() {
     }
   }, [view]);
 
-  // Auto-scroll chat containers to latest message or reasoning state
-  React.useEffect(() => {
+  const scrollChatsToBottom = React.useCallback((smooth = true) => {
     const containers = [chatScrollRef.current, drawerChatScrollRef.current];
     for (const el of containers) {
       if (el) {
-        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        el.scrollTo({ top: el.scrollHeight, behavior: smooth ? "smooth" : "auto" });
       }
     }
-  }, [messages, loading]);
+  }, []);
+
+  // Auto-scroll chat containers to latest message or reasoning state
+  React.useEffect(() => {
+    scrollChatsToBottom();
+  }, [messages, loading, scrollChatsToBottom]);
 
   // Mobile segmented tab for full-window mode ("left" vs "right")
   const [mobileFullTab, setMobileFullTab] = React.useState<"left" | "right">("left");
@@ -728,6 +860,8 @@ export function AiAssistant() {
       if (session && session.messages.length > 0) {
         setActiveConversationIdState(existingId);
         setMessages(session.messages);
+        // Already-read history appears at once; only new replies animate.
+        setRevealMessageId(null);
         return;
       }
     }
@@ -751,6 +885,7 @@ export function AiAssistant() {
     saveMessageToConversation(initialSession.id, initialGreeting, user?.id);
     setActiveConversationIdState(initialSession.id);
     setMessages([initialGreeting]);
+    setRevealMessageId(initialGreeting.id);
   }, [scopeKey, selectedVideoId, title, isVideoMock, user?.id]);
 
   const handleStartNewChat = () => {
@@ -773,6 +908,7 @@ export function AiAssistant() {
     saveMessageToConversation(newSession.id, greetingMsg, user?.id);
     setActiveConversationIdState(newSession.id);
     setMessages([greetingMsg]);
+    setRevealMessageId(greetingMsg.id);
     setIsHistoryOpen(false);
     setHistoryList(listConversations());
   };
@@ -783,6 +919,7 @@ export function AiAssistant() {
       setActiveConversationId(session.scopeKey, convId);
       setActiveConversationIdState(convId);
       setMessages(session.messages);
+      setRevealMessageId(null);
       setIsHistoryOpen(false);
     }
   };
@@ -878,7 +1015,18 @@ export function AiAssistant() {
       }
       const data = await res.json();
 
-      const reply = data.reply || data.answer || data.message || "I've analyzed that for you.";
+      /*
+       * No canned fallback here. If the provider returns nothing usable, the
+       * student must see a failure, not invented coaching they might act on.
+       */
+      const reply: string = [data?.reply, data?.answer, data?.message]
+        .map((value) => (typeof value === "string" ? value.trim() : ""))
+        .find((value) => value.length > 0) ?? "";
+
+      if (!reply) {
+        throw new Error("Stella's reply came back empty. Please ask again.");
+      }
+
       const stellaMsg: ChatMessageItem = {
         id: `stella-${Date.now()}`,
         sender: "stella",
@@ -886,6 +1034,7 @@ export function AiAssistant() {
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, stellaMsg]);
+      setRevealMessageId(stellaMsg.id);
       saveMessageToConversation(convId, stellaMsg, user?.id);
       setHistoryList(listConversations());
     } catch (err: unknown) {
@@ -900,6 +1049,7 @@ export function AiAssistant() {
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);
+      setRevealMessageId(null);
       saveMessageToConversation(convId, fallbackMsg, user?.id);
     } finally {
       setLoading(false);
@@ -1053,22 +1203,30 @@ export function AiAssistant() {
                       : "bg-primary text-primary-foreground ml-6"
                   )}
                 >
-                  <p className="whitespace-pre-line">{m.text}</p>
+                  {m.sender === "stella" ? (
+                    <TypewriterText
+                      text={m.text}
+                      animateReveal={m.id === revealMessageId}
+                      onTick={() => scrollChatsToBottom(false)}
+                    />
+                  ) : (
+                    <p className="whitespace-pre-line">{m.text}</p>
+                  )}
                   <div className="mt-1 text-[10px] opacity-60 text-right">{m.timestamp}</div>
                 </div>
               ))}
               {loading && (
-                <div className="flex gap-2 items-start p-1 animate-pulse">
+                <div className="flex gap-2 items-start p-1">
                   <div className="mt-0.5 shrink-0">
                     <StellaAvatar state="thinking" size={20} frame={false} />
                   </div>
                   <div className="rounded-xl border border-brand-bright/25 bg-brand-soft/40 px-3 py-2 text-[11px] text-foreground/90">
                     <div className="font-semibold text-brand-bright flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-brand-bright animate-ping" />
-                      <span>Stella is reasoning...</span>
+                      <span>{reasoningPhrase}…</span>
                     </div>
                     <div className="text-[10px] text-muted-foreground mt-0.5">
-                      Drafting IELTS advice with Grok 4.6 (~10–15s)
+                      Working from the official IELTS band descriptors.
                     </div>
                   </div>
                 </div>
@@ -1100,7 +1258,7 @@ export function AiAssistant() {
                   type="text"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  placeholder={loading ? "Stella is reasoning..." : "Ask Stella about this page..."}
+                  placeholder={loading ? `${reasoningPhrase}…` : "Ask Stella about this page..."}
                   disabled={loading}
                   className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none focus:border-brand-bright disabled:opacity-60"
                 />
@@ -1318,24 +1476,32 @@ export function AiAssistant() {
                               : "bg-primary text-primary-foreground"
                           )}
                         >
-                          <p className="whitespace-pre-line">{msg.text}</p>
+                          {isStella ? (
+                            <TypewriterText
+                              text={msg.text}
+                              animateReveal={msg.id === revealMessageId}
+                              onTick={() => scrollChatsToBottom(false)}
+                            />
+                          ) : (
+                            <p className="whitespace-pre-line">{msg.text}</p>
+                          )}
                           <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                         </div>
                       </div>
                     );
                   })}
                   {loading && (
-                    <div className="flex gap-2.5 items-start animate-pulse">
+                    <div className="flex gap-2.5 items-start">
                       <div className="mt-0.5 shrink-0">
                         <StellaAvatar state="thinking" size={26} frame={false} />
                       </div>
                       <div className="rounded-2xl border border-brand-bright/30 bg-brand-soft/40 px-4 py-3 text-xs shadow-xs text-foreground/90 space-y-1">
                         <div className="flex items-center gap-2 font-medium text-brand-bright">
                           <span className="inline-block h-2 w-2 rounded-full bg-brand-bright animate-ping" />
-                          <span>Stella is analyzing &amp; reasoning...</span>
+                          <span>{reasoningPhrase}…</span>
                         </div>
                         <p className="text-[11px] text-muted-foreground">
-                          Grok 4.6 is reasoning through Band 8–9 descriptors (takes ~10–15s).
+                          Working through the official IELTS band descriptors.
                         </p>
                       </div>
                     </div>
@@ -1369,13 +1535,13 @@ export function AiAssistant() {
                       type="text"
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      placeholder={loading ? "Stella is reasoning and drafting advice..." : `Ask Stella about ${title}...`}
+                      placeholder={loading ? `${reasoningPhrase}…` : `Ask Stella about ${title}...`}
                       disabled={loading}
                       className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground disabled:opacity-60"
                     />
                     <Button type="submit" size="sm" disabled={loading || !question.trim()} className="gap-1.5 h-9 px-4 cursor-pointer">
                       {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                      <span>{loading ? "Thinking..." : "Send"}</span>
+                      <span>{loading ? "Reasoning..." : "Send"}</span>
                     </Button>
                   </form>
                 </div>
@@ -1455,7 +1621,15 @@ export function AiAssistant() {
                               : "bg-primary text-primary-foreground"
                           )}
                         >
-                          <p className="whitespace-pre-line">{msg.text}</p>
+                          {isStella ? (
+                            <TypewriterText
+                              text={msg.text}
+                              animateReveal={msg.id === revealMessageId}
+                              onTick={() => scrollChatsToBottom(false)}
+                            />
+                          ) : (
+                            <p className="whitespace-pre-line">{msg.text}</p>
+                          )}
                           <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
                         </div>
                       </div>
@@ -1464,7 +1638,7 @@ export function AiAssistant() {
                   {loading && (
                     <div className="flex items-center gap-2.5 text-xs text-muted-foreground p-2">
                       <StellaAvatar state="thinking" size={26} frame={false} />
-                      <span>Stella is evaluating the candidate...</span>
+                      <span>{reasoningPhrase}…</span>
                     </div>
                   )}
                 </div>
@@ -1496,11 +1670,16 @@ export function AiAssistant() {
                       type="text"
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      placeholder={`Ask Stella about ${videoById(selectedVideoId)?.label || "this candidate"}...`}
-                      className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground"
+                      placeholder={
+                        loading
+                          ? `${reasoningPhrase}…`
+                          : `Ask Stella about ${videoById(selectedVideoId)?.label || "this candidate"}...`
+                      }
+                      disabled={loading}
+                      className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm outline-none placeholder:text-muted-foreground disabled:opacity-60"
                     />
                     <Button type="submit" size="sm" disabled={loading || !question.trim()} className="gap-1.5 h-9 px-4 cursor-pointer">
-                      <Send className="h-3.5 w-3.5" />
+                      {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                       <span>Send</span>
                     </Button>
                   </form>
@@ -1554,16 +1733,16 @@ export function AiAssistant() {
 
             <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
               <p>
-                <strong className="text-foreground">Foundational AI Architecture:</strong> IELTStar Speaking Lab utilizes advanced multimodal reasoning and speech evaluation models (including Meta AI research architectures via secure API gateways) to deliver real-time candidate coaching, transcript analysis, and IELTS examiner rubric feedback.
+                <strong className="text-foreground">How your practice is processed:</strong> When you submit a recording, it is sent to a speech-recognition service to be turned into text. That transcript, together with the question you were answering, is then sent to an AI model that produces your band feedback. Your email, password and account details are never included.
               </p>
               <p>
-                <strong className="text-foreground">Data Utilization &amp; Community Tier:</strong> To maintain accessible, community-friendly pricing for all IELTS candidates, anonymized practice responses may be processed and calibrated to improve foundational speech and language learning systems. All interactions are stripped of account credentials.
+                <strong className="text-foreground">Training:</strong> We deliberately do not use the cheaper model tiers that providers offer in exchange for using your prompts to improve their own products. If that ever changes, this notice changes first.
               </p>
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-700 dark:text-amber-300">
                 <strong>Important Privacy Notice:</strong> For your personal data security, please refrain from sharing sensitive personally identifiable information (such as credit cards, government identification numbers, passwords, or confidential employment secrets) during spoken or text practice sessions.
               </div>
               <p>
-                Account credentials, authentication tokens, and payment records remain strictly isolated in PostgreSQL and are never transmitted to external model training pipelines.
+                Your account, recordings and feedback live in our Supabase Postgres database with row-level security enabled, so one student can never read another student&apos;s data.
               </p>
             </div>
 
