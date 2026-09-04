@@ -42,6 +42,17 @@ const DEFAULT_API_BASE = "https://openrouter.ai/api/v1";
  */
 const MAX_COMPLETION_TOKENS = 32000;
 
+/**
+ * How hard the model should think before answering.
+ *
+ * "none" omits the reasoning field entirely, which matters for two reasons:
+ * reasoning tokens are billed, and they are spent before the first visible
+ * character is emitted, so they are felt directly as latency. Worth it for a
+ * band judgement across four criteria; not worth it for "what is a good Part 2
+ * opener", where it only makes a student wait longer for the same answer.
+ */
+export type ReasoningEffort = "none" | "low" | "medium" | "high";
+
 export interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -76,11 +87,13 @@ export async function callOpenRouter({
   systemPrompt = STELLA_SYSTEM_INSTRUCTION,
   maxTokens = 500,
   jsonMode = false,
+  reasoningEffort = "medium",
 }: {
   messages: OpenRouterMessage[];
   systemPrompt?: string;
   maxTokens?: number;
   jsonMode?: boolean;
+  reasoningEffort?: ReasoningEffort;
 }): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -107,8 +120,11 @@ export async function callOpenRouter({
       1,
       Math.min(MAX_COMPLETION_TOKENS, Math.round(maxTokens))
     ),
-    reasoning: { effort: "medium" },
   };
+
+  if (reasoningEffort !== "none") {
+    body.reasoning = { effort: reasoningEffort };
+  }
 
   if (jsonMode) {
     body.response_format = { type: "json_object" };
