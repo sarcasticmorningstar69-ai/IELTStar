@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { isR2Configured, isSafeId, uploadAudioDirect, MAX_AUDIO_BYTES } from "@/lib/storage/r2";
+import {
+  isR2Configured,
+  isSafeId,
+  isAllowedMimeType,
+  uploadAudioDirect,
+  MAX_AUDIO_BYTES,
+} from "@/lib/storage/r2";
 import { getVerifiedUser, unauthenticated } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +51,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (audioEntry.size <= 0) {
+    return NextResponse.json(
+      { error: "EMPTY_RECORDING", message: "That recording is empty. Please record it again." },
+      { status: 400, headers: NO_STORE }
+    );
+  }
+
   if (audioEntry.size > MAX_AUDIO_BYTES) {
     return NextResponse.json(
       { error: "RECORDING_TOO_LARGE", message: "Recording exceeds the maximum upload size." },
@@ -52,12 +65,28 @@ export async function POST(request: Request) {
     );
   }
 
+  /*
+   * Admission check, not a label.
+   *
+   * uploadAudioDirect calls normaliseMimeType, which coerces anything it does
+   * not recognise to audio/webm. That is fine for tagging an object we have
+   * decided to keep, but as a gate it means any bytes at all - an archive, an
+   * image, an executable - get stored under a .webm key on our bucket. Decide
+   * here, and refuse.
+   */
+  const declaredType = audioEntry.type || (typeof formData.get("mimeType") === "string" ? String(formData.get("mimeType")) : "");
+  if (!isAllowedMimeType(declaredType)) {
+    return NextResponse.json(
+      { error: "UNSUPPORTED_AUDIO_TYPE", message: "That file is not a supported audio recording." },
+      { status: 415, headers: NO_STORE }
+    );
+  }
+
   try {
     const arrayBuffer = await audioEntry.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const mimeType = audioEntry.type || (formData.get("mimeType") as string) || "audio/webm";
 
-    const key = await uploadAudioDirect(user.id, recordingId, buffer, mimeType);
+    const key = await uploadAudioDirect(user.id, recordingId, buffer, declaredType);
 
     return NextResponse.json(
       { success: true, key },
