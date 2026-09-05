@@ -403,6 +403,16 @@ export async function syncConversationsFromCloud(userId: string): Promise<void> 
 
 // --- Token-Saving Sliding Window Helper ---
 export function getSlidingWindowContext(messages: ChatMessageItem[], maxTurns: number = 6): ChatMessageItem[] {
-  if (messages.length <= maxTurns) return messages;
-  return messages.slice(-maxTurns);
+  const clean = messages.filter(
+    (m) =>
+      !m.id?.startsWith("stella-err-") &&
+      typeof m.text === "string" &&
+      m.text.trim().length > 0 &&
+      !m.text.includes("The question was invalid")
+  );
+  const sliced = clean.length <= maxTurns ? clean : clean.slice(-maxTurns);
+  return sliced.map((m) => ({
+    ...m,
+    text: m.text.length > 2500 ? m.text.slice(0, 2500) : m.text,
+  }));
 }

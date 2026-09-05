@@ -502,12 +502,31 @@ export function StellaWorkspaceView({
           question: text,
           pageTitle: heading || "IELTS speaking practice",
           evaluationContext,
-          recentMessages: chatMessages.slice(-6).map((m) => ({
-            sender: m.sender,
-            text: m.text,
-          })),
+          recentMessages: chatMessages
+            .filter(
+              (m) =>
+                !m.id?.startsWith("stella-err-") &&
+                typeof m.text === "string" &&
+                m.text.trim().length > 0 &&
+                !m.text.includes("The question was invalid")
+            )
+            .slice(-6)
+            .map((m) => ({
+              sender: m.sender,
+              text: m.text.length > 2500 ? m.text.slice(0, 2500) : m.text,
+            })),
         }),
       });
+
+      if (!response.ok) {
+        const errorData = (await response.json().catch(() => null)) as Record<string, unknown> | null;
+        const errorMsg =
+          (typeof errorData?.message === "string" && errorData.message.trim()) ||
+          (typeof errorData?.error === "string" && errorData.error.trim()) ||
+          "Stella couldn't answer just now. Please try again.";
+        throw new Error(errorMsg);
+      }
+
       const data = (await response.json()) as Record<string, unknown>;
       const answer =
         typeof data.answer === "string"
@@ -538,11 +557,15 @@ export function StellaWorkspaceView({
           user?.id
         );
       }
-    } catch {
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error && err.message
+          ? err.message
+          : "Your message didn't reach me — the connection dropped. Please send it again.";
       const errorReply: ChatMessage = {
-        id: `stella-${Date.now()}`,
+        id: `stella-err-${Date.now()}`,
         sender: "stella",
-        text: "Your message didn't reach me — the connection dropped. Please send it again.",
+        text: errorMsg,
         timestamp: clockLabel(),
       };
       setChatMessages((previous) => [...previous, errorReply]);

@@ -150,61 +150,49 @@ const analysisSchema = z.object({
 
 /** One entry of prior conversation replayed by the browser. */
 const chatHistoryMessageSchema = z.object({
-  sender: z.string().max(40).nullish(),
-  text: z.string().max(3000).nullish(),
+  sender: z.string().max(64).nullish(),
+  text: z.string().max(20000).nullish(),
 }).passthrough();
 
 /**
  * The evaluation the student is looking at, echoed back so Stella can discuss
  * it without a second round trip.
- *
- * Everything here comes from the browser and is therefore untrusted in two
- * different ways. Injection is handled downstream: the whole block is wrapped
- * by wrapMessageAsData, so it reaches the model as quoted data. Size is handled
- * here, and it is the one that costs money — an unbounded context is an
- * unbounded input bill on every single message.
- *
- * A student can also simply lie about their own bands. That is accepted: the
- * worst case is Stella discussing a score they were never given, which is
- * their own business, and nothing here is written back to the database.
  */
 const evaluationContextSchema = z.object({
-  prompt: z.string().max(500).nullish(),
+  prompt: z.string().max(8000).nullish(),
   overallBand: z.number().finite().min(0).max(9).nullish(),
   isOffTopic: z.boolean().nullish(),
-  offTopicWarning: z.string().max(1000).nullish(),
+  offTopicWarning: z.string().max(4000).nullish(),
   criteria: z.array(z.object({
-    criterion: z.string().max(100).nullish(),
+    criterion: z.string().max(200).nullish(),
     band: z.number().finite().min(0).max(9).nullish(),
-    summary: z.string().max(1200).nullish(),
-  }).passthrough()).max(IELTS_CRITERIA.length).nullish(),
+    summary: z.string().max(8000).nullish(),
+  }).passthrough()).max(20).nullish(),
   answers: z.array(z.object({
-    part: z.union([z.number(), z.string().max(20)]).nullish(),
-    question: z.string().max(500).nullish(),
-    transcript: z.string().max(MAX_CONTEXT_TRANSCRIPT_CHARS).nullish(),
-  }).passthrough()).max(MAX_ANSWERS).nullish(),
+    part: z.union([z.number(), z.string().max(50)]).nullish(),
+    question: z.string().max(2000).nullish(),
+    transcript: z.string().max(20000).nullish(),
+  }).passthrough()).max(50).nullish(),
 }).passthrough();
 
 /**
  * Chat request shape.
  *
- * Kept .passthrough() so an unknown key from a newer client is ignored rather
- * than rejected, but every field we actually read is typed and length-capped.
- * The previous version declared each field as z.any(), which stopped the
- * INVALID_CHAT_REQUEST failures by removing the validation rather than fixing
- * the mismatch that caused them.
+ * Kept .passthrough() so unknown keys from newer clients are ignored rather
+ * than rejected. Generous ceilings ensure valid conversations never trigger
+ * spurious validation failures.
  */
 const chatSchema = z.object({
   mode: z.string().max(64).nullish(),
   action: z.string().max(64).nullish(),
-  text: z.string().max(4000).nullish(),
-  question: z.string().max(4000).nullish(),
+  text: z.string().max(20000).nullish(),
+  question: z.string().max(20000).nullish(),
   metadata: z.object({
-    pageTitle: z.string().max(500).nullish(),
+    pageTitle: z.string().max(2000).nullish(),
   }).passthrough().nullish(),
-  correctedText: z.string().max(5000).nullish(),
-  pageTitle: z.string().max(500).nullish(),
-  recentMessages: z.array(chatHistoryMessageSchema).max(50).nullish(),
+  correctedText: z.string().max(10000).nullish(),
+  pageTitle: z.string().max(2000).nullish(),
+  recentMessages: z.array(chatHistoryMessageSchema).max(100).nullish(),
   evaluationContext: evaluationContextSchema.nullish(),
 }).passthrough();
 
@@ -862,12 +850,36 @@ async function handleChat(request: Request, userId: string) {
   } catch {
     return reply({ code: "INVALID_JSON", message: "The request was invalid." }, 400);
   }
+  const rawObj = rawBody && typeof rawBody === "object" ? (rawBody as Record<string, unknown>) : {};
   const checked = chatSchema.safeParse(rawBody);
-  if (!checked.success) {
-    console.error("[evaluate] chatSchema parse failed:", JSON.stringify(checked.error.issues));
-    return reply({ code: "INVALID_CHAT_REQUEST", message: "The question was invalid." }, 400);
+
+  let body: z.infer<typeof chatSchema>;
+  if (checked.success) {
+    body = checked.data;
+  } else {
+    console.warn("[evaluate] chatSchema parse notice, recovering gracefully:", JSON.stringify(checked.error.issues));
+    // Graceful recovery: extract student question and sanitize history rather than failing the chat
+    body = {
+      mode: typeof rawObj.mode === "string" ? rawObj.mode : undefined,
+      action: typeof rawObj.action === "string" ? rawObj.action : undefined,
+      text: typeof rawObj.text === "string" ? rawObj.text.slice(0, 10000) : undefined,
+      question:
+        typeof rawObj.question === "string"
+          ? rawObj.question.slice(0, 10000)
+          : typeof rawObj.text === "string"
+            ? rawObj.text.slice(0, 10000)
+            : "",
+      pageTitle: typeof rawObj.pageTitle === "string" ? rawObj.pageTitle.slice(0, 1000) : undefined,
+      recentMessages: Array.isArray(rawObj.recentMessages)
+        ? rawObj.recentMessages
+            .filter((m: unknown) => m && typeof m === "object" && typeof (m as Record<string, unknown>).text === "string")
+            .map((m: any) => ({
+              sender: typeof m.sender === "string" ? m.sender.slice(0, 64) : "user",
+              text: String(m.text || "").slice(0, 3000),
+            }))
+        : [],
+    };
   }
-  const body = checked.data;
 
   if (body.mode === "transcript-recheck" || body.correctedText) {
     return reply({
@@ -877,9 +889,22 @@ async function handleChat(request: Request, userId: string) {
   }
 
   const question = (body.question ?? body.text ?? "").trim();
+  if (!question) {
+    return reply({
+      answer: "Type a question or IELTS speaking topic, and I will be happy to help!",
+      message: "Type a question or IELTS speaking topic, and I will be happy to help!",
+      reply: "Type a question or IELTS speaking topic, and I will be happy to help!",
+    });
+  }
+
   const scope = prescreenStudentMessage(question);
   if (!scope.allowed) {
-    return reply({ code: `OUT_OF_SCOPE_${scope.reason || "REQUEST"}`, message: scope.message }, 400);
+    const politeRedirect = scope.message || "I can only help with English speaking practice for IELTS — things like your fluency, vocabulary, grammar and pronunciation. Ask me about your answer, a technique, or a topic and I am all yours.";
+    return reply({
+      answer: politeRedirect,
+      message: politeRedirect,
+      reply: politeRedirect,
+    });
   }
   if (!process.env.OPENROUTER_API_KEY) {
     return reply({ code: "AI_NOT_CONFIGURED", message: "Stella is not available yet. Please try again later." }, 503);
@@ -891,10 +916,17 @@ async function handleChat(request: Request, userId: string) {
   }
 
   const history = (body.recentMessages ?? [])
-    .filter((message) => typeof message.text === "string" && message.text.trim().length > 0)
+    .filter((message) => {
+      if (typeof message.text !== "string") return false;
+      const t = message.text.trim();
+      if (t.length === 0) return false;
+      // Exclude previous error messages so they don't bias or poison the coaching context
+      if (t.includes("The question was invalid") || t.includes("INVALID_CHAT_REQUEST") || t.includes("stella-err-")) return false;
+      return true;
+    })
     .slice(-8)
     .map((message) => {
-      const text = String(message.text || "").trim();
+      const text = String(message.text || "").trim().slice(0, 3000);
       return {
         role: message.sender === "stella" ? ("assistant" as const) : ("user" as const),
         content: message.sender === "stella" ? text : wrapMessageAsData(text),

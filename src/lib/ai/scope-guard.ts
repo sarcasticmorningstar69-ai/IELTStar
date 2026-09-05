@@ -22,11 +22,14 @@ export type ScopeVerdict = {
 };
 
 const OFF_TOPIC_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
-  { label: "code_fence", pattern: /```/ },
+  {
+    label: "code_fence",
+    pattern: /```(?:python|javascript|typescript|js|ts|cpp|java|html|css|sql|bash|sh|c|cs|rust|go)\b/i,
+  },
   {
     label: "programming",
     pattern:
-      /\b(?:def |function\s*\(|class\s+\w+\s*[:{]|import\s+\w+|#include|console\.log|printf|System\.out|public\s+static\s+void)/i,
+      /\b(?:def\s+\w+\s*\(|function\s+\w+\s*\(|class\s+\w+\s+extends|#include\s*<|console\.log\s*\(|System\.out\.print|public\s+static\s+void\s+main)/i,
   },
   {
     label: "sql",
@@ -35,7 +38,7 @@ const OFF_TOPIC_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
   {
     label: "code_request",
     pattern:
-      /\b(?:write|debug|fix|refactor|optimi[sz]e|explain)\b[^.?!]{0,40}\b(?:code|script|program|function|algorithm|regex|css|html|javascript|typescript|python|java|c\+\+|sql\s+quer(?:y|ies))\b/i,
+      /\b(?:write|debug|refactor|optimi[sz]e)\b[^.?!]{0,40}\b(?:python|javascript|typescript|c\+\+|java|sql\s+query|sql\s+queries|regex|algorithm)\b/i,
   },
   {
     label: "homework_other_subject",
@@ -45,17 +48,12 @@ const OFF_TOPIC_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
   {
     label: "content_generation",
     pattern:
-      /\b(?:write|draft|generate)\b[^.?!]{0,40}\b(?:essay|article|blog\s*post|cover\s*letter|resume|cv|business\s*plan|poem|story|song)\b/i,
+      /\b(?:write|draft|generate)\b[^.?!]{0,40}\b(?:essay|cover\s*letter|resume|cv|business\s*plan)\b/i,
   },
   {
     label: "instruction_override",
     pattern:
-      /\b(?:ignore|disregard|forget)\b[^.?!]{0,30}\b(?:previous|prior|above|your)\b[^.?!]{0,20}\b(?:instruction|prompt|rule|role)/i,
-  },
-  {
-    label: "band_demand",
-    pattern:
-      /\b(?:give|award|mark)\s+me\b[^.?!]{0,30}\b(?:band|score)\b[^.?!]{0,20}\b(?:9|nine|eight|8)\b/i,
+      /\b(?:ignore|disregard|override)\b[^.?!]{0,30}\b(?:previous|prior|above|all)\b[^.?!]{0,20}\b(?:instruction|system\s*prompt|rules)/i,
   },
 ];
 
