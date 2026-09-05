@@ -5,7 +5,6 @@ import { type RecordingMeta } from "@/lib/store/progress";
 import { getAudioURL, computePeaks } from "@/lib/storage/audio-db";
 import { formatTime, StaticWaveform } from "@/components/audio/audio-ui";
 import { CriteriaFlipCards } from "@/components/ai/criteria-flip-card";
-import { DeepDivePanel } from "@/components/ai/deep-dive-panel";
 import type {
   AiAnalysisResult,
   AiAnswerAnalysis,
@@ -24,8 +23,6 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Flame,
-  Rocket,
   ExternalLink,
 } from "lucide-react";
 
@@ -495,7 +492,7 @@ export function AnswerCard({
 }
 
 /* =========================================================================
- * Full Review & Recordings Panel (Shared between Workspace & Old Chats)
+ * Full review and recordings panel, shared by the workspace and past chats.
  * ========================================================================= */
 
 export interface WorkspaceReviewPanelProps {
@@ -504,15 +501,13 @@ export interface WorkspaceReviewPanelProps {
   failureByRecording?: Map<string, AiAnswerFailure>;
   result: AiAnalysisResult | null;
   running?: boolean;
-  deepDiveMode?: boolean;
-  deepDiveRunning?: boolean;
   uploadRatio?: number;
   stage?: string;
   failures?: AiAnswerFailure[];
   corrections?: Record<string, string>;
   heading?: string;
   onSaveCorrection?: (recordingId: string, corrected: string, questionLabel: string) => void;
-  onRunAnalysis?: (onlyRecordingIds?: string[], forceDeepDive?: boolean) => void;
+  onRunAnalysis?: (onlyRecordingIds?: string[]) => void;
   onAskStella?: (promptText: string) => void;
   onOpenFullWorkspace?: () => void;
   className?: string;
@@ -524,8 +519,6 @@ export function WorkspaceReviewPanel({
   failureByRecording = new Map(),
   result,
   running = false,
-  deepDiveMode = false,
-  deepDiveRunning = false,
   uploadRatio = 0,
   stage = "idle",
   failures = [],
@@ -533,7 +526,6 @@ export function WorkspaceReviewPanel({
   heading,
   onSaveCorrection,
   onRunAnalysis,
-  onAskStella,
   onOpenFullWorkspace,
   className,
 }: WorkspaceReviewPanelProps) {
@@ -594,13 +586,7 @@ export function WorkspaceReviewPanel({
                 {Math.round(uploadRatio * 100)}%
               </span>
             )}
-            {stage === "reviewing" && (
-              <span>
-                {deepDiveRunning
-                  ? "Stella is firing high-reasoning boosters (In-Depth Analysis — 2–4 minutes)…"
-                  : "Stella is transcribing and reviewing…"}
-              </span>
-            )}
+            {stage === "reviewing" && <span>Stella is transcribing and reviewing…</span>}
           </div>
           <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
             <div
@@ -648,35 +634,21 @@ export function WorkspaceReviewPanel({
         </div>
       )}
 
-      {/* Pre-Analysis Engine Selector (when not started yet) */}
+      {/* Not started yet: one button, one behaviour. */}
       {!running && !result && failures.length === 0 && onRunAnalysis && (
-        <div className="rounded-2xl border border-dashed border-border p-6 text-center space-y-4">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold text-foreground">
-              Select Analysis Engine
-            </p>
-            <p className="text-[11px] text-muted-foreground">
-              Choose standard evaluation (~30s) or ignite high-reasoning jet boosters for in-depth linguistic depth (2–4 min).
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8.5 cursor-pointer px-3.5 text-xs"
-              onClick={() => void onRunAnalysis(undefined, false)}
-            >
-              Standard Analysis
-            </Button>
-            <Button
-              size="sm"
-              className="group h-8.5 cursor-pointer gap-2 rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-4 text-xs font-black uppercase tracking-wider text-black shadow-md shadow-orange-500/20 hover:scale-[1.02] hover:shadow-orange-500/35 transition-all"
-              onClick={() => void onRunAnalysis(undefined, true)}
-            >
-              <Flame className="h-4 w-4 fill-black text-black transition-transform group-hover:scale-110" />
-              <span>In-Depth Analysis (Jet Boosters)</span>
-            </Button>
-          </div>
+        <div className="space-y-3 rounded-2xl border border-dashed border-border p-6 text-center">
+          <p className="text-xs font-semibold text-foreground">Ready when you are</p>
+          <p className="text-[11px] text-muted-foreground">
+            Stella transcribes each recording, then scores all four IELTS criteria against the
+            official band descriptors. This usually takes under a minute.
+          </p>
+          <Button
+            size="sm"
+            className="h-8.5 cursor-pointer px-4 text-xs font-semibold"
+            onClick={() => void onRunAnalysis()}
+          >
+            Start analysis
+          </Button>
         </div>
       )}
 
@@ -706,7 +678,7 @@ export function WorkspaceReviewPanel({
         ))}
       </div>
 
-      {/* AI Evaluation Report (Band score, Jet Boosters, Criteria, Strengths, Priorities) */}
+      {/* AI evaluation report: band, criteria, strengths, priorities */}
       {result && (
         <div className="space-y-3.5 rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between border-b border-border pb-3">
@@ -720,7 +692,7 @@ export function WorkspaceReviewPanel({
                 <span className="font-mono text-2xl font-bold tracking-tight text-foreground">
                   {result.overallBand === null || result.overallBand === undefined
                     ? "Not scored"
-                    : `Band ${Math.round(result.overallBand)}`}
+                    : `Band ${result.overallBand}`}
                 </span>
                 {result.overallRange && (
                   <span className="text-xs text-muted-foreground">
@@ -742,56 +714,6 @@ export function WorkspaceReviewPanel({
                 {result.offTopicWarning}
               </p>
             </div>
-          )}
-
-          {/* Jet Booster Console: In-Depth Linguistic Analysis */}
-          {!result.deepDive && onRunAnalysis && (
-            <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 shadow-[0_0_35px_rgba(245,158,11,0.14)]">
-              <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-amber-500/20 blur-3xl" />
-              <div className="pointer-events-none absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-rose-500/20 blur-3xl" />
-
-              <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-black tracking-widest uppercase text-amber-400">
-                      <Flame className="h-3.5 w-3.5 text-amber-400 animate-pulse fill-amber-500/30" />
-                      BOOSTERS READY · MAXIMUM REASONING
-                    </span>
-                    <span className="text-[11px] font-medium text-zinc-400">
-                      2–4 min supersonic deliberation
-                    </span>
-                  </div>
-                  <h4 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
-                    <span>Ignite In-Depth Analysis</span>
-                    <Rocket className="h-4 w-4 text-amber-400 -rotate-45" />
-                  </h4>
-                  <p className="text-xs text-zinc-300 leading-relaxed max-w-xl">
-                    Fire Stella’s highest reasoning engine. Replaces spoken phrasing with Band 8–9 curriculum vocabulary and performs an exhaustive category-by-category forensic grammar breakdown.
-                  </p>
-                </div>
-
-                <div className="shrink-0 flex items-center">
-                  <Button
-                    size="sm"
-                    disabled={running}
-                    onClick={() => void onRunAnalysis(undefined, true)}
-                    className="group relative cursor-pointer overflow-hidden rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-black shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.03] hover:shadow-orange-500/40 active:scale-[0.98] disabled:opacity-50"
-                  >
-                    <span className="relative flex items-center gap-2">
-                      <Flame className="h-4 w-4 fill-black text-black transition-transform group-hover:scale-125" />
-                      <span>{running && deepDiveRunning ? "Firing Boosters…" : "Ignite Boosters"}</span>
-                    </span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {result.deepDive && (
-            <DeepDivePanel
-              deepDive={result.deepDive}
-              onAskStella={onAskStella}
-            />
           )}
 
           {hasCriteria && (
