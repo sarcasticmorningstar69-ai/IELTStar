@@ -70,9 +70,25 @@ export interface OpenRouterMessage {
  * Student transcripts travel over this connection, so plain HTTP is refused
  * outright rather than downgraded with a warning.
  */
-function resolveEndpoint(): string {
-  const configured = (process.env.OPENROUTER_BASE_URL || "").trim();
-  const base = (configured || DEFAULT_API_BASE).replace(/\/+$/, "");
+/**
+ * Resolve the chat-completions endpoint and target model.
+ *
+ * Automatically detects whether the configured key or URL targets the
+ * Teamorouter gateway (api.teamorouter.com), which uses "grok-4.6" directly
+ * without the "x-ai/" vendor prefix.
+ */
+export function resolveFeedbackConfig(): { endpoint: string; model: string } {
+  const apiKey = (process.env.OPENROUTER_API_KEY || "").trim();
+  let configuredBase = (process.env.OPENROUTER_BASE_URL || "").trim();
+
+  const isTeamo =
+    apiKey.startsWith("sk-teamo-") || configuredBase.includes("teamorouter");
+
+  if (!configuredBase && isTeamo) {
+    configuredBase = "https://api.teamorouter.com/v1";
+  }
+
+  const base = (configuredBase || DEFAULT_API_BASE).replace(/\/+$/, "");
 
   let parsed: URL;
   try {
@@ -84,8 +100,20 @@ function resolveEndpoint(): string {
     throw new Error("OPENROUTER_BASE_URL must use HTTPS.");
   }
 
-  // Accept either ".../v1" or a full ".../v1/chat/completions".
-  return base.endsWith("/chat/completions") ? base : `${base}/chat/completions`;
+  const endpoint = base.endsWith("/chat/completions")
+    ? base
+    : `${base}/chat/completions`;
+
+  let model = (
+    process.env.OPENROUTER_MODEL ||
+    (isTeamo ? "grok-4.6" : DEFAULT_FEEDBACK_MODEL)
+  ).trim();
+
+  if (isTeamo && model.startsWith("x-ai/")) {
+    model = model.replace(/^x-ai\//, "");
+  }
+
+  return { endpoint, model };
 }
 
 export async function callOpenRouter({
@@ -106,7 +134,7 @@ export async function callOpenRouter({
     throw new Error("OPENROUTER_API_KEY is not configured.");
   }
 
-  const model = process.env.OPENROUTER_MODEL || DEFAULT_FEEDBACK_MODEL;
+  const { endpoint, model } = resolveFeedbackConfig();
 
   if (model.endsWith("-contributor")) {
     /*
@@ -141,7 +169,7 @@ export async function callOpenRouter({
     body.response_format = { type: "json_object" };
   }
 
-  const response = await fetch(resolveEndpoint(), {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -154,8 +182,8 @@ export async function callOpenRouter({
   });
 
   if (!response.ok) {
-    // Do not log the provider body: it may echo student content or account data.
-    console.error("[feedback] request failed", response.status);
+    const errorText = await response.text().catch(() => "");
+    console.error("[feedback] request failed", response.status, errorText);
     throw new Error(`Feedback request failed with status ${response.status}.`);
   }
 

@@ -11,7 +11,11 @@ import {
   type AiReliability,
   type AiUpgradedSample,
 } from "@/lib/ai/types";
-import { DEFAULT_FEEDBACK_MODEL, callOpenRouter } from "@/lib/ai/openrouter-client";
+import {
+  DEFAULT_FEEDBACK_MODEL,
+  callOpenRouter,
+  resolveFeedbackConfig,
+} from "@/lib/ai/openrouter-client";
 import { transcribeWithDeepgram } from "@/lib/ai/deepgram-client";
 import { consumeQuota, quotaMessage } from "@/lib/ai/quota";
 import {
@@ -41,9 +45,24 @@ const AUDIO_TYPES = new Set([
   "audio/webm",
   "audio/webm;codecs=opus",
   "audio/ogg",
+  "audio/ogg;codecs=opus",
   "audio/mp4",
+  "audio/mp4;codecs=mp4a.40.2",
+  "audio/aac",
   "audio/mpeg",
+  "audio/mp3",
+  "audio/wav",
+  "audio/wave",
+  "audio/x-wav",
+  "audio/x-m4a",
+  "audio/m4a",
 ]);
+
+function isAudioMimeType(mimeType?: string | null): boolean {
+  if (!mimeType) return false;
+  const clean = mimeType.toLowerCase().replace(/\s+/g, "");
+  return clean.startsWith("audio/") || AUDIO_TYPES.has(clean);
+}
 
 /** One mock is many answers, but never an unbounded number of them. */
 const MAX_ANSWERS = 20;
@@ -248,13 +267,14 @@ function reply(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: HEADERS });
 }
 
-function providers(): AiProviderStatus & { openrouter: boolean } {
+function providers(): AiProviderStatus {
+  const { model } = resolveFeedbackConfig();
   return {
     deepgram: Boolean(process.env.DEEPGRAM_API_KEY),
-    glm: false,
+    glm: Boolean(process.env.GLM_API_KEY),
     openrouter: Boolean(process.env.OPENROUTER_API_KEY),
     transcriptionModel: process.env.DEEPGRAM_MODEL || "nova-3",
-    feedbackModel: process.env.OPENROUTER_MODEL || DEFAULT_FEEDBACK_MODEL,
+    feedbackModel: model,
   };
 }
 
@@ -515,7 +535,7 @@ async function handleRecording(request: Request, userId: string) {
   for (const answer of answers) {
     const file = filesById.get(answer.recordingId) as File;
     const type = (file.type || "").toLowerCase();
-    if (!AUDIO_TYPES.has(type)) {
+    if (!isAudioMimeType(type)) {
       return reply({
         code: "UNSUPPORTED_AUDIO_TYPE",
         message: "One of these recordings is in a format Stella cannot read.",

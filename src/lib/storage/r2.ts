@@ -12,7 +12,20 @@ export const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
 export const MAX_AUDIO_SECONDS = 20 * 60;
 
 const ALLOWED_MIME_TYPES = new Set([
-  "audio/webm", "audio/webm;codecs=opus", "audio/ogg", "audio/mp4", "audio/mpeg",
+  "audio/webm",
+  "audio/webm;codecs=opus",
+  "audio/ogg",
+  "audio/ogg;codecs=opus",
+  "audio/mp4",
+  "audio/mp4;codecs=mp4a.40.2",
+  "audio/aac",
+  "audio/mpeg",
+  "audio/mp3",
+  "audio/wav",
+  "audio/wave",
+  "audio/x-wav",
+  "audio/x-m4a",
+  "audio/m4a",
 ]);
 const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/;
 
@@ -38,7 +51,9 @@ export function isSafeId(value: string): boolean {
  * refuse outright.
  */
 export function isAllowedMimeType(mimeType?: string | null): boolean {
-  return Boolean(mimeType && ALLOWED_MIME_TYPES.has(mimeType.toLowerCase()));
+  if (!mimeType) return false;
+  const clean = mimeType.toLowerCase().replace(/\s+/g, "");
+  return clean.startsWith("audio/") || ALLOWED_MIME_TYPES.has(clean);
 }
 
 export function audioKey(userId: string, recordingId: string): string {

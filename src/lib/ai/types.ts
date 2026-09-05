@@ -28,6 +28,7 @@ export type AiMode =
 export interface AiProviderStatus {
   deepgram: boolean;
   glm: boolean;
+  openrouter?: boolean;
   transcriptionModel: string;
   feedbackModel: string;
 }
