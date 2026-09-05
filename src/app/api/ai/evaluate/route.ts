@@ -31,10 +31,7 @@ import {
 import {
   STELLA_SYSTEM_INSTRUCTION,
   EVALUATION_JSON_SCHEMA_PROMPT,
-  STELLA_DEEP_DIVE_INSTRUCTION,
-  DEEP_DIVE_JSON_SCHEMA_PROMPT,
 } from "@/lib/ai/prompts/stella-prompt";
-import { getCuratedVocabForTopic } from "@/lib/ai/prompts/curated-vocab-selector";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -60,6 +57,16 @@ const MAX_AUDIO_MINUTES = Math.round(MAX_AUDIO_SECONDS / 60);
 const MAX_UPGRADES_PER_CRITERION = 3;
 /** Shorter quotes than this cannot be matched against a transcript safely. */
 const MIN_UPGRADE_QUOTE_LENGTH = 8;
+/** Per-transcript ceiling when the browser replays an evaluation back to chat. */
+const MAX_CONTEXT_TRANSCRIPT_CHARS = 4000;
+/**
+ * Ceiling on the whole assembled evaluation context.
+ *
+ * Every field below is supplied by the browser, so per-field caps alone still
+ * multiply: twenty answers at four thousand characters is eighty thousand
+ * characters of billed input on a single chat message. This is the backstop.
+ */
+const MAX_CONTEXT_CHARS = 20000;
 
 const surfaces = [
   "part1", "part2", "part3", "full-mock", "topic-wheel", "technique",
@@ -86,19 +93,73 @@ const analysisSchema = z.object({
   analysisRequestId: idSchema.optional(),
   scope: z.enum(["entire-mock", "selected-answers"]),
   answers: z.array(answerSchema).min(1).max(MAX_ANSWERS),
+  /*
+   * Deep Dive is gone. The flag is still ACCEPTED because this object is
+   * .strict() and a browser holding an older bundle would otherwise get a 400
+   * on a perfectly good submission. It is read by nothing: every request now
+   * takes the standard analysis path. Remove once no deployed client sends it.
+   */
   deepDive: z.boolean().optional(),
 }).strict();
 
+/** One entry of prior conversation replayed by the browser. */
+const chatHistoryMessageSchema = z.object({
+  sender: z.string().max(40).nullish(),
+  text: z.string().max(3000).nullish(),
+}).passthrough();
+
+/**
+ * The evaluation the student is looking at, echoed back so Stella can discuss
+ * it without a second round trip.
+ *
+ * Everything here comes from the browser and is therefore untrusted in two
+ * different ways. Injection is handled downstream: the whole block is wrapped
+ * by wrapMessageAsData, so it reaches the model as quoted data. Size is handled
+ * here, and it is the one that costs money — an unbounded context is an
+ * unbounded input bill on every single message.
+ *
+ * A student can also simply lie about their own bands. That is accepted: the
+ * worst case is Stella discussing a score they were never given, which is
+ * their own business, and nothing here is written back to the database.
+ */
+const evaluationContextSchema = z.object({
+  prompt: z.string().max(500).nullish(),
+  overallBand: z.number().finite().min(0).max(9).nullish(),
+  isOffTopic: z.boolean().nullish(),
+  offTopicWarning: z.string().max(1000).nullish(),
+  criteria: z.array(z.object({
+    criterion: z.string().max(100).nullish(),
+    band: z.number().finite().min(0).max(9).nullish(),
+    summary: z.string().max(1200).nullish(),
+  }).passthrough()).max(IELTS_CRITERIA.length).nullish(),
+  answers: z.array(z.object({
+    part: z.union([z.number(), z.string().max(20)]).nullish(),
+    question: z.string().max(500).nullish(),
+    transcript: z.string().max(MAX_CONTEXT_TRANSCRIPT_CHARS).nullish(),
+  }).passthrough()).max(MAX_ANSWERS).nullish(),
+}).passthrough();
+
+/**
+ * Chat request shape.
+ *
+ * Kept .passthrough() so an unknown key from a newer client is ignored rather
+ * than rejected, but every field we actually read is typed and length-capped.
+ * The previous version declared each field as z.any(), which stopped the
+ * INVALID_CHAT_REQUEST failures by removing the validation rather than fixing
+ * the mismatch that caused them.
+ */
 const chatSchema = z.object({
-  mode: z.any().optional(),
-  action: z.any().optional(),
-  text: z.any().optional(),
-  question: z.any().optional(),
-  metadata: z.any().optional(),
-  correctedText: z.any().optional(),
-  pageTitle: z.any().optional(),
-  recentMessages: z.any().optional(),
-  evaluationContext: z.any().optional(),
+  mode: z.string().max(64).nullish(),
+  action: z.string().max(64).nullish(),
+  text: z.string().max(4000).nullish(),
+  question: z.string().max(4000).nullish(),
+  metadata: z.object({
+    pageTitle: z.string().max(500).nullish(),
+  }).passthrough().nullish(),
+  correctedText: z.string().max(5000).nullish(),
+  pageTitle: z.string().max(500).nullish(),
+  recentMessages: z.array(chatHistoryMessageSchema).max(50).nullish(),
+  evaluationContext: evaluationContextSchema.nullish(),
 }).passthrough();
 
 const correctionSchema = z.object({
@@ -154,58 +215,6 @@ const answerNoteSchema = z.object({
   grammarCorrections: z.array(correctionSchema).max(15).optional(),
 }).strip();
 
-const interactiveVocabSchema = z.object({
-  phrase: z.string().trim().min(1).max(300),
-  originalUtterance: z.string().trim().max(500).optional(),
-  level: z.enum(["B2", "C1", "C2"]).catch("C1"),
-  definition: z.string().trim().min(1).max(800),
-  exampleSentence: z.string().trim().min(1).max(800),
-  nuanceExplanation: z.string().trim().min(1).max(1000),
-  fromProgram: z.boolean().optional(),
-}).strip();
-
-const grammarCategorySchema = z.object({
-  category: z.string().trim().min(1).max(200),
-  verdict: z.string().trim().min(1).max(500),
-  detailedBreakdown: z.string().trim().min(1).max(3000),
-  observedFlaws: z.array(z.object({
-    original: z.string().trim().min(1).max(600),
-    explanation: z.string().trim().min(1).max(1200),
-    upgradedVersion: z.string().trim().min(1).max(600),
-  })).max(12).default([]),
-  advancedPatternsToAdopt: z.array(z.object({
-    pattern: z.string().trim().min(1).max(300),
-    example: z.string().trim().min(1).max(600),
-  })).max(8).default([]),
-}).strip();
-
-const deepDiveSchema = z.object({
-  active: z.boolean().default(true),
-  vocabularyMastery: z.object({
-    overview: z.string().trim().min(1).max(2500),
-    repetitiveWords: z.array(z.object({
-      word: z.string().trim().min(1).max(120),
-      countApprox: z.string().trim().max(100).optional(),
-      alternatives: z.array(z.string().trim().min(1).max(200)).max(10),
-    })).max(15).default([]),
-    interactiveSuggestions: z.array(interactiveVocabSchema).max(20).default([]),
-    collocationsAndIdioms: z.array(z.object({
-      idiom: z.string().trim().min(1).max(200),
-      context: z.string().trim().min(1).max(600),
-      bandLevel: z.string().trim().max(40),
-    })).max(15).default([]),
-  }),
-  grammarDissection: z.object({
-    overview: z.string().trim().min(1).max(2500),
-    categories: z.array(grammarCategorySchema).max(10).default([]),
-  }),
-  discourseFluencyTactics: z.object({
-    fillerAnalysis: z.string().trim().min(1).max(2000),
-    topicDevelopment: z.string().trim().min(1).max(2000),
-    examinerPerception: z.string().trim().min(1).max(2000),
-  }),
-}).strip();
-
 const evaluationSchema = z.object({
   /*
    * Accepted so a model that reports it is not rejected, but never used: the
@@ -222,7 +231,6 @@ const evaluationSchema = z.object({
   reliability: reliabilitySchema.optional(),
   isOffTopic: z.boolean().optional(),
   offTopicWarning: z.string().trim().max(1000).optional(),
-  deepDive: deepDiveSchema.optional(),
 }).strip();
 
 type Evaluation = z.infer<typeof evaluationSchema>;
@@ -650,28 +658,10 @@ async function handleRecording(request: Request, userId: string) {
       ].join(" ")
     : "";
 
-  const isDeepDive = Boolean(metadata.deepDive);
-
-  let programVocabBlock = "";
-  if (isDeepDive) {
-    const contextSearch = usable.map((u) => `${u.answer.questionLabel} ${u.transcript}`).join(" ");
-    const curated = getCuratedVocabForTopic(contextSearch, 15);
-    if (curated.length > 0) {
-      programVocabBlock = [
-        "PROGRAM VOCABULARY (FROM OUR IELTSTAR CURRICULUM):",
-        "The following curated B2/C1/C2 phrases are part of our official program for this topic/domain. Actively integrate and recommend relevant items from this list in your interactiveSuggestions, setting fromProgram: true:",
-        curated.map((v) => `- "${v.phrase}" (${v.level}): ${v.definition}`).join("\n"),
-      ].join("\n");
-    }
-  }
-
   const prompt = [
     transcriptBlocks,
     multiAnswerRule,
-    isDeepDive ? STELLA_DEEP_DIVE_INSTRUCTION : "",
-    isDeepDive ? programVocabBlock : "",
     EVALUATION_JSON_SCHEMA_PROMPT,
-    isDeepDive ? DEEP_DIVE_JSON_SCHEMA_PROMPT : "",
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -681,15 +671,16 @@ async function handleRecording(request: Request, userId: string) {
     const raw = await callOpenRouter({
       messages: [{ role: "user", content: prompt }],
       systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
-      maxTokens: isDeepDive ? 30000 : MAX_ANALYSIS_OUTPUT_TOKENS,
+      maxTokens: MAX_ANALYSIS_OUTPUT_TOKENS,
       jsonMode: true,
       /*
-       * Band judgements are the one place the reasoning pass earns its cost:
+       * Band judgements are the one place a reasoning pass earns its cost:
        * four criteria have to stay consistent with each other and with the
-       * descriptor table across up to twenty answers.
-       * In Deep Dive mode, reasoning effort is set to 'high' for forensic analysis.
+       * descriptor table across up to twenty answers. Medium, not high — high
+       * effort on a full mock pushed generation past the client timeout, and
+       * it failed after Deepgram had already been paid.
        */
-      reasoningEffort: isDeepDive ? "high" : "medium",
+      reasoningEffort: "medium",
     });
     evaluation = evaluationSchema.parse(parseJson(raw));
   } catch (error) {
@@ -749,6 +740,37 @@ async function handleRecording(request: Request, userId: string) {
     };
   });
 
+  // ---- Topic relevance -----------------------------------------------------
+  const isOffTopic = Boolean(evaluation.isOffTopic);
+  const offTopicWarning = evaluation.offTopicWarning || (
+    isOffTopic
+      ? "Topic Relevance Alert: Your response did not address the required prompt. In official IELTS, an off-topic response heavily penalises Fluency & Coherence and Lexical Resource (maximum Band 3)."
+      : undefined
+  );
+
+  if (isOffTopic) {
+    /*
+     * Under the IELTS rubric, off-topic speech destroys coherence to task and
+     * appropriate vocabulary, so these two are capped at Band 3.
+     *
+     * The summary is amended alongside the number. Clamping the score on its
+     * own left the model's prose — written before the cap, and often describing
+     * a genuinely fluent answer — sitting directly under a Band 3, which reads
+     * as a bug to the student and undermines the rest of the report.
+     */
+    for (const item of criteria) {
+      const capped =
+        item.criterion === "Fluency & Coherence" ||
+        item.criterion === "Lexical Resource";
+      if (capped && item.band !== null && item.band > 3) {
+        item.band = 3;
+        item.summary =
+          "Capped at Band 3 because this answer did not address the question that was asked. " +
+          item.summary;
+      }
+    }
+  }
+
   /*
    * Overall band, computed here rather than trusted from the model.
    *
@@ -760,26 +782,6 @@ async function handleRecording(request: Request, userId: string) {
    * Pronunciation is usually unrated here because a transcript cannot evidence
    * it, so the average is taken over the criteria we could actually rate.
    */
-  // ── Topic Relevance & Off-Topic Enforcement ──
-  const isOffTopic = Boolean(evaluation.isOffTopic);
-  const offTopicWarning = evaluation.offTopicWarning || (
-    isOffTopic
-      ? "Topic Relevance Alert: Your response did not address the required prompt. In official IELTS, an off-topic response heavily penalises Fluency & Coherence and Lexical Resource (maximum Band 3)."
-      : undefined
-  );
-
-  if (isOffTopic) {
-    // Under IELTS rubric, off-topic speech destroys coherence to task and appropriate vocabulary.
-    // Deterministically cap Fluency & Coherence and Lexical Resource at maximum Band 3.
-    for (const item of criteria) {
-      if (item.criterion === "Fluency & Coherence" || item.criterion === "Lexical Resource") {
-        if (item.band !== null && item.band > 3) {
-          item.band = 3;
-        }
-      }
-    }
-  }
-
   const ratedBands = criteria
     .map((item) => item.band)
     .filter((value): value is number => value !== null);
@@ -804,7 +806,6 @@ async function handleRecording(request: Request, userId: string) {
     disclaimer: "This estimate is for practice and self-reflection. Official IELTS examinations are scored under strict certified test conditions.",
     isOffTopic: isOffTopic || undefined,
     offTopicWarning,
-    deepDive: evaluation.deepDive,
   };
   return reply(result);
 }
@@ -830,8 +831,7 @@ async function handleChat(request: Request, userId: string) {
     }, 422);
   }
 
-  const rawQuestion = body.question ?? body.text ?? "";
-  const question = (typeof rawQuestion === "string" ? rawQuestion : String(rawQuestion || "")).trim();
+  const question = (body.question ?? body.text ?? "").trim();
   const scope = prescreenStudentMessage(question);
   if (!scope.allowed) {
     return reply({ code: `OUT_OF_SCOPE_${scope.reason || "REQUEST"}`, message: scope.message }, 400);
@@ -845,71 +845,56 @@ async function handleChat(request: Request, userId: string) {
     return reply({ code: quota.reason, message: quotaMessage(quota) }, quotaHttpStatus(quota.reason));
   }
 
-  const rawHistory = Array.isArray(body.recentMessages) ? body.recentMessages : [];
-  const history = rawHistory
-    .filter((m): m is { sender?: unknown; text?: unknown } => typeof m === "object" && m !== null)
-    .filter((m) => typeof m.text === "string" && m.text.trim().length > 0)
+  const history = (body.recentMessages ?? [])
+    .filter((message) => typeof message.text === "string" && message.text.trim().length > 0)
     .slice(-8)
     .map((message) => {
-      const text = String(message.text || "").trim().slice(0, 3000);
+      const text = String(message.text || "").trim();
       return {
         role: message.sender === "stella" ? ("assistant" as const) : ("user" as const),
         content: message.sender === "stella" ? text : wrapMessageAsData(text),
       };
     });
-  const rawPageTitle =
-    typeof body.pageTitle === "string"
-      ? body.pageTitle
-      : typeof (body.metadata as Record<string, unknown>)?.pageTitle === "string"
-        ? (body.metadata as Record<string, unknown>).pageTitle
-        : "";
-  const pageTitle = String(rawPageTitle || "").trim().slice(0, 500);
+
+  const pageTitle = (body.pageTitle ?? body.metadata?.pageTitle ?? "").trim();
   const context = pageTitle
     ? wrapMessageAsData(`Current IELTS study page: ${pageTitle}`) + "\n\n"
     : "";
 
   let speakingContext = "";
-  if (body.evaluationContext && typeof body.evaluationContext === "object") {
-    const ec = body.evaluationContext as Record<string, unknown>;
-    const lines: string[] = ["CURRENT TEST & EVALUATION CONTEXT (VISIBLE TO CANDIDATE ON SCREEN):"];
-    if (ec.prompt) lines.push(`Topic/Prompt: ${ec.prompt}`);
-    if (ec.overallBand !== undefined && ec.overallBand !== null) {
-      lines.push(`Overall Band Awarded: ${ec.overallBand}`);
+  const evaluationContext = body.evaluationContext;
+  if (evaluationContext) {
+    const lines: string[] = [
+      "CURRENT TEST & EVALUATION CONTEXT (VISIBLE TO CANDIDATE ON SCREEN):",
+    ];
+    if (evaluationContext.prompt) {
+      lines.push(`Topic/Prompt: ${evaluationContext.prompt}`);
     }
-    if (ec.isOffTopic) {
-      lines.push(`TOPIC RELEVANCE: OFF-TOPIC PENALTY APPLIED. The candidate failed to address the required topic.`);
-      if (ec.offTopicWarning) lines.push(`Off-Topic Warning: ${ec.offTopicWarning}`);
+    if (evaluationContext.overallBand !== undefined && evaluationContext.overallBand !== null) {
+      lines.push(`Overall Band Awarded: ${evaluationContext.overallBand}`);
     }
-    if (Array.isArray(ec.criteria)) {
+    if (evaluationContext.isOffTopic) {
+      lines.push("TOPIC RELEVANCE: OFF-TOPIC PENALTY APPLIED. The candidate failed to address the required topic.");
+      if (evaluationContext.offTopicWarning) {
+        lines.push(`Off-Topic Warning: ${evaluationContext.offTopicWarning}`);
+      }
+    }
+    if (evaluationContext.criteria && evaluationContext.criteria.length > 0) {
       lines.push("Criteria Breakdown:");
-      for (const c of ec.criteria) {
-        if (typeof c === "object" && c !== null) {
-          const item = c as Record<string, unknown>;
-          lines.push(`- ${item.criterion}: Band ${item.band ?? "N/A"}. Summary: ${item.summary || ""}`);
-        }
+      for (const item of evaluationContext.criteria) {
+        lines.push(`- ${item.criterion ?? "Criterion"}: Band ${item.band ?? "N/A"}. Summary: ${item.summary ?? ""}`);
       }
     }
-    if (Array.isArray(ec.answers)) {
+    if (evaluationContext.answers && evaluationContext.answers.length > 0) {
       lines.push("Candidate's Spoken Answers & Transcripts:");
-      for (const a of ec.answers) {
-        if (typeof a === "object" && a !== null) {
-          const item = a as Record<string, unknown>;
-          lines.push(`[Part ${item.part ?? "?"} Question: "${item.question || ""}"]`);
-          lines.push(`Transcript: "${item.transcript || ""}"`);
-        }
-      }
-    }
-    if (ec.deepDive && typeof ec.deepDive === "object") {
-      const dd = ec.deepDive as Record<string, unknown>;
-      if (Array.isArray(dd.vocabHighlights) && dd.vocabHighlights.length > 0) {
-        lines.push(`In-Depth Analysis High-Band Vocabulary: ${dd.vocabHighlights.join(", ")}`);
-      }
-      if (Array.isArray(dd.grammarHighlights) && dd.grammarHighlights.length > 0) {
-        lines.push(`Grammar Categories Dissected: ${dd.grammarHighlights.join(", ")}`);
+      for (const item of evaluationContext.answers) {
+        lines.push(`[Part ${item.part ?? "?"} Question: "${item.question ?? ""}"]`);
+        lines.push(`Transcript: "${item.transcript ?? ""}"`);
       }
     }
     lines.push("CRITICAL COACH INSTRUCTION: When the student asks why they received a specific score or asks about their performance, you must directly cite the prompt, their exact transcript words, and the criteria breakdown above. Never say you do not know the question or answer!");
-    speakingContext = wrapMessageAsData(lines.join("\n")) + "\n\n";
+    speakingContext =
+      wrapMessageAsData(lines.join("\n").slice(0, MAX_CONTEXT_CHARS)) + "\n\n";
   }
 
   try {
@@ -921,13 +906,12 @@ async function handleChat(request: Request, userId: string) {
       systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
       maxTokens: MAX_CHAT_OUTPUT_TOKENS,
       /*
-       * No reasoning pass for chat. Reasoning tokens are billed and are spent
-       * before the first visible character, so on "what is a good Part 2
-       * opener" they only make the student wait. They also count against
-       * MAX_CHAT_OUTPUT_TOKENS, which is a deliberate scope limit — letting
-       * thinking consume it is what broke chat and prompted raising it.
+       * Low, not off. A coaching reply does not improve for a thinking pass,
+       * and reasoning tokens are billed and spent before the first visible
+       * character. Omitting the field entirely is worse than asking for low:
+       * the provider then applies its own default, which can be a long pass.
        */
-      reasoningEffort: "none",
+      reasoningEffort: "low",
     });
     return reply({ answer: text, message: text, reply: text });
   } catch (error) {
