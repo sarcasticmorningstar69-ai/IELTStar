@@ -32,6 +32,7 @@ import type {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FormattedChatMessage } from "@/components/ai/formatted-chat-message";
+import { TypewriterText, useReasoningPhrase } from "@/components/ai/typewriter-text";
 import { WorkspaceReviewPanel } from "@/components/ai/workspace-review-panel";
 import { StellaHistoryPanel } from "@/components/ai/stella-history-panel";
 import {
@@ -185,6 +186,20 @@ export function StellaWorkspaceView({
   const [chatInput, setChatInput] = React.useState("");
   const [chatLoading, setChatLoading] = React.useState(false);
   const chatScrollRef = React.useRef<HTMLDivElement>(null);
+
+  /**
+   * Only the newest reply types itself out. Older messages, and anything
+   * restored from saved history, render immediately.
+   */
+  const [revealMessageId, setRevealMessageId] = React.useState<string | null>(null);
+
+  /** What Stella is doing right now, rotated while the request is open. */
+  const reasoningPhrase = useReasoningPhrase(chatLoading);
+
+  const scrollChatToBottom = React.useCallback(() => {
+    const el = chatScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
 
   const analysisByRecording = React.useMemo(() => {
     const map = new Map<string, AiAnswerAnalysis>();
@@ -386,6 +401,7 @@ export function StellaWorkspaceView({
             );
           }
 
+          setRevealMessageId(welcomeMsg.id);
           return [welcomeMsg];
         });
       } catch (error) {
@@ -504,6 +520,7 @@ export function StellaWorkspaceView({
       };
 
       setChatMessages((previous) => [...previous, stellaMsg]);
+      setRevealMessageId(stellaMsg.id);
 
       if (currentConvId) {
         saveMessageToConversation(
@@ -525,6 +542,7 @@ export function StellaWorkspaceView({
         timestamp: clockLabel(),
       };
       setChatMessages((previous) => [...previous, errorReply]);
+      setRevealMessageId(errorReply.id);
     } finally {
       setChatLoading(false);
     }
@@ -548,6 +566,7 @@ export function StellaWorkspaceView({
       };
 
       setChatMessages((previous) => [...previous, userCorr, stellaCorr]);
+      setRevealMessageId(stellaCorr.id);
 
       const currentConvId = conversationIdRef.current;
       if (currentConvId) {
@@ -577,10 +596,8 @@ export function StellaWorkspaceView({
   );
 
   React.useEffect(() => {
-    if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-    }
-  }, [chatMessages]);
+    scrollChatToBottom();
+  }, [chatMessages, scrollChatToBottom]);
 
   // Refresh history list when history panel opens
   React.useEffect(() => {
@@ -768,6 +785,8 @@ export function StellaWorkspaceView({
                     setStage("done");
                     startedRef.current = true;
                   }
+                  // Restored history is shown as-is, never re-typed.
+                  setRevealMessageId(null);
                   setChatMessages(
                     selectedSession.messages.map((m) => ({
                       id: m.id,
@@ -797,6 +816,7 @@ export function StellaWorkspaceView({
                 setConversationId(newConv.id);
                 conversationIdRef.current = newConv.id;
                 setChatMessages([]);
+                setRevealMessageId(null);
                 setIsHistoryOpen(false);
                 setHistoryList(listConversations());
               }}
@@ -826,6 +846,7 @@ export function StellaWorkspaceView({
                 )}
                 {chatMessages.map((message) => {
                   const isStella = message.sender === "stella";
+                  const body = <FormattedChatMessage text={message.text} />;
                   return (
                     <div
                       key={message.id}
@@ -845,7 +866,17 @@ export function StellaWorkspaceView({
                           message.isCorrection && "border-warning/40 bg-warning/10 text-foreground"
                         )}
                       >
-                        <FormattedChatMessage text={message.text} />
+                        {isStella && message.id === revealMessageId ? (
+                          <TypewriterText
+                            text={message.text}
+                            onTick={scrollChatToBottom}
+                            onDone={() => setRevealMessageId(null)}
+                          >
+                            {body}
+                          </TypewriterText>
+                        ) : (
+                          body
+                        )}
                         <div className="mt-1.5 text-right text-[10px] opacity-60">{message.timestamp}</div>
                       </div>
                     </div>
@@ -853,9 +884,13 @@ export function StellaWorkspaceView({
                 })}
 
                 {chatLoading && (
-                  <div className="flex items-center gap-2.5 p-2 text-xs text-muted-foreground">
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="flex items-center gap-2.5 p-2 text-xs text-muted-foreground"
+                  >
                     <StellaAvatar state="thinking" size={26} frame={false} />
-                    <span>Stella is writing a reply…</span>
+                    <span className="animate-pulse">{reasoningPhrase}</span>
                   </div>
                 )}
               </div>
