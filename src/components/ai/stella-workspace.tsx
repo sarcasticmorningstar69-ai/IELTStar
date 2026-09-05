@@ -43,7 +43,6 @@ import {
   deleteConversation,
   findConversationByScope,
   type ConversationSummary,
-  type ChatMessageItem,
 } from "@/lib/ai/chat-history";
 import {
   Info,
@@ -199,9 +198,6 @@ export function StellaWorkspaceView({
     return map;
   }, [failures]);
 
-  const [deepDiveMode, setDeepDiveMode] = React.useState(false);
-  const [deepDiveRunning, setDeepDiveRunning] = React.useState(false);
-
   // Sync active conversationId to ref
   React.useEffect(() => {
     conversationIdRef.current = conversationId;
@@ -242,12 +238,8 @@ export function StellaWorkspaceView({
   }, [answers.length, mockId, sessionId, recordingIds, scopeKey, convTitle, heading]);
 
   const runAnalysis = React.useCallback(
-    async (onlyRecordingIds?: string[], forceDeepDive?: boolean) => {
+    async (onlyRecordingIds?: string[]) => {
       if (!answers.length || inFlightRef.current) return;
-
-      const isDeep = forceDeepDive !== undefined ? forceDeepDive : deepDiveMode;
-      if (forceDeepDive !== undefined) setDeepDiveMode(forceDeepDive);
-      setDeepDiveRunning(isDeep);
 
       const selected = onlyRecordingIds
         ? answers.filter((r) => onlyRecordingIds.includes(r.id))
@@ -306,7 +298,6 @@ export function StellaWorkspaceView({
               startOffset: segment?.startOffset,
             };
           }),
-          deepDive: isDeep,
         };
 
         const form = new FormData();
@@ -373,7 +364,7 @@ export function StellaWorkspaceView({
           const bandLine =
             fresh.overallBand === null || fresh.overallBand === undefined
               ? "I've reviewed your speaking, but there wasn't enough clear speech for me to put a band on it."
-              : `I've reviewed your speaking. My estimate is Band ${Math.round(fresh.overallBand)}.`;
+              : `I've reviewed your speaking. My estimate is Band ${fresh.overallBand}.`;
 
           const welcomeMsg: ChatMessage = {
             id: `welcome-${Date.now()}`,
@@ -407,10 +398,9 @@ export function StellaWorkspaceView({
       } finally {
         inFlightRef.current = false;
         setUploadRatio(0);
-        setDeepDiveRunning(false);
       }
     },
-    [answers, isFullMock, mock, mockId, session?.access_token, sessionId, deepDiveMode, user?.id]
+    [answers, isFullMock, mock, mockId, session?.access_token, sessionId, user?.id]
   );
 
   React.useEffect(() => {
@@ -473,8 +463,6 @@ export function StellaWorkspaceView({
           criterion: c.criterion,
           band: c.band,
           summary: c.summary,
-          evidence: c.evidence,
-          nextStep: c.nextStep,
         })),
         answers: answers.map((a) => {
           const analysis = analysisByRecording.get(a.id);
@@ -484,12 +472,6 @@ export function StellaWorkspaceView({
             transcript: analysis?.transcript || "",
           };
         }),
-        deepDive: result?.deepDive
-          ? {
-              vocabHighlights: result.deepDive.vocabularyMastery.interactiveSuggestions.map((v) => v.phrase),
-              grammarHighlights: result.deepDive.grammarDissection.categories.map((g) => g.category),
-            }
-          : undefined,
       };
 
       const response = await fetch("/api/ai/evaluate", {
@@ -937,11 +919,10 @@ export function StellaWorkspaceView({
             failureByRecording={failureByRecording}
             result={result}
             running={running}
+            stage={stage}
             uploadRatio={uploadRatio}
             failures={failures}
             corrections={corrections}
-            deepDiveMode={deepDiveMode}
-            deepDiveRunning={deepDiveRunning}
             onRunAnalysis={runAnalysis}
             onSaveCorrection={handleSaveCorrection}
             onAskStella={(prompt) => {
