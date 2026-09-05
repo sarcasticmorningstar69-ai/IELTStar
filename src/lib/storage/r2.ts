@@ -28,6 +28,19 @@ export function isSafeId(value: string): boolean {
   return SAFE_ID.test(value);
 }
 
+/**
+ * Admission check for an incoming upload.
+ *
+ * Deliberately distinct from `normaliseMimeType`, which coerces. Coercion is
+ * correct when labelling an object we have already decided to store, and wrong
+ * as a gate: used as one it accepts any bytes at all and files them under an
+ * audio key. Anything taking a blob from a browser should call this first and
+ * refuse outright.
+ */
+export function isAllowedMimeType(mimeType?: string | null): boolean {
+  return Boolean(mimeType && ALLOWED_MIME_TYPES.has(mimeType.toLowerCase()));
+}
+
 export function audioKey(userId: string, recordingId: string): string {
   if (!isSafeId(userId) || !isSafeId(recordingId)) {
     throw new Error("Unsafe identifier rejected while building an object key.");
