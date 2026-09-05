@@ -33,7 +33,7 @@ interface AuthContextType {
     password: string,
     metadata?: { name?: string; targetBand?: number }
   ) => Promise<{
-    error: AuthError | null;
+    error: AuthError | Error | null;
     needsEmailVerification?: boolean;
     sessionCreated?: boolean;
   }>;
@@ -204,42 +204,100 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     metadata?: { name?: string; targetBand?: number }
   ) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: metadata?.name || email.split("@")[0],
-          target_band: metadata?.targetBand || 7.5,
-        },
-      },
-    });
+    try {
+      // Create user auto-confirmed via server API to bypass email rate limits and broken confirmation links
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          name: metadata?.name,
+          targetBand: metadata?.targetBand,
+        }),
+      });
 
-    if (error) {
-      return { error, needsEmailVerification: false, sessionCreated: false };
-    }
+      const resData = await res.json().catch(() => ({}));
 
-    // With "Confirm email" disabled in the Supabase dashboard, signUp returns a
-    // session immediately and no email is sent, so the 2-emails-per-hour limit
-    // on the built-in provider never applies.
-    if (data.session) {
-      applySession(data.session);
+      if (!res.ok) {
+        if (res.status === 409) {
+          return {
+            error: new Error(
+              resData.message || "An account with this email already exists."
+            ),
+            needsEmailVerification: false,
+            sessionCreated: false,
+          };
+        }
+        // If server route fails, fall back to standard signUp
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: metadata?.name || email.split("@")[0],
+              target_band: metadata?.targetBand || 7.5,
+            },
+          },
+        });
+
+        if (error) {
+          return { error, needsEmailVerification: false, sessionCreated: false };
+        }
+        if (data.session) {
+          applySession(data.session);
+          closeAuthModal();
+          return {
+            error: null,
+            needsEmailVerification: false,
+            sessionCreated: true,
+          };
+        }
+        return {
+          error: null,
+          needsEmailVerification: true,
+          sessionCreated: false,
+        };
+      }
+
+      // User created and auto-confirmed. Sign in immediately to establish session
+      const { data: signInData, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+      if (signInError) {
+        return {
+          error: signInError,
+          needsEmailVerification: false,
+          sessionCreated: false,
+        };
+      }
+
+      applySession(signInData.session ?? null);
       closeAuthModal();
       return {
         error: null,
         needsEmailVerification: false,
         sessionCreated: true,
       };
+    } catch (err: unknown) {
+      const error =
+        err instanceof Error ? err : new Error("Registration failed.");
+      return {
+        error,
+        needsEmailVerification: false,
+        sessionCreated: false,
+      };
     }
-
-    // No session means the project still requires email confirmation. Tell the
-    // student the truth rather than faking a signed-in state.
-    return { error: null, needsEmailVerification: true, sessionCreated: false };
   };
 
   const signInWithGoogle = async () => {
     const redirectUrl =
-      typeof window !== "undefined" ? window.location.origin : "";
+      typeof window !== "undefined"
+        ? `${window.location.origin}/auth/callback`
+        : "";
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: redirectUrl },
