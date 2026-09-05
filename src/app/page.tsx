@@ -70,6 +70,7 @@ function CurrentView() {
           recordingIds={view.recordingIds}
           mockId={view.mockId}
           sessionId={view.sessionId}
+          heading={view.heading}
         />
       );
     case "learn":

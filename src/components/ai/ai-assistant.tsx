@@ -44,6 +44,7 @@ import { Button } from "@/components/ui/button";
 import { FormattedChatMessage } from "@/components/ai/formatted-chat-message";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useProgress, type RecordingMeta } from "@/lib/store/progress";
 import {
   createConversation,
   loadConversation,
@@ -55,8 +56,11 @@ import {
   syncConversationsFromCloud,
   getSlidingWindowContext,
   type ConversationSummary,
+  type ConversationSession,
   type ChatMessageItem,
 } from "@/lib/ai/chat-history";
+import { WorkspaceReviewPanel, ReliabilityChip } from "@/components/ai/workspace-review-panel";
+import { StellaHistoryPanel } from "@/components/ai/stella-history-panel";
 import {
   Maximize2,
   Minimize2,
@@ -73,23 +77,8 @@ import {
   Trash2,
   ShieldCheck,
   LoaderCircle,
+  Award,
 } from "lucide-react";
-
-function formatRelativeTime(dateStr: string): string {
-  try {
-    const diffMs = Date.now() - new Date(dateStr).getTime();
-    const diffMin = Math.floor(diffMs / (1000 * 60));
-    if (diffMin < 1) return "Just now";
-    if (diffMin < 60) return `${diffMin}m ago`;
-    const diffHours = Math.floor(diffMin / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    if (diffDays === 1) return "Yesterday";
-    return `${diffDays}d ago`;
-  } catch {
-    return "";
-  }
-}
 
 /**
  * Waiting-state copy.
@@ -533,138 +522,6 @@ function YouTubeMockPlayerPanel({
   );
 }
 
-interface StellaHistoryPanelProps {
-  historyList: ConversationSummary[];
-  activeConversationId: string | null;
-  onSelectConversation: (id: string) => void;
-  onDeleteConversation: (id: string) => void;
-  onStartNewChat: () => void;
-  onCloseHistory: () => void;
-  onOpenPrivacyNotice: () => void;
-}
-
-function StellaHistoryPanel({
-  historyList,
-  activeConversationId,
-  onSelectConversation,
-  onDeleteConversation,
-  onStartNewChat,
-  onCloseHistory,
-  onOpenPrivacyNotice,
-}: StellaHistoryPanelProps) {
-  return (
-    <div className="flex-1 min-h-0 flex flex-col bg-card animate-in fade-in duration-150 h-full overflow-hidden">
-      {/* Panel Header */}
-      <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-surface/40 shrink-0">
-        <div className="flex items-center gap-2">
-          <HistoryIcon className="h-4 w-4 text-brand-bright" />
-          <span className="text-xs font-semibold text-foreground">Coaching History</span>
-          <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-brand-bright">
-            {historyList.length}
-          </span>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onCloseHistory}
-          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground cursor-pointer gap-1"
-        >
-          <MessageSquare className="h-3 w-3" />
-          <span>Back to Chat</span>
-        </Button>
-      </div>
-
-      {/* New Thread CTA */}
-      <div className="p-3 border-b border-border bg-card shrink-0">
-        <button
-          type="button"
-          onClick={onStartNewChat}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-bright/40 bg-brand-soft py-2 px-3 text-xs font-semibold text-brand-bright transition-all hover:bg-brand-soft/80 shadow-xs cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Start New Coaching Thread</span>
-        </button>
-      </div>
-
-      {/* Conversations Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1.5 scrollbar-thin text-xs bg-card">
-        {historyList.length === 0 ? (
-          <div className="py-16 text-center text-muted-foreground space-y-2">
-            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-muted/60 text-muted-foreground">
-              <HistoryIcon className="h-5 w-5" />
-            </div>
-            <p className="text-xs font-medium">No previous coaching sessions.</p>
-            <p className="text-[11px] text-muted-foreground/70 max-w-xs mx-auto">
-              Conversations you have with Stella across speaking mocks and cue cards will appear here.
-            </p>
-          </div>
-        ) : (
-          historyList.map((conv) => {
-            const isActive = conv.id === activeConversationId;
-            return (
-              <div
-                key={conv.id}
-                className={cn(
-                  "group flex items-center justify-between gap-2.5 rounded-xl p-3 transition-colors cursor-pointer border text-left",
-                  isActive
-                    ? "border-brand-bright/40 bg-brand-soft/50 text-foreground shadow-xs"
-                    : "border-transparent hover:border-border hover:bg-surface text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => onSelectConversation(conv.id)}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 font-semibold text-xs truncate">
-                    {conv.scopeKey.startsWith("video:") ? (
-                      <VideoIcon className="h-3 w-3 text-brand-bright shrink-0" />
-                    ) : (
-                      <MessageSquare className="h-3 w-3 text-brand-bright shrink-0" />
-                    )}
-                    <span className="truncate">{conv.title}</span>
-                  </div>
-                  <p className="text-[11px] truncate opacity-70 mt-0.5">{conv.lastMessageSnippet}</p>
-                  <div className="text-[10px] opacity-50 mt-1 flex items-center gap-2">
-                    <span>{formatRelativeTime(conv.updatedAt)}</span>
-                    <span>•</span>
-                    <span>{conv.messageCount} messages</span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteConversation(conv.id);
-                  }}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-opacity cursor-pointer shrink-0"
-                  title="Delete conversation"
-                  aria-label="Delete conversation"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-border p-3 bg-surface/50 text-[11px] space-y-1.5 shrink-0">
-        <div className="flex items-center gap-1.5 text-muted-foreground text-[10px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-          <span>Local-first • Synced across devices with Supabase</span>
-        </div>
-        <button
-          type="button"
-          onClick={onOpenPrivacyNotice}
-          className="flex items-center gap-1 text-brand-bright hover:underline text-[11px] cursor-pointer"
-        >
-          <ShieldCheck className="h-3 w-3" />
-          <span>AI Data Transparency &amp; Privacy Notice</span>
-        </button>
-      </div>
-    </div>
-  );
-}
 
 export function AiAssistant() {
   const [mounted, setMounted] = React.useState(false);
@@ -685,6 +542,42 @@ export function AiAssistant() {
   const [historyList, setHistoryList] = React.useState<ConversationSummary[]>([]);
   const chatScrollRef = React.useRef<HTMLDivElement>(null);
   const drawerChatScrollRef = React.useRef<HTMLDivElement>(null);
+
+  const allRecordings = useProgress((s) => s.recordings);
+  const [activeReviewSession, setActiveReviewSession] = React.useState<ConversationSession | null>(null);
+
+  const activeReviewAnswers = React.useMemo(() => {
+    if (!activeReviewSession) return [];
+    const byId = new Map(allRecordings.map((r) => [r.id, r]));
+    const found = (activeReviewSession.recordingIds || [])
+      .map((id) => byId.get(id))
+      .filter((r): r is RecordingMeta => Boolean(r));
+    if (found.length > 0) return found;
+    // Fallback: reconstruct from analysisResult.answers so recordings and transcripts are always visible
+    if (activeReviewSession.analysisResult?.answers) {
+      return activeReviewSession.analysisResult.answers.map(
+        (a, i) =>
+          ({
+            id: a.recordingId,
+            sessionId: "saved",
+            part: (a.part as 1 | 2 | 3) || 1,
+            startedAt: Date.now(),
+            duration: a.durationSeconds || 0,
+            mimeType: "audio/webm",
+            size: 0,
+            label: a.questionLabel || `Question ${i + 1}`,
+            createdAt: new Date().toISOString(),
+          } as RecordingMeta)
+      );
+    }
+    return [];
+  }, [activeReviewSession, allRecordings]);
+
+  const activeAnalysisByRecording = React.useMemo(() => {
+    const map = new Map<string, import("@/lib/ai/types").AiAnswerAnalysis>();
+    activeReviewSession?.analysisResult?.answers?.forEach((a) => map.set(a.recordingId, a));
+    return map;
+  }, [activeReviewSession]);
 
   const reasoningPhrase = useReasoningPhrase(loading);
 
@@ -864,6 +757,11 @@ export function AiAssistant() {
       if (session && session.messages.length > 0) {
         setActiveConversationIdState(existingId);
         setMessages(session.messages);
+        if (session.analysisResult || (session.recordingIds && session.recordingIds.length > 0)) {
+          setActiveReviewSession(session);
+        } else {
+          setActiveReviewSession(null);
+        }
         // Already-read history appears at once; only new replies animate.
         setRevealMessageId(null);
         return;
@@ -888,6 +786,7 @@ export function AiAssistant() {
 
     saveMessageToConversation(initialSession.id, initialGreeting, user?.id);
     setActiveConversationIdState(initialSession.id);
+    setActiveReviewSession(null);
     setMessages([initialGreeting]);
     setRevealMessageId(initialGreeting.id);
   }, [scopeKey, selectedVideoId, title, isVideoMock, user?.id]);
@@ -911,6 +810,7 @@ export function AiAssistant() {
 
     saveMessageToConversation(newSession.id, greetingMsg, user?.id);
     setActiveConversationIdState(newSession.id);
+    setActiveReviewSession(null);
     setMessages([greetingMsg]);
     setRevealMessageId(greetingMsg.id);
     setIsHistoryOpen(false);
@@ -923,6 +823,11 @@ export function AiAssistant() {
       setActiveConversationId(session.scopeKey, convId);
       setActiveConversationIdState(convId);
       setMessages(session.messages);
+      if (session.analysisResult || (session.recordingIds && session.recordingIds.length > 0)) {
+        setActiveReviewSession(session);
+      } else {
+        setActiveReviewSession(null);
+      }
       setRevealMessageId(null);
       setIsHistoryOpen(false);
     }
@@ -933,6 +838,7 @@ export function AiAssistant() {
     const updated = listConversations();
     setHistoryList(updated);
     if (activeConversationId === convId) {
+      setActiveReviewSession(null);
       handleStartNewChat();
     }
   };
@@ -997,6 +903,42 @@ export function AiAssistant() {
         headers["Authorization"] = `Bearer ${session.access_token}`;
       }
 
+      const evaluationContext = activeReviewSession?.analysisResult
+        ? {
+            prompt: activeReviewSession.heading || activeReviewSession.title,
+            overallBand: activeReviewSession.analysisResult.overallBand,
+            isOffTopic: activeReviewSession.analysisResult.isOffTopic,
+            offTopicWarning: activeReviewSession.analysisResult.offTopicWarning,
+            criteria: activeReviewSession.analysisResult.criteria?.map((c) => ({
+              criterion: c.criterion,
+              band: c.band,
+              summary: c.summary,
+              evidence: c.evidence,
+              nextStep: c.nextStep,
+            })),
+            answers: activeReviewAnswers.map((a) => {
+              const analysis = activeAnalysisByRecording.get(a.id);
+              return {
+                part: a.part,
+                question: a.label,
+                transcript: analysis?.transcript || "",
+              };
+            }),
+            deepDive: activeReviewSession.analysisResult.deepDive
+              ? {
+                  vocabHighlights:
+                    activeReviewSession.analysisResult.deepDive.vocabularyMastery.interactiveSuggestions.map(
+                      (v) => v.phrase
+                    ),
+                  grammarHighlights:
+                    activeReviewSession.analysisResult.deepDive.grammarDissection.categories.map(
+                      (g) => g.category
+                    ),
+                }
+              : undefined,
+          }
+        : undefined;
+
       const res = await fetch("/api/ai/evaluate", {
         method: "POST",
         headers,
@@ -1006,6 +948,7 @@ export function AiAssistant() {
           question: q,
           pageTitle: title,
           metadata,
+          evaluationContext,
           recentMessages: getSlidingWindowContext(messages, 6),
         }),
       });
@@ -1197,6 +1140,33 @@ export function AiAssistant() {
               ref={drawerChatScrollRef}
               className="scrollbar-thin flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3 text-xs bg-card"
             >
+              {activeReviewSession?.analysisResult && (
+                <div className="rounded-xl border border-brand-bright/35 bg-gradient-to-r from-brand-soft/80 via-card to-brand-soft/40 p-3 shadow-xs mb-2 shrink-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Award className="h-4 w-4 text-brand-bright" />
+                      <span className="font-mono text-xs font-bold text-foreground">
+                        {activeReviewSession.analysisResult.overallBand !== null &&
+                        activeReviewSession.analysisResult.overallBand !== undefined
+                          ? `Band ${Math.round(activeReviewSession.analysisResult.overallBand)}`
+                          : "Review Ready"}
+                      </span>
+                      {activeReviewSession.analysisResult.reliability && (
+                        <ReliabilityChip value={activeReviewSession.analysisResult.reliability} />
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setStellaMode("full-window")}
+                      className="h-6 px-2 text-[11px] text-brand-bright hover:bg-brand-soft/70 gap-1 font-semibold cursor-pointer"
+                    >
+                      <span>Review &amp; Audio</span>
+                      <Maximize2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
               {messages.map((m) => (
                 <div
                   key={m.id}
@@ -1295,17 +1265,42 @@ export function AiAssistant() {
             <div>
               <div className="flex items-center gap-2">
                 <p className="text-sm font-semibold tracking-tight">
-                  {isVideoMock ? "YouTube Speaking Mock Analysis" : "Stella Full-Window Study"}
+                  {activeReviewSession
+                    ? activeReviewSession.title
+                    : isVideoMock
+                      ? "YouTube Speaking Mock Analysis"
+                      : "Stella Full-Window Study"}
                 </p>
                 <span className="rounded-full border border-brand-bright/40 bg-brand-soft/60 px-2 py-0.5 text-[10px] font-medium text-brand-bright inline-flex items-center gap-1">
-                  {isVideoMock ? <VideoIcon className="h-2.5 w-2.5" /> : <Maximize2 className="h-2.5 w-2.5" />}
-                  {isVideoMock ? "Video Mock" : "Full Window"}
+                  {activeReviewSession ? (
+                    <>
+                      <Award className="h-2.5 w-2.5" />
+                      {activeReviewSession.analysisResult?.overallBand !== null &&
+                      activeReviewSession.analysisResult?.overallBand !== undefined
+                        ? `Band ${Math.round(activeReviewSession.analysisResult.overallBand)} Review`
+                        : "Review & Audio"}
+                    </>
+                  ) : isVideoMock ? (
+                    <>
+                      <VideoIcon className="h-2.5 w-2.5" />
+                      Video Mock
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="h-2.5 w-2.5" />
+                      Full Window
+                    </>
+                  )}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground truncate max-w-xs sm:max-w-md">
-                {isVideoMock
-                  ? `${mockNumber(videoIndex(selectedVideoId))} — ${videoById(selectedVideoId)?.label || "Supplied Mock"}`
-                  : `Studying: ${title}`}
+                {activeReviewSession
+                  ? activeReviewSession.analysisResult
+                    ? `${activeReviewAnswers.length} recordings • Band ${Math.round(activeReviewSession.analysisResult.overallBand ?? 0)} Evaluation`
+                    : "Speaking Review & Recordings"
+                  : isVideoMock
+                    ? `${mockNumber(videoIndex(selectedVideoId))} — ${videoById(selectedVideoId)?.label || "Supplied Mock"}`
+                    : `Studying: ${title}`}
               </p>
             </div>
           </div>
@@ -1317,7 +1312,7 @@ export function AiAssistant() {
                 setIsHistoryOpen((prev) => {
                   const next = !prev;
                   if (next) {
-                    if (isVideoMock) setMobileFullTab("right");
+                    if (isVideoMock && !activeReviewSession) setMobileFullTab("right");
                     else setMobileFullTab("left");
                   }
                   return next;
@@ -1368,7 +1363,7 @@ export function AiAssistant() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {isVideoMock ? (
+              {isVideoMock && !activeReviewSession ? (
                 <>
                   <VideoIcon className="h-3.5 w-3.5 text-brand-bright" />
                   <span>Video Player</span>
@@ -1390,7 +1385,12 @@ export function AiAssistant() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {isVideoMock ? (
+              {activeReviewSession ? (
+                <>
+                  <Award className="h-3.5 w-3.5 text-brand-bright" />
+                  <span>Review &amp; Audio</span>
+                </>
+              ) : isVideoMock ? (
                 <>
                   <MessageSquare className="h-3.5 w-3.5 text-brand-bright" />
                   <span>{isHistoryOpen ? "History" : "Stella Chat"}</span>
@@ -1407,14 +1407,14 @@ export function AiAssistant() {
 
         {/* 2-Column Split: On YouTube mocks, LEFT is Video and RIGHT is Chat. On other views, LEFT is Chat and RIGHT is Study Context */}
         <div className="grid flex-1 grid-cols-1 lg:grid-cols-2 overflow-hidden" style={{ height: "calc(100% - 60px)" }}>
-          {/* COLUMN 1: Video Player (for YouTube mocks) OR Chat (for regular views) */}
+          {/* COLUMN 1: Video Player (for YouTube mocks) OR Chat (for regular views or active review) */}
           <section
             className={cn(
               "flex-col h-full overflow-hidden border-border bg-card/20 lg:border-r",
               mobileFullTab === "left" ? "flex" : "hidden lg:flex"
             )}
           >
-            {isVideoMock ? (
+            {isVideoMock && !activeReviewSession ? (
               <YouTubeMockPlayerPanel
                 videoId={selectedVideoId}
                 onSelectVideo={setSelectedVideoId}
@@ -1553,14 +1553,37 @@ export function AiAssistant() {
             )}
           </section>
 
-          {/* COLUMN 2: Chat (for YouTube mocks) OR Study Context (for regular views) */}
+          {/* COLUMN 2: Review Panel OR YouTube Mock Chat OR Study Context */}
           <section
             className={cn(
               "flex-col h-full overflow-hidden bg-card/10",
               mobileFullTab === "right" ? "flex" : "hidden lg:flex"
             )}
           >
-            {isVideoMock ? (
+            {activeReviewSession?.analysisResult ? (
+              <div className="flex flex-col h-full overflow-y-auto p-4 sm:p-6 space-y-5">
+                <WorkspaceReviewPanel
+                  answers={activeReviewAnswers}
+                  analysisByRecording={activeAnalysisByRecording}
+                  result={activeReviewSession.analysisResult}
+                  onOpenFullWorkspace={() => {
+                    close();
+                    navigate({
+                      name: "analysis",
+                      recordingIds:
+                        activeReviewSession.recordingIds ||
+                        activeReviewAnswers.map((a) => a.id),
+                      mockId: activeReviewSession.mockId,
+                      sessionId: activeReviewSession.sessionId,
+                      heading: activeReviewSession.heading || activeReviewSession.title,
+                    });
+                  }}
+                  onAskStella={(prompt) => {
+                    void submitQuestion(prompt);
+                  }}
+                />
+              </div>
+            ) : isVideoMock ? (
               isHistoryOpen ? (
                 <StellaHistoryPanel
                   historyList={historyList}

@@ -1,4 +1,5 @@
 import { getSupabase } from "@/lib/supabase/client";
+import type { AiAnalysisResult } from "@/lib/ai/types";
 
 export interface ChatMessageItem {
   id: string;
@@ -15,6 +16,12 @@ export interface ConversationSession {
   messages: ChatMessageItem[];
   createdAt: string;
   updatedAt: string;
+  // Associated evaluation review & recordings
+  recordingIds?: string[];
+  mockId?: string;
+  sessionId?: string;
+  heading?: string;
+  analysisResult?: AiAnalysisResult;
 }
 
 export interface ConversationSummary {
@@ -24,6 +31,13 @@ export interface ConversationSummary {
   lastMessageSnippet: string;
   messageCount: number;
   updatedAt: string;
+  hasReview?: boolean;
+  overallBand?: number | null;
+  recordingCount?: number;
+  recordingIds?: string[];
+  mockId?: string;
+  sessionId?: string;
+  heading?: string;
 }
 
 const LOCAL_STORAGE_KEY = "ieltstar_stella_conversations_v2";
@@ -61,7 +75,17 @@ export function setActiveConversationId(scopeKey: string, conversationId: string
 }
 
 // --- Create New Conversation ---
-export function createConversation(scopeKey: string, initialTitle: string = "Coaching Session"): ConversationSession {
+export function createConversation(
+  scopeKey: string,
+  initialTitle: string = "Coaching Session",
+  meta?: {
+    recordingIds?: string[];
+    mockId?: string;
+    sessionId?: string;
+    heading?: string;
+    analysisResult?: AiAnalysisResult;
+  }
+): ConversationSession {
   const id = `conv_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   const now = new Date().toISOString();
   const session: ConversationSession = {
@@ -71,6 +95,11 @@ export function createConversation(scopeKey: string, initialTitle: string = "Coa
     messages: [],
     createdAt: now,
     updatedAt: now,
+    recordingIds: meta?.recordingIds,
+    mockId: meta?.mockId,
+    sessionId: meta?.sessionId,
+    heading: meta?.heading,
+    analysisResult: meta?.analysisResult,
   };
 
   const store = getLocalStore();
@@ -87,6 +116,109 @@ export function loadConversation(id: string): ConversationSession | null {
   return store[id] || null;
 }
 
+// --- Find Conversation by ScopeKey or Scope Object ---
+export function findConversationByScope(
+  scope:
+    | string
+    | {
+        scopeKey?: string;
+        mockId?: string;
+        sessionId?: string;
+        recordingIds?: string[];
+      }
+): ConversationSession | null {
+  const store = getLocalStore();
+  const list = Object.values(store);
+  if (typeof scope === "string") {
+    return list.find((c) => c.scopeKey === scope) || null;
+  }
+  if (scope.mockId) {
+    const found = list.find((c) => c.mockId === scope.mockId || c.scopeKey === `mock:${scope.mockId}`);
+    if (found) return found;
+  }
+  if (scope.sessionId) {
+    const found = list.find((c) => c.sessionId === scope.sessionId || c.scopeKey === `session:${scope.sessionId}`);
+    if (found) return found;
+  }
+  if (scope.scopeKey) {
+    const found = list.find((c) => c.scopeKey === scope.scopeKey);
+    if (found) return found;
+  }
+  if (scope.recordingIds && scope.recordingIds.length > 0) {
+    const targetSet = new Set(scope.recordingIds);
+    const found = list.find((c) => c.recordingIds && c.recordingIds.some((id) => targetSet.has(id)));
+    if (found) return found;
+  }
+  return null;
+}
+
+// --- Find Conversation by Recording IDs ---
+export function findConversationByRecordings(recordingIds: string[]): ConversationSession | null {
+  if (!recordingIds.length) return null;
+  const store = getLocalStore();
+  const list = Object.values(store);
+  const targetSet = new Set(recordingIds);
+  return (
+    list.find((c) => {
+      if (!c.recordingIds || !c.recordingIds.length) return false;
+      return c.recordingIds.some((id) => targetSet.has(id));
+    }) || null
+  );
+}
+
+// --- Save or Update Analysis in Conversation ---
+export function saveConversationAnalysis(
+  conversationId: string,
+  analysis: AiAnalysisResult,
+  extraOrRecordings?:
+    | string[]
+    | {
+        recordingIds?: string[];
+        mockId?: string;
+        sessionId?: string;
+        heading?: string;
+        userId?: string;
+      }
+): ConversationSession | null {
+  const store = getLocalStore();
+  const session = store[conversationId];
+  if (!session) return null;
+
+  const extra = Array.isArray(extraOrRecordings)
+    ? { recordingIds: extraOrRecordings }
+    : extraOrRecordings;
+
+  session.analysisResult = analysis;
+  if (extra?.recordingIds?.length) session.recordingIds = extra.recordingIds;
+  if (extra?.mockId) session.mockId = extra.mockId;
+  if (extra?.sessionId) session.sessionId = extra.sessionId;
+  if (extra?.heading) session.heading = extra.heading;
+  session.updatedAt = new Date().toISOString();
+
+  // If title is default or coaching thread, make it a descriptive review title with band
+  const bandText =
+    analysis.overallBand !== null && analysis.overallBand !== undefined
+      ? ` • Band ${Math.round(analysis.overallBand)}`
+      : "";
+  if (
+    session.title.includes("Coaching Session") ||
+    session.title.includes("Session") ||
+    session.title.includes("Thread") ||
+    session.title.includes("Practice")
+  ) {
+    session.title = (extra?.heading || "Speaking Evaluation") + bandText;
+  }
+
+  store[conversationId] = session;
+  saveLocalStore(store);
+
+  if (extra?.userId) {
+    void syncConversationMetaToCloud(session, extra.userId);
+  }
+
+  return session;
+}
+
 // --- Save Message ---
 export function saveMessageToConversation(
   conversationId: string,
@@ -97,7 +229,10 @@ export function saveMessageToConversation(
   const session = store[conversationId];
   if (!session) return null;
 
-  session.messages.push(message);
+  // Avoid inserting duplicates
+  if (!session.messages.some((m) => m.id === message.id)) {
+    session.messages.push(message);
+  }
   session.updatedAt = new Date().toISOString();
 
   // Auto-generate title from first user message if default
@@ -125,6 +260,7 @@ export function listConversations(scopeFilter?: string): ConversationSummary[] {
     .filter((c) => !scopeFilter || c.scopeKey === scopeFilter || scopeFilter === "all")
     .map((c) => {
       const lastMsg = c.messages[c.messages.length - 1];
+      const hasReview = Boolean(c.analysisResult || (c.recordingIds && c.recordingIds.length > 0));
       return {
         id: c.id,
         scopeKey: c.scopeKey,
@@ -132,6 +268,13 @@ export function listConversations(scopeFilter?: string): ConversationSummary[] {
         lastMessageSnippet: lastMsg ? lastMsg.text.slice(0, 70) : "No messages yet",
         messageCount: c.messages.length,
         updatedAt: c.updatedAt,
+        hasReview,
+        overallBand: c.analysisResult?.overallBand ?? null,
+        recordingCount: c.recordingIds?.length ?? (c.analysisResult?.answers?.length ?? 0),
+        recordingIds: c.recordingIds,
+        mockId: c.mockId,
+        sessionId: c.sessionId,
+        heading: c.heading,
       };
     })
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
@@ -149,6 +292,21 @@ export function deleteConversation(conversationId: string, userId?: string): voi
 }
 
 // --- Cloud Synchronization (Supabase) ---
+async function syncConversationMetaToCloud(session: ConversationSession, userId: string) {
+  try {
+    const supabase = getSupabase();
+    await supabase.from("stella_conversations").upsert({
+      id: session.id,
+      user_id: userId,
+      scope_key: session.scopeKey,
+      title: session.title,
+      updated_at: session.updatedAt,
+    });
+  } catch (err) {
+    console.warn("Background chat meta sync notice:", err);
+  }
+}
+
 async function syncMessageToCloud(session: ConversationSession, message: ChatMessageItem, userId: string) {
   try {
     const supabase = getSupabase();

@@ -3,9 +3,10 @@
 /**
  * Stella's full-window analysis workspace.
  *
- * LEFT: conversation with Stella.
+ * LEFT: conversation with Stella (or coaching history panel).
  * RIGHT: one card per recording — audio player, status, and an expandable
- *        transcript, followed by the overall assessment for the submission.
+ *        transcript, followed by the overall assessment for the submission
+ *        (rendered via WorkspaceReviewPanel).
  *
  * Nothing on this screen is invented. If Stella has not returned a result for
  * a recording, the card says so; it never shows a sample transcript or a
@@ -17,52 +18,43 @@ import * as React from "react";
 import { useApp } from "@/lib/store/app";
 import { useProgress, type RecordingMeta } from "@/lib/store/progress";
 import { useAuth } from "@/lib/auth/auth-context";
-import { getAudio, getAudioURL, computePeaks } from "@/lib/storage/audio-db";
-import { formatTime, StaticWaveform } from "@/components/audio/audio-ui";
+import { getAudio } from "@/lib/storage/audio-db";
+import { formatTime } from "@/components/audio/audio-ui";
 import { StellaAvatar } from "@/components/ai/stella-avatar";
-import { STELLA_STATUS_TEXT, type StellaState } from "@/lib/ai/stella-media";
+import { type StellaState } from "@/lib/ai/stella-media";
 import type {
   AiAnalysisRequest,
   AiAnalysisResult,
   AiAnswerAnalysis,
   AiAnswerFailure,
-  AiReliability,
   AiSurface,
 } from "@/lib/ai/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CriteriaFlipCards } from "@/components/ai/criteria-flip-card";
 import { FormattedChatMessage } from "@/components/ai/formatted-chat-message";
-import { DeepDivePanel } from "@/components/ai/deep-dive-panel";
+import { WorkspaceReviewPanel } from "@/components/ai/workspace-review-panel";
+import { StellaHistoryPanel } from "@/components/ai/stella-history-panel";
 import {
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle2,
-  ChevronDown,
-  Gauge,
+  createConversation,
+  loadConversation,
+  saveMessageToConversation,
+  saveConversationAnalysis,
+  listConversations,
+  deleteConversation,
+  findConversationByScope,
+  type ConversationSummary,
+  type ChatMessageItem,
+} from "@/lib/ai/chat-history";
+import {
   Info,
-  Loader2,
   Maximize2,
   Minimize2,
-  Pause,
-  Play,
-  RotateCcw,
   ArrowUp,
   X,
-  Zap,
-  Flame,
-  Rocket,
+  History as HistoryIcon,
 } from "lucide-react";
 
-const SPEEDS = [0.75, 1, 1.25, 1.5];
 const REQUEST_TIMEOUT_MS = 6 * 60 * 1000;
-
-const RELIABILITY_LABEL: Record<AiReliability, string> = {
-  high: "Strong evidence",
-  medium: "Reasonable evidence",
-  low: "Weak evidence",
-  insufficient: "Not enough to judge",
-};
 
 type Stage = "idle" | "preparing" | "uploading" | "reviewing" | "done";
 
@@ -78,35 +70,6 @@ function clockLabel() {
   return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-function ReliabilityChip({ value }: { value: AiReliability }) {
-  return (
-    <span
-      className={cn(
-        "rounded-full border px-2 py-0.5 text-[10px] font-medium whitespace-nowrap",
-        value === "high" && "border-success/40 text-success bg-success/10",
-        value === "medium" && "border-border text-muted-foreground",
-        (value === "low" || value === "insufficient") &&
-          "border-warning/40 text-warning bg-warning/10"
-      )}
-    >
-      {RELIABILITY_LABEL[value]}
-    </span>
-  );
-}
-
-/** Group a transcript into readable paragraphs without changing a word. */
-function toParagraphs(text: string): string[] {
-  const clean = text.replace(/\s+/g, " ").trim();
-  if (!clean) return [];
-  const sentences = clean.match(/[^.!?]+[.!?]*/g) || [clean];
-  const paragraphs: string[] = [];
-  for (let i = 0; i < sentences.length; i += 3) {
-    const chunk = sentences.slice(i, i + 3).join(" ").trim();
-    if (chunk) paragraphs.push(chunk);
-  }
-  return paragraphs;
-}
-
 type UploadResponse = {
   ok: boolean;
   status: number;
@@ -115,9 +78,6 @@ type UploadResponse = {
 
 /**
  * POST a multipart body with real upload progress.
- *
- * `fetch` cannot report upload progress, and a student uploading a 20-minute
- * mock on a phone needs to see that something is happening.
  */
 function postFormWithProgress(
   url: string,
@@ -186,6 +146,26 @@ export function StellaWorkspaceView({
 
   const [mobileTab, setMobileTab] = React.useState<"chat" | "evaluation">("evaluation");
 
+  // ---- Conversation & History state --------------------------------------
+  const [conversationId, setConversationId] = React.useState<string | null>(null);
+  const conversationIdRef = React.useRef<string | null>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
+  const [historyList, setHistoryList] = React.useState<ConversationSummary[]>([]);
+
+  const scopeKey = mockId
+    ? `mock:${mockId}`
+    : sessionId
+      ? `session:${sessionId}`
+      : `recordings:${recordingIds.slice(0, 3).join(",")}`;
+
+  const convTitle =
+    heading ||
+    (mockId
+      ? "Full Mock Review"
+      : answers.length === 1
+        ? `${answers[0].label} Review`
+        : `${answers.length} Answers Evaluation`);
+
   // ---- Analysis state ----------------------------------------------------
   const [stage, setStage] = React.useState<Stage>("idle");
   const [uploadRatio, setUploadRatio] = React.useState(0);
@@ -195,10 +175,6 @@ export function StellaWorkspaceView({
   const [corrections, setCorrections] = React.useState<Record<string, string>>({});
   const startedRef = React.useRef(false);
   const inFlightRef = React.useRef(false);
-  /**
-   * One stable id per submission. Sent unchanged on retries so the server
-   * reserves quota once, no matter how many network attempts it takes.
-   */
   const requestIdRef = React.useRef<string>(
     `req${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`
   );
@@ -225,6 +201,45 @@ export function StellaWorkspaceView({
 
   const [deepDiveMode, setDeepDiveMode] = React.useState(false);
   const [deepDiveRunning, setDeepDiveRunning] = React.useState(false);
+
+  // Sync active conversationId to ref
+  React.useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
+
+  // Load existing session or create conversation on mount
+  React.useEffect(() => {
+    if (!answers.length) return;
+    const found = findConversationByScope({ mockId, sessionId, recordingIds });
+    if (found) {
+      setConversationId(found.id);
+      conversationIdRef.current = found.id;
+      if (found.analysisResult) {
+        setResult(found.analysisResult);
+        setStage("done");
+        startedRef.current = true;
+      }
+      if (found.messages && found.messages.length > 0) {
+        setChatMessages(
+          found.messages.map((m) => ({
+            id: m.id,
+            sender: m.sender,
+            text: m.text,
+            timestamp: m.timestamp,
+          }))
+        );
+      }
+    } else {
+      const newConv = createConversation(scopeKey, convTitle, {
+        recordingIds,
+        mockId,
+        sessionId,
+        heading,
+      });
+      setConversationId(newConv.id);
+      conversationIdRef.current = newConv.id;
+    }
+  }, [answers.length, mockId, sessionId, recordingIds, scopeKey, convTitle, heading]);
 
   const runAnalysis = React.useCallback(
     async (onlyRecordingIds?: string[], forceDeepDive?: boolean) => {
@@ -297,8 +312,6 @@ export function StellaWorkspaceView({
         const form = new FormData();
         form.append("metadata", JSON.stringify(request));
         available.forEach(({ meta, audio }) => {
-          // Field name carries the recording id, so the server never has to
-          // guess which transcript belongs to which question.
           form.append(`audio:${meta.id}`, audio.blob, `${meta.id}.webm`);
         });
 
@@ -338,6 +351,11 @@ export function StellaWorkspaceView({
           return { ...fresh, answers: Array.from(merged.values()) };
         });
 
+        const currentConvId = conversationIdRef.current;
+        if (currentConvId) {
+          saveConversationAnalysis(currentConvId, fresh, answers.map((a) => a.id));
+        }
+
         const stillFailed = [
           ...(fresh.failedAnswers || []),
           ...lost.map(({ meta }) => ({
@@ -356,14 +374,28 @@ export function StellaWorkspaceView({
             fresh.overallBand === null || fresh.overallBand === undefined
               ? "I've reviewed your speaking, but there wasn't enough clear speech for me to put a band on it."
               : `I've reviewed your speaking. My estimate is Band ${Math.round(fresh.overallBand)}.`;
-          return [
-            {
-              id: "welcome-1",
-              sender: "stella",
-              text: `${bandLine}\n\nEach recording is on the right with its own player. Open "Show transcript" under any answer to read exactly what the speech recogniser heard. Ask me anything about your answers below.`,
-              timestamp: clockLabel(),
-            },
-          ];
+
+          const welcomeMsg: ChatMessage = {
+            id: `welcome-${Date.now()}`,
+            sender: "stella",
+            text: `${bandLine}\n\nEach recording is on the right with its own player. Open "Show transcript" under any answer to read exactly what the speech recogniser heard. Ask me anything about your answers below.`,
+            timestamp: clockLabel(),
+          };
+
+          if (currentConvId) {
+            saveMessageToConversation(
+              currentConvId,
+              {
+                id: welcomeMsg.id,
+                sender: "stella",
+                text: welcomeMsg.text,
+                timestamp: welcomeMsg.timestamp,
+              },
+              user?.id
+            );
+          }
+
+          return [welcomeMsg];
         });
       } catch (error) {
         setNotice(
@@ -378,7 +410,7 @@ export function StellaWorkspaceView({
         setDeepDiveRunning(false);
       }
     },
-    [answers, isFullMock, mock, mockId, session?.access_token, sessionId, deepDiveMode]
+    [answers, isFullMock, mock, mockId, session?.access_token, sessionId, deepDiveMode, user?.id]
   );
 
   React.useEffect(() => {
@@ -404,11 +436,29 @@ export function StellaWorkspaceView({
     if (!text || chatLoading) return;
     if (!presetPrompt) setChatInput("");
 
-    setChatMessages((previous) => [
-      ...previous,
-      { id: `user-${Date.now()}`, sender: "user", text, timestamp: clockLabel() },
-    ]);
+    const userMsg: ChatMessage = {
+      id: `user-${Date.now()}`,
+      sender: "user",
+      text,
+      timestamp: clockLabel(),
+    };
+
+    setChatMessages((previous) => [...previous, userMsg]);
     setChatLoading(true);
+
+    const currentConvId = conversationIdRef.current;
+    if (currentConvId) {
+      saveMessageToConversation(
+        currentConvId,
+        {
+          id: userMsg.id,
+          sender: "user",
+          text: userMsg.text,
+          timestamp: userMsg.timestamp,
+        },
+        user?.id
+      );
+    }
 
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -463,21 +513,36 @@ export function StellaWorkspaceView({
           : typeof data.message === "string"
             ? data.message
             : "Stella couldn't answer just now. Please try again.";
-      setChatMessages((previous) => [
-        ...previous,
-        { id: `stella-${Date.now()}`, sender: "stella", text: answer, timestamp: clockLabel() },
-      ]);
+
+      const stellaMsg: ChatMessage = {
+        id: `stella-${Date.now()}`,
+        sender: "stella",
+        text: answer,
+        timestamp: clockLabel(),
+      };
+
+      setChatMessages((previous) => [...previous, stellaMsg]);
+
+      if (currentConvId) {
+        saveMessageToConversation(
+          currentConvId,
+          {
+            id: stellaMsg.id,
+            sender: "stella",
+            text: stellaMsg.text,
+            timestamp: stellaMsg.timestamp,
+          },
+          user?.id
+        );
+      }
     } catch {
-      // No invented coaching: say plainly that the message did not get through.
-      setChatMessages((previous) => [
-        ...previous,
-        {
-          id: `stella-${Date.now()}`,
-          sender: "stella",
-          text: "Your message didn't reach me — the connection dropped. Please send it again.",
-          timestamp: clockLabel(),
-        },
-      ]);
+      const errorReply: ChatMessage = {
+        id: `stella-${Date.now()}`,
+        sender: "stella",
+        text: "Your message didn't reach me — the connection dropped. Please send it again.",
+        timestamp: clockLabel(),
+      };
+      setChatMessages((previous) => [...previous, errorReply]);
     } finally {
       setChatLoading(false);
     }
@@ -486,24 +551,47 @@ export function StellaWorkspaceView({
   const handleSaveCorrection = React.useCallback(
     (recordingId: string, corrected: string, questionLabel: string) => {
       setCorrections((previous) => ({ ...previous, [recordingId]: corrected }));
-      setChatMessages((previous) => [
-        ...previous,
-        {
-          id: `corr-${Date.now()}`,
-          sender: "user",
-          text: `Transcript correction for "${questionLabel}": ${corrected}`,
-          timestamp: clockLabel(),
-          isCorrection: true,
-        },
-        {
-          id: `corr-reply-${Date.now()}`,
-          sender: "stella",
-          text: "Saved as your own correction and shown next to the original. I haven't re-scored anything: re-checking wording against the audio needs a fresh analysis, which isn't available yet.",
-          timestamp: clockLabel(),
-        },
-      ]);
+      const userCorr: ChatMessage = {
+        id: `corr-${Date.now()}`,
+        sender: "user",
+        text: `Transcript correction for "${questionLabel}": ${corrected}`,
+        timestamp: clockLabel(),
+        isCorrection: true,
+      };
+      const stellaCorr: ChatMessage = {
+        id: `corr-reply-${Date.now()}`,
+        sender: "stella",
+        text: "Saved as your own correction and shown next to the original. I haven't re-scored anything: re-checking wording against the audio needs a fresh analysis, which isn't available yet.",
+        timestamp: clockLabel(),
+      };
+
+      setChatMessages((previous) => [...previous, userCorr, stellaCorr]);
+
+      const currentConvId = conversationIdRef.current;
+      if (currentConvId) {
+        saveMessageToConversation(
+          currentConvId,
+          {
+            id: userCorr.id,
+            sender: "user",
+            text: userCorr.text,
+            timestamp: userCorr.timestamp,
+          },
+          user?.id
+        );
+        saveMessageToConversation(
+          currentConvId,
+          {
+            id: stellaCorr.id,
+            sender: "stella",
+            text: stellaCorr.text,
+            timestamp: stellaCorr.timestamp,
+          },
+          user?.id
+        );
+      }
     },
-    []
+    [user?.id]
   );
 
   React.useEffect(() => {
@@ -511,6 +599,13 @@ export function StellaWorkspaceView({
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [chatMessages]);
+
+  // Refresh history list when history panel opens
+  React.useEffect(() => {
+    if (isHistoryOpen) {
+      setHistoryList(listConversations());
+    }
+  }, [isHistoryOpen]);
 
   // ---- Guards ------------------------------------------------------------
   if (!user) {
@@ -562,7 +657,6 @@ export function StellaWorkspaceView({
   }
 
   const totalSeconds = answers.reduce((sum, r) => sum + (r.duration || 0), 0);
-  const hasCriteria = (result?.criteria?.length || 0) === 4;
 
   return (
     <div className="fade-up flex min-h-[100dvh] flex-col bg-background">
@@ -586,6 +680,24 @@ export function StellaWorkspaceView({
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setIsHistoryOpen((prev) => !prev);
+              setHistoryList(listConversations());
+            }}
+            className={cn(
+              "gap-1.5 text-xs transition-colors cursor-pointer",
+              isHistoryOpen
+                ? "bg-brand-soft text-brand-bright font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            title="Coaching History"
+          >
+            <HistoryIcon className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{isHistoryOpen ? "Close History" : "History"}</span>
+          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -620,7 +732,7 @@ export function StellaWorkspaceView({
               : "border-transparent text-muted-foreground"
           )}
         >
-          Chat with Stella
+          {isHistoryOpen ? "Coaching History" : "Chat with Stella"}
         </button>
         <button
           type="button"
@@ -639,810 +751,206 @@ export function StellaWorkspaceView({
       </div>
 
       <div className="grid flex-1 gap-0 lg:grid-cols-2">
-        {/* ---------------------------- LEFT: CHAT --------------------------- */}
+        {/* ---------------------------- LEFT: CHAT OR HISTORY --------------------------- */}
         <section
           className={cn(
-            "flex flex-col gap-4 border-border bg-card/35 px-4 py-5 sm:px-6 lg:h-[calc(100dvh-61px)] lg:border-r",
+            "flex flex-col gap-4 border-border bg-card/35 px-4 py-5 sm:px-6 lg:h-[calc(100dvh-61px)] lg:border-r overflow-hidden",
             mobileTab === "chat" ? "flex" : "hidden lg:flex"
           )}
         >
-          {notice && (
-            <div
-              role="status"
-              className="flex items-start gap-2.5 rounded-xl border border-border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground"
-            >
-              <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-bright" />
-              <p>{notice}</p>
-            </div>
-          )}
-
-          <div
-            ref={chatScrollRef}
-            className="scrollbar-thin flex-1 space-y-3.5 overflow-y-auto rounded-2xl border border-border bg-surface/60 p-4 text-xs shadow-inner"
-          >
-            {chatMessages.length === 0 && !running && (
-              <p className="py-6 text-center text-xs text-muted-foreground">
-                Ask Stella a question about your speaking whenever you are ready.
-              </p>
-            )}
-            {chatMessages.map((message) => {
-              const isStella = message.sender === "stella";
-              return (
-                <div
-                  key={message.id}
-                  className={cn("flex gap-2.5", isStella ? "items-start" : "justify-end")}
-                >
-                  {isStella && (
-                    <div className="mt-0.5 shrink-0">
-                      <StellaAvatar state="idle" size={30} frame={false} />
-                    </div>
-                  )}
-                  <div
-                    className={cn(
-                      "max-w-[88%] rounded-2xl px-4 py-3 text-xs leading-relaxed sm:text-sm",
-                      isStella
-                        ? "border border-border bg-card text-foreground shadow-sm"
-                        : "bg-primary text-primary-foreground shadow-sm",
-                      message.isCorrection && "border-warning/40 bg-warning/10 text-foreground"
-                    )}
-                  >
-                    <FormattedChatMessage text={message.text} />
-                    <div className="mt-1.5 text-right text-[10px] opacity-60">{message.timestamp}</div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {chatLoading && (
-              <div className="flex items-center gap-2.5 p-2 text-xs text-muted-foreground">
-                <StellaAvatar state="thinking" size={26} frame={false} />
-                <span>Stella is writing a reply…</span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {[
-              ["✨ Band 8 model answer", "Give me a Band 8 model answer for this question"],
-              ["⚡ Boost fluency", "How do I improve my fluency and reduce hesitation?"],
-              ["💎 Upgrade vocabulary", "What vocabulary upgrades can I make here?"],
-              ["🎯 Practice drill", "Give me a two-minute practice drill for this"],
-            ].map(([label, prompt]) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => void handleSendChat(prompt)}
-                className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-brand-bright/50 hover:bg-brand-soft hover:text-foreground"
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              void handleSendChat();
-            }}
-            className="flex items-center gap-2 rounded-2xl border border-border bg-card p-1.5 shadow-sm focus-within:border-brand-bright"
-          >
-            <input
-              type="text"
-              value={chatInput}
-              onChange={(event) => setChatInput(event.target.value)}
-              placeholder="Ask Stella about your answers…"
-              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs outline-none placeholder:text-muted-foreground sm:text-sm"
+          {isHistoryOpen ? (
+            <StellaHistoryPanel
+              historyList={historyList}
+              activeConversationId={conversationId}
+              onSelectConversation={(id) => {
+                const selectedSession = loadConversation(id);
+                if (selectedSession) {
+                  if (
+                    selectedSession.recordingIds &&
+                    selectedSession.recordingIds.length > 0 &&
+                    selectedSession.recordingIds.some((rid) => !recordingIds.includes(rid))
+                  ) {
+                    navigate({
+                      name: "analysis",
+                      recordingIds: selectedSession.recordingIds,
+                      mockId: selectedSession.mockId,
+                      sessionId: selectedSession.sessionId,
+                      heading: selectedSession.heading || selectedSession.title,
+                    });
+                    return;
+                  }
+                  setConversationId(selectedSession.id);
+                  conversationIdRef.current = selectedSession.id;
+                  if (selectedSession.analysisResult) {
+                    setResult(selectedSession.analysisResult);
+                    setStage("done");
+                    startedRef.current = true;
+                  }
+                  setChatMessages(
+                    selectedSession.messages.map((m) => ({
+                      id: m.id,
+                      sender: m.sender,
+                      text: m.text,
+                      timestamp: m.timestamp,
+                    }))
+                  );
+                  setIsHistoryOpen(false);
+                }
+              }}
+              onDeleteConversation={(id) => {
+                deleteConversation(id, user?.id);
+                setHistoryList(listConversations());
+                if (conversationId === id) {
+                  setChatMessages([]);
+                }
+              }}
+              onStartNewChat={() => {
+                const newConv = createConversation(scopeKey, convTitle, {
+                  recordingIds,
+                  mockId,
+                  sessionId,
+                  heading,
+                  analysisResult: result || undefined,
+                });
+                setConversationId(newConv.id);
+                conversationIdRef.current = newConv.id;
+                setChatMessages([]);
+                setIsHistoryOpen(false);
+                setHistoryList(listConversations());
+              }}
+              onCloseHistory={() => setIsHistoryOpen(false)}
+              onOpenPrivacyNotice={() => {}}
             />
-            <Button
-              type="submit"
-              size="sm"
-              disabled={chatLoading || !chatInput.trim()}
-              className="h-9 gap-1.5 px-4 cursor-pointer"
-            >
-              <ArrowUp className="h-4 w-4 stroke-[2.5]" />
-              <span>Send</span>
-            </Button>
-          </form>
+          ) : (
+            <>
+              {notice && (
+                <div
+                  role="status"
+                  className="flex items-start gap-2.5 rounded-xl border border-border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground"
+                >
+                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-bright" />
+                  <p>{notice}</p>
+                </div>
+              )}
+
+              <div
+                ref={chatScrollRef}
+                className="scrollbar-thin flex-1 space-y-3.5 overflow-y-auto rounded-2xl border border-border bg-surface/60 p-4 text-xs shadow-inner"
+              >
+                {chatMessages.length === 0 && !running && (
+                  <p className="py-6 text-center text-xs text-muted-foreground">
+                    Ask Stella a question about your speaking whenever you are ready.
+                  </p>
+                )}
+                {chatMessages.map((message) => {
+                  const isStella = message.sender === "stella";
+                  return (
+                    <div
+                      key={message.id}
+                      className={cn("flex gap-2.5", isStella ? "items-start" : "justify-end")}
+                    >
+                      {isStella && (
+                        <div className="mt-0.5 shrink-0">
+                          <StellaAvatar state="idle" size={30} frame={false} />
+                        </div>
+                      )}
+                      <div
+                        className={cn(
+                          "max-w-[88%] rounded-2xl px-4 py-3 text-xs leading-relaxed sm:text-sm",
+                          isStella
+                            ? "border border-border bg-card text-foreground shadow-sm"
+                            : "bg-primary text-primary-foreground shadow-sm",
+                          message.isCorrection && "border-warning/40 bg-warning/10 text-foreground"
+                        )}
+                      >
+                        <FormattedChatMessage text={message.text} />
+                        <div className="mt-1.5 text-right text-[10px] opacity-60">{message.timestamp}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {chatLoading && (
+                  <div className="flex items-center gap-2.5 p-2 text-xs text-muted-foreground">
+                    <StellaAvatar state="thinking" size={26} frame={false} />
+                    <span>Stella is writing a reply…</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {[
+                  ["✨ Band 8 model answer", "Give me a Band 8 model answer for this question"],
+                  ["⚡ Boost fluency", "How do I improve my fluency and reduce hesitation?"],
+                  ["💎 Upgrade vocabulary", "What vocabulary upgrades can I make here?"],
+                  ["🎯 Practice drill", "Give me a two-minute practice drill for this"],
+                ].map(([label, prompt]) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => void handleSendChat(prompt)}
+                    className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-brand-bright/50 hover:bg-brand-soft hover:text-foreground cursor-pointer"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void handleSendChat();
+                }}
+                className="flex items-center gap-2 rounded-2xl border border-border bg-card p-1.5 shadow-sm focus-within:border-brand-bright"
+              >
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(event) => setChatInput(event.target.value)}
+                  placeholder="Ask Stella about your answers…"
+                  className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs outline-none placeholder:text-muted-foreground sm:text-sm"
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={chatLoading || !chatInput.trim()}
+                  className="h-9 gap-1.5 px-4 cursor-pointer"
+                >
+                  <ArrowUp className="h-4 w-4 stroke-[2.5]" />
+                  <span>Send</span>
+                </Button>
+              </form>
+            </>
+          )}
         </section>
 
-        {/* ------------------- RIGHT: RECORDINGS + RESULT -------------------- */}
+        {/* ------------------- RIGHT: RECORDINGS + RESULT (WORKSPACE REVIEW PANEL) -------------------- */}
         <section
           className={cn(
             "flex flex-col gap-5 px-4 py-5 sm:px-6 lg:h-[calc(100dvh-61px)] lg:overflow-y-auto",
             mobileTab === "evaluation" ? "flex" : "hidden lg:flex"
           )}
         >
-          {running && (
-            <div
-              role="status"
-              aria-live="polite"
-              className="rounded-2xl border border-brand-bright/30 bg-brand-soft/40 p-4"
-            >
-              <div className="flex items-center gap-2 text-xs font-semibold text-brand-bright">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                {stage === "preparing" && <span>Preparing your recordings…</span>}
-                {stage === "uploading" && (
-                  <span>
-                    Uploading {answers.length === 1 ? "your recording" : `${answers.length} recordings`} —{" "}
-                    {Math.round(uploadRatio * 100)}%
-                  </span>
-                )}
-                {stage === "reviewing" && (
-                  <span>
-                    {deepDiveRunning
-                      ? "Stella is firing high-reasoning boosters (In-Depth Analysis — 2–4 minutes)…"
-                      : "Stella is transcribing and reviewing…"}
-                  </span>
-                )}
-              </div>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
-                <div
-                  className={cn(
-                    "h-full rounded-full bg-brand-bright transition-[width] duration-200",
-                    stage === "reviewing" && "animate-pulse"
-                  )}
-                  style={{
-                    width:
-                      stage === "uploading" ? `${Math.max(4, uploadRatio * 100)}%` : "100%",
-                  }}
-                />
-              </div>
-              <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                Please keep this page open. Your recordings stay saved on this device, so nothing is
-                lost if something goes wrong.
-              </p>
-            </div>
-          )}
-
-          {failures.length > 0 && (
-            <div className="rounded-2xl border border-warning/40 bg-warning/5 p-4">
-              <div className="flex items-center gap-2 text-xs font-semibold text-warning">
-                <AlertCircle className="h-4 w-4" />
-                {failures.length === 1
-                  ? "One answer could not be analysed"
-                  : `${failures.length} answers could not be analysed`}
-              </div>
-              <ul className="mt-2 space-y-1 text-[11px] text-muted-foreground">
-                {failures.map((failure) => (
-                  <li key={failure.recordingId}>
-                    <span className="text-foreground">{failure.questionLabel}</span> — {failure.message}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={running}
-                onClick={() => void runAnalysis(failures.map((f) => f.recordingId))}
-                className="mt-3 h-8 cursor-pointer gap-1.5 text-xs"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                Retry failed recordings
-              </Button>
-            </div>
-          )}
-
-          {!running && !result && failures.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border p-6 text-center space-y-4">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-foreground">
-                  Select Analysis Engine
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Choose standard evaluation (~30s) or ignite high-reasoning jet boosters for in-depth linguistic depth (2–4 min).
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8.5 cursor-pointer px-3.5 text-xs"
-                  onClick={() => void runAnalysis(undefined, false)}
-                >
-                  Standard Analysis
-                </Button>
-                <Button
-                  size="sm"
-                  className="group h-8.5 cursor-pointer gap-2 rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-4 text-xs font-black uppercase tracking-wider text-black shadow-md shadow-orange-500/20 hover:scale-[1.02] hover:shadow-orange-500/35 transition-all"
-                  onClick={() => void runAnalysis(undefined, true)}
-                >
-                  <Flame className="h-4 w-4 fill-black text-black transition-transform group-hover:scale-110" />
-                  <span>In-Depth Analysis (Jet Boosters)</span>
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold tracking-tight">
-                {answers.length === 1 ? "Your answer" : `Your ${answers.length} answers`}
-              </h3>
-              <span className="text-[11px] text-muted-foreground">
-                Each answer keeps its own audio and transcript
-              </span>
-            </div>
-
-            {answers.map((answer, index) => (
-              <AnswerCard
-                key={answer.id}
-                answer={answer}
-                index={index}
-                total={answers.length}
-                analysis={analysisByRecording.get(answer.id)}
-                failure={failureByRecording.get(answer.id)}
-                running={running}
-                studentCorrection={corrections[answer.id]}
-                onSaveCorrection={handleSaveCorrection}
-              />
-            ))}
-          </div>
-
-          {result && (
-            <div className="space-y-3.5 rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div>
-                  <div className="text-[10px] font-semibold tracking-[0.16em] text-brand-bright uppercase">
-                    {result.kind === "full-mock-estimate"
-                      ? "Full mock estimate"
-                      : "Practice estimate"}
-                  </div>
-                  <div className="mt-0.5 flex items-baseline gap-2">
-                    <span className="font-mono text-2xl font-bold tracking-tight text-foreground">
-                      {result.overallBand === null || result.overallBand === undefined
-                        ? "Not scored"
-                        : `Band ${Math.round(result.overallBand)}`}
-                    </span>
-                    {result.overallRange && (
-                      <span className="text-xs text-muted-foreground">
-                        likely {result.overallRange.low}–{result.overallRange.high}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {result.reliability && <ReliabilityChip value={result.reliability} />}
-              </div>
-
-              {result.offTopicWarning && (
-                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 text-xs text-rose-300 shadow-sm">
-                  <div className="flex items-center gap-2 font-semibold text-rose-400">
-                    <AlertTriangle className="h-4 w-4 shrink-0" />
-                    <span>Topic Relevance Alert</span>
-                  </div>
-                  <p className="mt-1 leading-relaxed text-rose-200/90 break-words">
-                    {result.offTopicWarning}
-                  </p>
-                </div>
-              )}
-
-              {/* Jet Booster Console: In-Depth Linguistic Analysis */}
-              {!result.deepDive && (
-                <div className="relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-5 shadow-[0_0_35px_rgba(245,158,11,0.14)]">
-                  <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-amber-500/20 blur-3xl" />
-                  <div className="pointer-events-none absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-rose-500/20 blur-3xl" />
-
-                  <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="space-y-1.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-black tracking-widest uppercase text-amber-400">
-                          <Flame className="h-3.5 w-3.5 text-amber-400 animate-pulse fill-amber-500/30" />
-                          BOOSTERS READY · MAXIMUM REASONING
-                        </span>
-                        <span className="text-[11px] font-medium text-zinc-400">
-                          2–4 min supersonic deliberation
-                        </span>
-                      </div>
-                      <h4 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
-                        <span>Ignite In-Depth Analysis</span>
-                        <Rocket className="h-4 w-4 text-amber-400 -rotate-45" />
-                      </h4>
-                      <p className="text-xs text-zinc-300 leading-relaxed max-w-xl">
-                        Fire Stella’s highest reasoning engine. Replaces spoken phrasing with Band 8–9 curriculum vocabulary and performs an exhaustive category-by-category forensic grammar breakdown.
-                      </p>
-                    </div>
-
-                    <div className="shrink-0 flex items-center">
-                      <Button
-                        size="sm"
-                        disabled={running}
-                        onClick={() => void runAnalysis(undefined, true)}
-                        className="group relative cursor-pointer overflow-hidden rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-black shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.03] hover:shadow-orange-500/40 active:scale-[0.98] disabled:opacity-50"
-                      >
-                        <span className="relative flex items-center gap-2">
-                          <Flame className="h-4 w-4 fill-black text-black transition-transform group-hover:scale-125" />
-                          <span>{running && deepDiveRunning ? "Firing Boosters…" : "Ignite Boosters"}</span>
-                        </span>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {result.deepDive && (
-                <DeepDivePanel
-                  deepDive={result.deepDive}
-                  onAskStella={(promptText) => {
-                    void handleSendChat(promptText);
-                    setMobileTab("chat");
-                  }}
-                />
-              )}
-
-              {hasCriteria && (
-                <CriteriaFlipCards
-                  criteria={result.criteria}
-                  overallBand={
-                    result.overallBand === null || result.overallBand === undefined
-                      ? null
-                      : Math.round(result.overallBand)
-                  }
-                />
-              )}
-
-              {result.strengths.length > 0 && (
-                <div className="rounded-xl border border-border bg-surface/50 p-3.5">
-                  <div className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                    What worked
-                  </div>
-                  <ul className="mt-1.5 space-y-1 text-xs leading-relaxed text-foreground/90">
-                    {result.strengths.map((item, i) => (
-                      <li key={i} className="flex gap-2">
-                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {result.priorities.length > 0 && (
-                <div className="rounded-xl border border-border bg-surface/50 p-3.5">
-                  <div className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                    Work on next
-                  </div>
-                  <ul className="mt-1.5 space-y-1 text-xs leading-relaxed text-foreground/90">
-                    {result.priorities.map((item, i) => (
-                      <li key={i} className="flex gap-2">
-                        <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <p className="border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                {result.disclaimer}
-              </p>
-            </div>
-          )}
+          <WorkspaceReviewPanel
+            answers={answers}
+            analysisByRecording={analysisByRecording}
+            failureByRecording={failureByRecording}
+            result={result}
+            running={running}
+            uploadRatio={uploadRatio}
+            failures={failures}
+            corrections={corrections}
+            deepDiveMode={deepDiveMode}
+            deepDiveRunning={deepDiveRunning}
+            onRunAnalysis={runAnalysis}
+            onSaveCorrection={handleSaveCorrection}
+            onAskStella={(prompt) => {
+              if (mobileTab !== "chat") setMobileTab("chat");
+              void handleSendChat(prompt);
+            }}
+          />
         </section>
       </div>
     </div>
-  );
-}
-
-/* =========================================================================
- * One recording: player, status, and its own expandable transcript.
- * ========================================================================= */
-
-function AnswerCard({
-  answer,
-  index,
-  total,
-  analysis,
-  failure,
-  running,
-  studentCorrection,
-  onSaveCorrection,
-}: {
-  answer: RecordingMeta;
-  index: number;
-  total: number;
-  analysis?: AiAnswerAnalysis;
-  failure?: AiAnswerFailure;
-  running: boolean;
-  studentCorrection?: string;
-  onSaveCorrection: (recordingId: string, corrected: string, questionLabel: string) => void;
-}) {
-  const audioRef = React.useRef<HTMLAudioElement>(null);
-  const [url, setUrl] = React.useState<string | null>(null);
-  const [peaks, setPeaks] = React.useState<number[] | null>(null);
-  const [playing, setPlaying] = React.useState(false);
-  const [current, setCurrent] = React.useState(0);
-  const [duration, setDuration] = React.useState<number | null>(null);
-  const [speedIdx, setSpeedIdx] = React.useState(1);
-  const [expanded, setExpanded] = React.useState(false);
-const [editing, setEditing] = React.useState(false);
-  const [draft, setDraft] = React.useState("");
-
-  const transcriptId = `transcript-${answer.id}`;
-  const transcript = analysis?.transcript || "";
-  const words = analysis?.words || [];
-  const paragraphs = React.useMemo(() => toParagraphs(transcript), [transcript]);
-  const [transcriptView, setTranscriptView] = React.useState<"text" | "interactive">("text");
-
-  React.useEffect(() => {
-    let revoke: string | null = null;
-    let alive = true;
-    setUrl(null);
-    setPeaks(null);
-    getAudioURL(answer.id).then((u) => {
-      if (!alive) {
-        if (u) URL.revokeObjectURL(u);
-        return;
-      }
-      if (u) {
-        revoke = u;
-        setUrl(u);
-      }
-    });
-    computePeaks(answer.id, 120).then((p) => {
-      if (alive) setPeaks(p);
-    });
-    return () => {
-      alive = false;
-      if (revoke) URL.revokeObjectURL(revoke);
-    };
-  }, [answer.id]);
-
-  React.useEffect(() => {
-    const el = audioRef.current;
-    if (!el || !playing) return;
-    let raf = 0;
-    let last = -1;
-    const loop = () => {
-      const t = el.currentTime;
-      if (Math.abs(t - last) > 0.016) {
-        last = t;
-        setCurrent(t);
-      }
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [playing]);
-
-  const handleLoadedMetadata = (event: React.SyntheticEvent<HTMLAudioElement>) => {
-    const el = event.currentTarget;
-    if (isFinite(el.duration) && el.duration > 0) {
-      setDuration(el.duration);
-      return;
-    }
-    const onSeeked = () => {
-      el.removeEventListener("timeupdate", onSeeked);
-      if (isFinite(el.duration) && el.duration > 0) setDuration(el.duration);
-      el.currentTime = 0;
-    };
-    el.addEventListener("timeupdate", onSeeked);
-    try {
-      el.currentTime = 1e101;
-    } catch {
-      /* duration stays unknown and renders as --:-- */
-    }
-  };
-
-  const togglePlay = async () => {
-    const el = audioRef.current;
-    if (!el) return;
-    if (el.paused) await el.play().catch(() => {});
-    else el.pause();
-  };
-
-  const seekTo = (time: number) => {
-    const el = audioRef.current;
-    if (!el) return;
-    el.currentTime = Math.max(0, time);
-    setCurrent(el.currentTime);
-    if (el.paused) void el.play().catch(() => {});
-  };
-
-  const progress = duration && current ? current / duration : 0;
-  const corrections = analysis?.grammarCorrections || [];
-
-  return (
-    <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <audio
-        ref={audioRef}
-        src={url || undefined}
-        preload="metadata"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
-        onTimeUpdate={(event) => setCurrent(event.currentTarget.currentTime)}
-        onLoadedMetadata={handleLoadedMetadata}
-        onDurationChange={(event) => {
-          const d = event.currentTarget.duration;
-          if (isFinite(d) && d > 0) setDuration(d);
-        }}
-      />
-
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-md bg-brand-bright/10 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-brand-bright uppercase">
-          Part {answer.part}
-        </span>
-        <span className="text-[11px] text-muted-foreground">
-          Answer {index + 1} of {total}
-        </span>
-        <span className="text-[11px] text-muted-foreground">
-          {formatTime(duration ?? answer.duration)}
-        </span>
-        {analysis && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-            <CheckCircle2 className="h-3 w-3" /> Analysed
-          </span>
-        )}
-        {failure && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning">
-            <AlertCircle className="h-3 w-3" /> Not analysed
-          </span>
-        )}
-      </div>
-
-      <h4 className="mt-2 text-sm leading-snug font-semibold tracking-tight sm:text-base break-words [overflow-wrap:anywhere]">
-        {answer.label}
-      </h4>
-
-      <div className="mt-3 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={togglePlay}
-          disabled={!url}
-          aria-label={playing ? "Pause this answer" : "Play this answer"}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-all hover:brightness-110 active:scale-95 disabled:opacity-40"
-        >
-          {playing ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
-        </button>
-        <div className="min-w-0 flex-1">
-          <StaticWaveform
-            peaks={peaks}
-            progress={progress}
-            onSeek={(ratio) => duration && seekTo(ratio * duration)}
-            className="h-12 cursor-pointer"
-          />
-          <div className="mt-1 flex justify-between font-mono text-[11px] font-semibold tabular-nums text-muted-foreground">
-            <span className="text-foreground">{formatTime(current)}</span>
-            <span>{formatTime(duration ?? answer.duration)}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
-        <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-[11px] text-muted-foreground">Speed:</span>
-        {SPEEDS.map((speed, i) => (
-          <button
-            key={speed}
-            type="button"
-            onClick={() => {
-              setSpeedIdx(i);
-              if (audioRef.current) audioRef.current.playbackRate = speed;
-            }}
-            className={cn(
-              "rounded-full border px-2.5 py-1 text-[11px] font-medium tabular-nums transition-colors",
-              speedIdx === i
-                ? "border-brand-bright bg-brand-soft font-semibold text-brand-bright"
-                : "border-border text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {speed}×
-          </button>
-        ))}
-      </div>
-
-      {!url && (
-        <p className="mt-3 text-[11px] text-muted-foreground">
-          The audio for this answer is not stored on this device any more.
-        </p>
-      )}
-
-      {analysis?.summary && (
-        <p className="mt-3 rounded-xl border border-border bg-surface/50 p-3 text-xs leading-relaxed text-foreground/90 break-words [overflow-wrap:anywhere]">
-          {analysis.summary}
-        </p>
-      )}
-
-      {failure && (
-        <p className="mt-3 rounded-xl border border-warning/30 bg-warning/5 p-3 text-xs leading-relaxed text-warning break-words [overflow-wrap:anywhere]">
-          {failure.message}
-        </p>
-      )}
-
-      {/* -------- Transcript reveal, one per recording -------- */}
-      <div className="mt-3 border-t border-border pt-3">
-        <button
-          type="button"
-          onClick={() => setExpanded((value) => !value)}
-          disabled={!transcript}
-          aria-expanded={expanded}
-          aria-controls={transcriptId}
-          className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold transition-colors hover:border-brand-bright/50 hover:text-foreground disabled:opacity-50"
-        >
-          <span>
-            {!transcript
-              ? running
-                ? "Transcript is being prepared…"
-                : "No transcript for this answer yet"
-              : expanded
-                ? "Hide transcript"
-                : "Show transcript"}
-          </span>
-          <ChevronDown
-            className={cn("h-4 w-4 shrink-0 transition-transform", expanded && "rotate-180")}
-          />
-        </button>
-
-        {expanded && transcript && (
-          <div id={transcriptId} className="mt-3 space-y-3">
-            {words.length > 0 && (
-              <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2">
-                <div className="inline-flex rounded-lg border border-border/80 bg-surface/80 p-0.5 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setTranscriptView("text")}
-                    className={cn(
-                      "rounded-md px-2.5 py-1 text-xs font-medium transition-all",
-                      transcriptView === "text"
-                        ? "bg-brand text-primary-foreground font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Full Transcript
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTranscriptView("interactive")}
-                    className={cn(
-                      "rounded-md px-2.5 py-1 text-xs font-medium transition-all",
-                      transcriptView === "interactive"
-                        ? "bg-brand text-primary-foreground font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Interactive Follow-Along
-                  </button>
-                </div>
-                {transcriptView === "interactive" && (
-                  <span className="text-[10px] text-muted-foreground">
-                    Tap a word to jump audio
-                  </span>
-                )}
-              </div>
-            )}
-
-            {transcriptView === "text" || words.length === 0 ? (
-              <div className="rounded-xl border border-border/70 bg-surface/40 p-4">
-                <div className="mb-2 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                  Transcript · speech recognition
-                </div>
-                <div className="space-y-2.5 text-sm leading-relaxed text-foreground/90">
-                  {paragraphs.map((paragraph, i) => (
-                    <p key={i} className="break-words whitespace-pre-line">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-border/70 bg-surface/40 p-4">
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                  <div className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                    Follow along · tap a word to jump there
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">
-                    Dotted words were unclear to the recogniser
-                  </span>
-                </div>
-                <div className="scrollbar-thin max-h-60 overflow-y-auto text-sm leading-loose">
-                  {words.map((word, i) => {
-                    const isNow = current >= word.start && current < word.end;
-                    const isUnsure = word.confidence < 0.6;
-                    return (
-                      <button
-                        key={`${word.start}-${i}`}
-                        type="button"
-                        onClick={() => seekTo(word.start)}
-                        title={`Jump to ${formatTime(word.start)}`}
-                        className={cn(
-                          "mr-1.5 inline-block cursor-pointer rounded-md px-1 py-0.5 transition-all",
-                          isNow
-                            ? "scale-105 bg-brand-bright font-semibold text-primary-foreground shadow-sm"
-                            : isUnsure
-                              ? "text-muted-foreground underline decoration-dotted decoration-warning/60 hover:bg-brand-soft"
-                              : "text-foreground/90 hover:bg-brand-soft"
-                        )}
-                      >
-                        {word.word}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {corrections.length > 0 && (
-              <div className="rounded-xl border border-border/70 bg-surface/40 p-4">
-                <div className="mb-2 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                  Grammar notes for this answer
-                </div>
-                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                  {corrections.map((correction, i) => (
-                    <div key={i} className="rounded-xl border border-border bg-card p-3">
-                      <div className="text-xs">
-                        <span className="grammar-strike text-xs">{correction.original}</span>
-                        <span className="grammar-correction-tag text-xs">
-                          [{correction.corrected}]
-                        </span>
-                      </div>
-                      <p className="mt-2 border-t border-border/50 pt-2 text-[11px] leading-relaxed text-muted-foreground">
-                        <strong className="text-foreground">Rule:</strong> {correction.explanation}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {studentCorrection && (
-              <div className="rounded-xl border border-warning/40 bg-warning/5 p-4">
-                <div className="mb-1.5 text-[10px] font-bold tracking-wider text-warning uppercase">
-                  Your corrected version · not verified against the audio
-                </div>
-                <p className="text-sm leading-relaxed break-words text-foreground/90">
-                  {studentCorrection}
-                </p>
-              </div>
-            )}
-
-            {editing ? (
-              <div className="rounded-xl border border-warning/40 bg-warning/5 p-4">
-                <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Type what you actually said. Your version is saved beside the original and
-                  labelled as your own correction — it does not change your band scores.
-                </p>
-                <textarea
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  rows={4}
-                  className="mt-2.5 w-full rounded-lg border border-border bg-background p-2.5 text-xs leading-relaxed outline-none focus:border-brand-bright"
-                />
-                <div className="mt-2.5 flex items-center justify-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 cursor-pointer text-xs"
-                    onClick={() => setEditing(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="h-8 cursor-pointer text-xs"
-                    disabled={!draft.trim()}
-                    onClick={() => {
-                      onSaveCorrection(answer.id, draft.trim(), answer.label);
-                      setEditing(false);
-                    }}
-                  >
-                    Save my version
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setDraft(studentCorrection || transcript);
-                  setEditing(true);
-                }}
-                className="rounded-full border border-warning/40 bg-warning/10 px-2.5 py-1 text-[11px] font-medium text-warning transition-colors hover:bg-warning/20"
-              >
-                Transcript is wrong?
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    </article>
   );
 }
