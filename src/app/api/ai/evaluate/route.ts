@@ -34,6 +34,7 @@ import {
 } from "@/lib/ai/prompts/band-descriptors";
 import {
   STELLA_SYSTEM_INSTRUCTION,
+  STELLA_CHAT_INSTRUCTION,
   EVALUATION_JSON_SCHEMA_PROMPT,
 } from "@/lib/ai/prompts/stella-prompt";
 
@@ -923,7 +924,7 @@ async function handleChat(request: Request, userId: string) {
         role: "user",
         content: `${speakingContext}${context}${wrapMessageAsData(question)}`,
       }],
-      systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
+      systemPrompt: `${STELLA_SYSTEM_INSTRUCTION}\n\n${STELLA_CHAT_INSTRUCTION}\n\n${STELLA_SCOPE_RULE}`,
       maxTokens: MAX_CHAT_OUTPUT_TOKENS,
       /*
        * Low, not off. A coaching reply does not improve for a thinking pass,

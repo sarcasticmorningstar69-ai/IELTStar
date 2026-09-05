@@ -1,16 +1,18 @@
 "use client";
 
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
 interface FormattedChatMessageProps {
   text: string;
   className?: string;
+  isUser?: boolean;
 }
 
 /**
  * Parses inline formatting: **bold**, *italic*, `code`.
  */
-function renderInlineFormatting(line: string): React.ReactNode[] {
+function renderInlineFormatting(line: string, isUser: boolean = false): React.ReactNode[] {
   // Regex to tokenize bold (**...**), italic (*...* or _..._), and inline code (`...`)
   const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|`[^`]+`)/g;
   const parts = line.split(tokenRegex);
@@ -18,7 +20,10 @@ function renderInlineFormatting(line: string): React.ReactNode[] {
   return parts.map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
       return (
-        <strong key={index} className="font-bold text-foreground">
+        <strong
+          key={index}
+          className={cn("font-bold", isUser ? "text-white" : "text-foreground")}
+        >
           {part.slice(2, -2)}
         </strong>
       );
@@ -28,7 +33,10 @@ function renderInlineFormatting(line: string): React.ReactNode[] {
       (part.startsWith("_") && part.endsWith("_") && part.length > 2)
     ) {
       return (
-        <em key={index} className="italic text-foreground/95">
+        <em
+          key={index}
+          className={cn("italic", isUser ? "text-white/95" : "text-foreground/95")}
+        >
           {part.slice(1, -1)}
         </em>
       );
@@ -37,7 +45,12 @@ function renderInlineFormatting(line: string): React.ReactNode[] {
       return (
         <code
           key={index}
-          className="rounded border border-border/80 bg-surface/80 px-1.5 py-0.5 font-mono text-[11px] text-brand-bright"
+          className={cn(
+            "rounded px-1.5 py-0.5 font-mono text-[11px]",
+            isUser
+              ? "border border-white/20 bg-white/15 text-white"
+              : "border border-border/80 bg-surface/80 text-brand-bright"
+          )}
         >
           {part.slice(1, -1)}
         </code>
@@ -55,9 +68,13 @@ function renderInlineFormatting(line: string): React.ReactNode[] {
  * - Dividers (---) as subtle styled horizontal rules instead of raw characters
  * - Clean bulleted lists
  * - Rich bold and italic typography
- * - Eliminates unsightly raw symbols
+ * - High-contrast white rendering when isUser is true
  */
-export function FormattedChatMessage({ text, className }: FormattedChatMessageProps) {
+export function FormattedChatMessage({
+  text,
+  className,
+  isUser = false,
+}: FormattedChatMessageProps) {
   if (!text) return null;
 
   const rawLines = text.split("\n");
@@ -69,7 +86,10 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
       elements.push(
         <ul
           key={`${keyPrefix}-list`}
-          className="my-2 space-y-1.5 pl-4 text-xs leading-relaxed list-disc marker:text-brand-bright/70"
+          className={cn(
+            "my-2 space-y-1.5 pl-4 text-xs leading-relaxed list-disc",
+            isUser ? "marker:text-white/80" : "marker:text-brand-bright/70"
+          )}
         >
           {currentListItems}
         </ul>
@@ -87,7 +107,7 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
       elements.push(
         <hr
           key={`hr-${index}`}
-          className="my-3 border-t border-border/60"
+          className={cn("my-3 border-t", isUser ? "border-white/20" : "border-border/60")}
         />
       );
       return;
@@ -99,9 +119,12 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
       elements.push(
         <h3
           key={`h3-${index}`}
-          className="mt-3 mb-1.5 text-sm font-bold tracking-tight text-foreground first:mt-0"
+          className={cn(
+            "mt-3 mb-1.5 text-sm font-bold tracking-tight first:mt-0",
+            isUser ? "text-white" : "text-foreground"
+          )}
         >
-          {renderInlineFormatting(line.slice(4))}
+          {renderInlineFormatting(line.slice(4), isUser)}
         </h3>
       );
       return;
@@ -112,9 +135,12 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
       elements.push(
         <h2
           key={`h2-${index}`}
-          className="mt-3.5 mb-1.5 text-base font-bold tracking-tight text-foreground first:mt-0"
+          className={cn(
+            "mt-3.5 mb-1.5 text-base font-bold tracking-tight first:mt-0",
+            isUser ? "text-white" : "text-foreground"
+          )}
         >
-          {renderInlineFormatting(line.slice(3))}
+          {renderInlineFormatting(line.slice(3), isUser)}
         </h2>
       );
       return;
@@ -125,9 +151,12 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
       elements.push(
         <h1
           key={`h1-${index}`}
-          className="mt-4 mb-2 text-lg font-extrabold tracking-tight text-foreground first:mt-0"
+          className={cn(
+            "mt-4 mb-2 text-lg font-extrabold tracking-tight first:mt-0",
+            isUser ? "text-white" : "text-foreground"
+          )}
         >
-          {renderInlineFormatting(line.slice(2))}
+          {renderInlineFormatting(line.slice(2), isUser)}
         </h1>
       );
       return;
@@ -137,8 +166,11 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
     const bulletMatch = line.match(/^[-*•]\s+(.*)$/);
     if (bulletMatch) {
       currentListItems.push(
-        <li key={`li-${index}`} className="text-xs leading-relaxed text-foreground/90">
-          {renderInlineFormatting(bulletMatch[1])}
+        <li
+          key={`li-${index}`}
+          className={cn("text-xs leading-relaxed", isUser ? "text-white/95" : "text-foreground/90")}
+        >
+          {renderInlineFormatting(bulletMatch[1], isUser)}
         </li>
       );
       return;
@@ -150,8 +182,22 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
       flushList(`flush-num-${index}`);
       elements.push(
         <div key={`num-${index}`} className="flex items-start gap-2 my-1 text-xs leading-relaxed">
-          <span className="font-bold text-brand-bright min-w-[1.25rem]">{numberedMatch[1]}.</span>
-          <div className="flex-1 text-foreground/90">{renderInlineFormatting(numberedMatch[2])}</div>
+          <span
+            className={cn(
+              "font-bold min-w-[1.25rem]",
+              isUser ? "text-white/90" : "text-brand-bright"
+            )}
+          >
+            {numberedMatch[1]}.
+          </span>
+          <div
+            className={cn(
+              "flex-1",
+              isUser ? "text-white/95" : "text-foreground/90"
+            )}
+          >
+            {renderInlineFormatting(numberedMatch[2], isUser)}
+          </div>
         </div>
       );
       return;
@@ -168,9 +214,12 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
     elements.push(
       <p
         key={`p-${index}`}
-        className="text-xs leading-relaxed text-foreground/90 break-words [overflow-wrap:anywhere]"
+        className={cn(
+          "text-xs leading-relaxed break-words [overflow-wrap:anywhere]",
+          isUser ? "text-white font-normal" : "text-foreground/90 font-normal"
+        )}
       >
-        {renderInlineFormatting(line)}
+        {renderInlineFormatting(line, isUser)}
       </p>
     );
   });
@@ -178,7 +227,13 @@ export function FormattedChatMessage({ text, className }: FormattedChatMessagePr
   flushList("flush-end");
 
   return (
-    <div className={`space-y-2 break-words [overflow-wrap:anywhere] ${className || ""}`}>
+    <div
+      className={cn(
+        "space-y-2 break-words [overflow-wrap:anywhere]",
+        isUser && "text-white [&_*]:text-white",
+        className
+      )}
+    >
       {elements}
     </div>
   );

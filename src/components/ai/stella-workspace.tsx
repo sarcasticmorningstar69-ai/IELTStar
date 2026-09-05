@@ -846,7 +846,7 @@ export function StellaWorkspaceView({
                 )}
                 {chatMessages.map((message) => {
                   const isStella = message.sender === "stella";
-                  const body = <FormattedChatMessage text={message.text} />;
+                  const body = <FormattedChatMessage text={message.text} isUser={!isStella} />;
                   return (
                     <div
                       key={message.id}
@@ -859,10 +859,10 @@ export function StellaWorkspaceView({
                       )}
                       <div
                         className={cn(
-                          "max-w-[88%] rounded-2xl px-4 py-3 text-xs leading-relaxed sm:text-sm",
+                          "max-w-[88%] rounded-2xl px-4 py-3 text-xs leading-relaxed sm:text-sm shadow-sm",
                           isStella
-                            ? "border border-border bg-card text-foreground shadow-sm"
-                            : "bg-primary text-primary-foreground shadow-sm",
+                            ? "border border-border bg-card text-foreground"
+                            : "bg-primary text-white selection:bg-white/20 selection:text-white",
                           message.isCorrection && "border-warning/40 bg-warning/10 text-foreground"
                         )}
                       >
@@ -877,7 +877,14 @@ export function StellaWorkspaceView({
                         ) : (
                           body
                         )}
-                        <div className="mt-1.5 text-right text-[10px] opacity-60">{message.timestamp}</div>
+                        <div
+                          className={cn(
+                            "mt-1.5 text-right text-[10px]",
+                            isStella ? "opacity-60 text-muted-foreground" : "text-white/75"
+                          )}
+                        >
+                          {message.timestamp}
+                        </div>
                       </div>
                     </div>
                   );

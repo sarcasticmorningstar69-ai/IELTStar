@@ -1167,28 +1167,38 @@ export function AiAssistant() {
                   </div>
                 </div>
               )}
-              {messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    "rounded-xl p-3 leading-relaxed",
-                    m.sender === "stella"
-                      ? "border border-border bg-surface text-foreground"
-                      : "bg-primary text-primary-foreground ml-6"
-                  )}
-                >
-                  {m.sender === "stella" ? (
-                    <TypewriterText
-                      text={m.text}
-                      animateReveal={m.id === revealMessageId}
-                      onTick={() => scrollChatsToBottom(false)}
-                    />
-                  ) : (
-                    <FormattedChatMessage text={m.text} />
-                  )}
-                  <div className="mt-1 text-[10px] opacity-60 text-right">{m.timestamp}</div>
-                </div>
-              ))}
+              {messages.map((m) => {
+                const isStella = m.sender === "stella";
+                return (
+                  <div
+                    key={m.id}
+                    className={cn(
+                      "rounded-xl p-3 leading-relaxed shadow-sm",
+                      isStella
+                        ? "border border-border bg-surface text-foreground"
+                        : "bg-primary text-white ml-6 selection:bg-white/20 selection:text-white"
+                    )}
+                  >
+                    {isStella ? (
+                      <TypewriterText
+                        text={m.text}
+                        animateReveal={m.id === revealMessageId}
+                        onTick={() => scrollChatsToBottom(false)}
+                      />
+                    ) : (
+                      <FormattedChatMessage text={m.text} isUser={true} />
+                    )}
+                    <div
+                      className={cn(
+                        "mt-1 text-[10px] text-right",
+                        isStella ? "opacity-60 text-muted-foreground" : "text-white/75"
+                      )}
+                    >
+                      {m.timestamp}
+                    </div>
+                  </div>
+                );
+              })}
               {loading && (
                 <div className="flex gap-2 items-start p-1">
                   <div className="mt-0.5 shrink-0">
@@ -1477,7 +1487,7 @@ export function AiAssistant() {
                             "rounded-2xl px-4 py-3 max-w-[88%] leading-relaxed text-xs sm:text-sm shadow-sm",
                             isStella
                               ? "border border-border bg-card text-foreground"
-                              : "bg-primary text-primary-foreground"
+                              : "bg-primary text-white selection:bg-white/20 selection:text-white"
                           )}
                         >
                           {isStella ? (
@@ -1487,9 +1497,16 @@ export function AiAssistant() {
                               onTick={() => scrollChatsToBottom(false)}
                             />
                           ) : (
-                            <FormattedChatMessage text={msg.text} />
+                            <FormattedChatMessage text={msg.text} isUser={true} />
                           )}
-                          <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
+                          <div
+                            className={cn(
+                              "mt-1.5 text-[10px] text-right",
+                              isStella ? "opacity-60 text-muted-foreground" : "text-white/75"
+                            )}
+                          >
+                            {msg.timestamp}
+                          </div>
                         </div>
                       </div>
                     );
@@ -1645,7 +1662,7 @@ export function AiAssistant() {
                             "rounded-2xl px-4 py-3 max-w-[88%] leading-relaxed text-xs sm:text-sm shadow-sm",
                             isStella
                               ? "border border-border bg-card text-foreground"
-                              : "bg-primary text-primary-foreground"
+                              : "bg-primary text-white selection:bg-white/20 selection:text-white"
                           )}
                         >
                           {isStella ? (
@@ -1655,9 +1672,16 @@ export function AiAssistant() {
                               onTick={() => scrollChatsToBottom(false)}
                             />
                           ) : (
-                            <FormattedChatMessage text={msg.text} />
+                            <FormattedChatMessage text={msg.text} isUser={true} />
                           )}
-                          <div className="mt-1.5 text-[10px] opacity-60 text-right">{msg.timestamp}</div>
+                          <div
+                            className={cn(
+                              "mt-1.5 text-[10px] text-right",
+                              isStella ? "opacity-60 text-muted-foreground" : "text-white/75"
+                            )}
+                          >
+                            {msg.timestamp}
+                          </div>
                         </div>
                       </div>
                     );
