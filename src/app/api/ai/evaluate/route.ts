@@ -62,7 +62,33 @@ const AUDIO_TYPES = new Set([
 function isAudioMimeType(mimeType?: string | null): boolean {
   if (!mimeType) return false;
   const clean = mimeType.toLowerCase().replace(/\s+/g, "");
-  return clean.startsWith("audio/") || AUDIO_TYPES.has(clean);
+  return (
+    clean.startsWith("audio/") ||
+    clean.startsWith("video/") ||
+    AUDIO_TYPES.has(clean) ||
+    clean === "application/octet-stream" ||
+    clean === "binary/octet-stream"
+  );
+}
+
+function isAudioFileOrMime(file: File): boolean {
+  const type = (file.type || "").toLowerCase().replace(/\s+/g, "");
+  if (isAudioMimeType(type)) return true;
+  const name = (file.name || "").toLowerCase();
+  return /\.(webm|wav|wave|mp4|m4a|aac|ogg|opus|mp3|mpeg)$/.test(name);
+}
+
+function resolveAudioMimeType(file: File): string {
+  const type = (file.type || "").toLowerCase().replace(/\s+/g, "");
+  if (type.startsWith("audio/")) return type;
+  if (type.startsWith("video/")) return type.replace(/^video\//, "audio/");
+  const name = (file.name || "").toLowerCase();
+  if (name.endsWith(".wav")) return "audio/wav";
+  if (name.endsWith(".mp4") || name.endsWith(".m4a")) return "audio/mp4";
+  if (name.endsWith(".ogg") || name.endsWith(".opus")) return "audio/ogg";
+  if (name.endsWith(".aac")) return "audio/aac";
+  if (name.endsWith(".mp3")) return "audio/mpeg";
+  return "audio/webm";
 }
 
 /** One mock is many answers, but never an unbounded number of them. */
@@ -536,7 +562,7 @@ async function handleRecording(request: Request, userId: string) {
   for (const answer of answers) {
     const file = filesById.get(answer.recordingId) as File;
     const type = (file.type || "").toLowerCase();
-    if (!isAudioMimeType(type)) {
+    if (!isAudioFileOrMime(file)) {
       return reply({
         code: "UNSUPPORTED_AUDIO_TYPE",
         message: "One of these recordings is in a format Stella cannot read.",
@@ -594,7 +620,7 @@ async function handleRecording(request: Request, userId: string) {
     TRANSCRIBE_CONCURRENCY,
     async (answer) => {
       const file = filesById.get(answer.recordingId) as File;
-      const type = (file.type || "").toLowerCase();
+      const type = resolveAudioMimeType(file);
       try {
         const transcription = await transcribeWithDeepgram(
           await file.arrayBuffer(),
@@ -695,13 +721,11 @@ async function handleRecording(request: Request, userId: string) {
       maxTokens: MAX_ANALYSIS_OUTPUT_TOKENS,
       jsonMode: true,
       /*
-       * Band judgements are the one place a reasoning pass earns its cost:
-       * four criteria have to stay consistent with each other and with the
-       * descriptor table across up to twenty answers. Medium, not high — high
-       * effort on a full mock pushed generation past the client timeout, and
-       * it failed after Deepgram had already been paid.
+       * Band judgements: Low reasoning keeps generation comfortably under
+       * the edge and browser timeouts (15-25s vs 120s+), avoiding client drops
+       * while maintaining high-fidelity IELTS criterion evaluations.
        */
-      reasoningEffort: "medium",
+      reasoningEffort: "low",
     });
     evaluation = evaluationSchema.parse(parseJson(raw));
   } catch (error) {

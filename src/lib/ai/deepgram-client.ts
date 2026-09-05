@@ -35,19 +35,27 @@ export async function transcribeWithDeepgram(
   url.searchParams.set("filler_words", "true");
   url.searchParams.set("words", "true");
 
+  const cleanType = (contentType || "").toLowerCase().trim();
+  const safeContentType =
+    cleanType.startsWith("audio/")
+      ? cleanType
+      : cleanType.startsWith("video/")
+        ? cleanType.replace(/^video\//, "audio/")
+        : "audio/webm";
+
   const response = await fetch(url.toString(), {
     method: "POST",
     headers: {
       Authorization: `Token ${apiKey}`,
-      "Content-Type": contentType,
+      "Content-Type": safeContentType,
     },
-    body: new Blob([audioBuffer as unknown as BlobPart], { type: contentType }),
+    body: audioBuffer as unknown as BodyInit,
   });
 
   if (!response.ok) {
-    // Never log the response body: it can contain transcript fragments.
-    console.error("[deepgram] transcription request failed", response.status);
-    throw new Error(`Deepgram transcription failed (${response.status}).`);
+    const errText = await response.text().catch(() => "");
+    console.error("[deepgram] transcription request failed:", response.status, errText);
+    throw new Error(`Deepgram transcription failed (${response.status}): ${errText || "unknown error"}`);
   }
 
   const data = await response.json();

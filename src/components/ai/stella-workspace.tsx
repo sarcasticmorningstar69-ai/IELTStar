@@ -318,7 +318,11 @@ export function StellaWorkspaceView({
         const form = new FormData();
         form.append("metadata", JSON.stringify(request));
         available.forEach(({ meta, audio }) => {
-          form.append(`audio:${meta.id}`, audio.blob, `${meta.id}.webm`);
+          const isMp4 = audio.mimeType?.includes("mp4") || audio.blob.type?.includes("mp4");
+          const ext = isMp4 ? "mp4" : "webm";
+          const mime = audio.blob.type || audio.mimeType || (isMp4 ? "audio/mp4" : "audio/webm");
+          const blob = audio.blob.type ? audio.blob : new Blob([audio.blob], { type: mime });
+          form.append(`audio:${meta.id}`, blob, `${meta.id}.${ext}`);
         });
 
         setStage("uploading");

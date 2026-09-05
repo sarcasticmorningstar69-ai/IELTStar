@@ -80,6 +80,7 @@ export async function putAudio(id: string, blob: Blob, mimeType: string): Promis
 }
 
 export async function getAudio(id: string): Promise<StoredAudio | null> {
+  // 1. First priority: Check local IndexedDB (instant, 0 network latency)
   try {
     const db = await openDB();
     const result = await new Promise<StoredAudio | null>((resolve, reject) => {
@@ -89,18 +90,47 @@ export async function getAudio(id: string): Promise<StoredAudio | null> {
       req.onerror = () => reject(req.error);
     });
     db.close();
-    return result;
+    if (result) return result;
   } catch {
-    return null;
+    /* ignore IndexedDB read error and try R2 fallback */
   }
+
+  // 2. Second priority: If on a different device or cache was cleared, fetch from Cloudflare R2
+  try {
+    const res = await fetch(`/api/audio/playback-url?id=${encodeURIComponent(id)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) {
+        const audioRes = await fetch(data.url);
+        if (audioRes.ok) {
+          const blob = await audioRes.blob();
+          const mimeType = blob.type || "audio/webm";
+          const restored: StoredAudio = {
+            id,
+            blob,
+            mimeType,
+            createdAt: Date.now(),
+            r2Synced: true,
+          };
+          // Cache restored audio in IndexedDB for subsequent zero-latency reads
+          putAudio(id, blob, mimeType).catch(() => {});
+          return restored;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Could not retrieve audio from R2 fallback for id:", id, err);
+  }
+
+  return null;
 }
 
 export async function getAudioURL(id: string): Promise<string | null> {
-  // 1. First priority: Check local IndexedDB (instant, 0 network latency)
+  // Check local IndexedDB or R2 fallback via getAudio
   const rec = await getAudio(id);
   if (rec) return URL.createObjectURL(rec.blob);
 
-  // 2. Second priority: If on a different device or cache cleared, fetch Cloudflare R2 streaming URL
+  // Direct URL fallback if blob couldn't be loaded into memory
   try {
     const res = await fetch(`/api/audio/playback-url?id=${encodeURIComponent(id)}`);
     if (res.ok) {
