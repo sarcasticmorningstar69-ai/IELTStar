@@ -54,7 +54,7 @@ export function AuthModal() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
-  const [targetBand, setTargetBand] = React.useState(7.5);
+  const [targetBand, setTargetBand] = React.useState<number>(7.0);
   const [testTimeline, setTestTimeline] = React.useState("3m");
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -66,10 +66,12 @@ export function AuthModal() {
   React.useEffect(() => {
     if (authModalOpen) {
       setTab(authModalTab);
+      if (profile?.targetBand) setTargetBand(profile.targetBand);
+      if (profile?.testDate) setTestTimeline(profile.testDate);
       setErrorMsg("");
       setSuccessMsg("");
     }
-  }, [authModalOpen, authModalTab]);
+  }, [authModalOpen, authModalTab, profile?.targetBand, profile?.testDate]);
 
   if (!authModalOpen) return null;
 
@@ -93,7 +95,7 @@ export function AuthModal() {
         const { error, needsEmailVerification } = await signUpWithEmail(
           email.trim(),
           password,
-          { name: name.trim() || undefined, targetBand: 7.5 }
+          { name: name.trim() || undefined }
         );
         if (error) throw error;
 

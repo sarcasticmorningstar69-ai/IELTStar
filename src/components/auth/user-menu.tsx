@@ -95,15 +95,19 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <div className="my-1.5 flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2 text-xs">
+        <button
+          type="button"
+          onClick={() => openAuthModal("target-band")}
+          className="my-1.5 flex w-full items-center justify-between rounded-xl bg-muted/40 px-3 py-2 text-xs transition-colors hover:bg-brand-soft/70 hover:text-brand-bright cursor-pointer"
+        >
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Target className="h-3.5 w-3.5 text-brand-bright" />
             <span>Target Score</span>
           </div>
           <span className="font-bold text-foreground">
-            Band {profile?.targetBand ? profile.targetBand.toFixed(1) : "7.5"}
+            {profile?.targetBand ? `Band ${profile.targetBand.toFixed(1)}` : "Set goal →"}
           </span>
-        </div>
+        </button>
 
         <div className="my-1.5 flex items-center justify-between rounded-xl bg-emerald-500/10 px-3 py-2 text-xs text-emerald-600 dark:text-emerald-400">
           <div className="flex items-center gap-1.5 font-medium">

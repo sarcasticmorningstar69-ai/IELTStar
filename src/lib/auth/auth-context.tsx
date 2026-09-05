@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         "Student",
       targetBand: u.user_metadata?.target_band
         ? Number(u.user_metadata.target_band)
-        : 7.5,
+        : undefined,
       testDate: u.user_metadata?.test_date || "",
       avatarUrl: u.user_metadata?.avatar_url || "",
     };
@@ -236,7 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           options: {
             data: {
               full_name: metadata?.name || email.split("@")[0],
-              target_band: metadata?.targetBand || 7.5,
+              ...(metadata?.targetBand !== undefined ? { target_band: metadata.targetBand } : {}),
             },
           },
         });
@@ -276,7 +276,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       applySession(signInData.session ?? null);
-      closeAuthModal();
+      // Keep modal open so student can set their target band and timeline on the rotary wheel
       return {
         error: null,
         needsEmailVerification: false,
@@ -339,7 +339,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       id: user.id,
       email: user.email || current?.email || "",
       name: data.name ?? current?.name ?? "Student",
-      targetBand: data.targetBand ?? current?.targetBand ?? 7.5,
+      targetBand: data.targetBand ?? current?.targetBand,
       testDate: data.testDate ?? current?.testDate ?? "",
       avatarUrl: data.avatarUrl ?? current?.avatarUrl ?? "",
     };

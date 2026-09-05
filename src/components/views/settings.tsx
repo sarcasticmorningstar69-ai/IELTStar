@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Moon, Sun, Check, Download, Upload, Trash2, HardDrive, ShieldCheck } from "lucide-react";
+import { Moon, Sun, Check, Download, Upload, Trash2, HardDrive, ShieldCheck, SlidersHorizontal, Target } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 import { formatBytes } from "./review/shared";
 
 const RETENTION_OPTIONS: {
@@ -49,6 +50,7 @@ function fileStamp(): string {
 export function SettingsView() {
   const { toast } = useToast();
   const { resolvedTheme, setTheme } = useTheme();
+  const { profile, openAuthModal } = useAuth();
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
 
@@ -182,6 +184,25 @@ export function SettingsView() {
             {activeTheme === "light" && <Check className="h-4 w-4 text-brand-bright" aria-hidden />}
           </button>
         </div>
+      </SectionCard>
+
+      {/* Target score & timeline */}
+      <SectionCard
+        title="Target score & exam timeline"
+        hint={profile?.targetBand ? `Band ${profile.targetBand.toFixed(1)}` : "Not set"}
+      >
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          {profile?.targetBand
+            ? `Your practice roadmap and Stella's AI feedback are calibrated for Band ${profile.targetBand.toFixed(1)}. You can rotate the dial anytime to adjust your target score and exam timeline.`
+            : "No target score has been set yet. Rotate the rotary band dial and choose your exam timeline to unlock your custom AI practice roadmap."}
+        </p>
+        <Button
+          onClick={() => openAuthModal("target-band")}
+          className="gap-2"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          <span>{profile?.targetBand ? "Change Target Score & Timeline" : "Set Target Score & Timeline"}</span>
+        </Button>
       </SectionCard>
 
       {/* Recordings retention */}

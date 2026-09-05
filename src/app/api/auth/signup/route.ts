@@ -36,16 +36,20 @@ export async function POST(request: Request) {
     const target =
       typeof targetBand === "number" && targetBand >= 4 && targetBand <= 9
         ? targetBand
-        : 7.5;
+        : undefined;
+
+    const userMetadata: Record<string, unknown> = {
+      full_name: displayName,
+    };
+    if (target !== undefined) {
+      userMetadata.target_band = target;
+    }
 
     const { data, error } = await admin.auth.admin.createUser({
       email: trimmedEmail,
       password,
       email_confirm: true,
-      user_metadata: {
-        full_name: displayName,
-        target_band: target,
-      },
+      user_metadata: userMetadata,
     });
 
     if (error) {

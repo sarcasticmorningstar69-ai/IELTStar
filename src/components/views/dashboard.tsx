@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import {
   Mic, Clock, ClipboardCheck, Flame, TrendingUp, ChevronRight, Sparkles, Check, ArrowRight, Cloud,
 } from "lucide-react";
+import { CustomRoadmapCard } from "@/components/ai/custom-roadmap";
 
 const QUICK_CATEGORY_LABEL: Record<string, string> = {
   WORD: "Words",
@@ -347,6 +348,8 @@ export function DashboardView() {
           </Button>
         }
       />
+
+      <CustomRoadmapCard />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
