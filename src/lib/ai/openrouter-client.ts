@@ -32,10 +32,10 @@ const DEFAULT_API_BASE = "https://openrouter.ai/api/v1";
  * stop a runaway response.
  *
  * It must leave room for TWO things, not one. Reasoning models count their
- * internal reasoning tokens as completion tokens, so with `reasoning.effort`
- * set to medium a hard mock can burn a large share of the cap before the first
- * character of JSON is emitted. Sizing this to the JSON alone is how you get a
- * truncated object on exactly the submissions that matter most.
+ * internal reasoning tokens as completion tokens, so a hard mock can burn a
+ * real share of the cap before the first character of JSON is emitted. Sizing
+ * this to the JSON alone is how you get a truncated object on exactly the
+ * submissions that matter most.
  *
  * Keep this comfortably above MAX_ANALYSIS_OUTPUT_TOKENS in scope-guard.ts,
  * and below the model's own max output (Grok 4.6: 65,536).
@@ -45,13 +45,19 @@ const MAX_COMPLETION_TOKENS = 32000;
 /**
  * How hard the model should think before answering.
  *
- * "none" omits the reasoning field entirely, which matters for two reasons:
- * reasoning tokens are billed, and they are spent before the first visible
- * character is emitted, so they are felt directly as latency. Worth it for a
- * band judgement across four criteria; not worth it for "what is a good Part 2
- * opener", where it only makes a student wait longer for the same answer.
+ * The effort field is ALWAYS sent. Omitting it is not the same as asking for
+ * less: a reasoning-enforcing model then applies its own default, which can be
+ * a long pass, so "send nothing" is the one option that makes latency
+ * unpredictable. An explicit low is both cheaper and more predictable.
+ *
+ * Reasoning tokens are billed and are spent before the first visible character
+ * is emitted, so effort is felt directly as latency and cost:
+ *   - "low"    chat. A coaching reply does not improve with a thinking pass.
+ *   - "medium" analysis. Four criteria have to stay consistent with each other
+ *              and with the descriptor table across up to 20 answers.
+ *   - "high"   nothing currently. Retained because the gateway accepts it.
  */
-export type ReasoningEffort = "none" | "low" | "medium" | "high";
+export type ReasoningEffort = "low" | "medium" | "high";
 
 export interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
@@ -87,7 +93,7 @@ export async function callOpenRouter({
   systemPrompt = STELLA_SYSTEM_INSTRUCTION,
   maxTokens = 500,
   jsonMode = false,
-  reasoningEffort = "medium",
+  reasoningEffort = "low",
 }: {
   messages: OpenRouterMessage[];
   systemPrompt?: string;
@@ -122,12 +128,14 @@ export async function callOpenRouter({
     ),
   };
 
-  // Support both OpenRouter ({ reasoning: { effort } }) and OpenAI/TeamORouter ({ reasoning_effort }) schemas.
-  // For reasoning-enforcing models like Grok 4.6, 'low' keeps latency to a minimum without
-  // letting the provider default to 35s+ deep reasoning passes.
-  const targetEffort = reasoningEffort === "none" ? "low" : reasoningEffort;
-  body.reasoning_effort = targetEffort;
-  body.reasoning = { effort: targetEffort };
+  /*
+   * Both spellings are sent because gateways disagree: OpenRouter reads
+   * `reasoning.effort`, while OpenAI-compatible gateways read
+   * `reasoning_effort`. Sending both means switching OPENROUTER_BASE_URL does
+   * not silently change how hard the model thinks.
+   */
+  body.reasoning_effort = reasoningEffort;
+  body.reasoning = { effort: reasoningEffort };
 
   if (jsonMode) {
     body.response_format = { type: "json_object" };
