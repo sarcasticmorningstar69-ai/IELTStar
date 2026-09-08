@@ -40,6 +40,7 @@ export function BandWheelPicker({ value, onChange, className }: BandWheelPickerP
   const initialRotation = -currentIndex * stepAngle;
 
   const [rotation, setRotation] = React.useState(initialRotation);
+  const rotationRef = React.useRef(initialRotation);
   const [isDragging, setIsDragging] = React.useState(false);
 
   // Drag tracking state
@@ -63,7 +64,9 @@ export function BandWheelPicker({ value, onChange, className }: BandWheelPickerP
   React.useEffect(() => {
     if (!isDragging) {
       const targetAngle = -currentIndex * stepAngle;
-      setRotation((prev) => getClosestAngle(prev, targetAngle));
+      const targetRot = getClosestAngle(rotationRef.current, targetAngle);
+      rotationRef.current = targetRot;
+      setRotation(targetRot);
     }
   }, [currentIndex, stepAngle, isDragging]);
 
@@ -109,21 +112,19 @@ export function BandWheelPicker({ value, onChange, className }: BandWheelPickerP
       }
     }
 
-    setRotation((prev) => {
-      const next = prev + delta;
+    const nextRotation = rotationRef.current + delta;
+    rotationRef.current = nextRotation;
+    setRotation(nextRotation);
 
-      // Determine nearest band to 12 o'clock pointer:
-      const normalized = ((-next % 360) + 360) % 360;
-      const nearestIdx = Math.round(normalized / stepAngle) % BAND_VALUES.length;
-      const nearestBand = BAND_VALUES[nearestIdx];
+    // Determine nearest band to 12 o'clock pointer:
+    const normalized = ((-nextRotation % 360) + 360) % 360;
+    const nearestIdx = Math.round(normalized / stepAngle) % BAND_VALUES.length;
+    const nearestBand = BAND_VALUES[nearestIdx];
 
-      if (nearestBand !== valueRef.current) {
-        valueRef.current = nearestBand;
-        onChange(nearestBand);
-      }
-
-      return next;
-    });
+    if (nearestBand !== valueRef.current) {
+      valueRef.current = nearestBand;
+      onChange(nearestBand);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -137,12 +138,12 @@ export function BandWheelPicker({ value, onChange, className }: BandWheelPickerP
     }
 
     // Snap smoothly to nearest band on release
-    setRotation((prev) => {
-      const normalized = ((-prev % 360) + 360) % 360;
-      const nearestIdx = Math.round(normalized / stepAngle) % BAND_VALUES.length;
-      const targetAngle = -nearestIdx * stepAngle;
-      return getClosestAngle(prev, targetAngle);
-    });
+    const normalized = ((-rotationRef.current % 360) + 360) % 360;
+    const nearestIdx = Math.round(normalized / stepAngle) % BAND_VALUES.length;
+    const targetAngle = -nearestIdx * stepAngle;
+    const snapped = getClosestAngle(rotationRef.current, targetAngle);
+    rotationRef.current = snapped;
+    setRotation(snapped);
   };
 
   const handleNumberClick = (band: number, index: number, e: React.MouseEvent) => {
@@ -152,7 +153,9 @@ export function BandWheelPicker({ value, onChange, className }: BandWheelPickerP
 
     onChange(band);
     const targetAngle = -index * stepAngle;
-    setRotation((prev) => getClosestAngle(prev, targetAngle));
+    const nextRot = getClosestAngle(rotationRef.current, targetAngle);
+    rotationRef.current = nextRot;
+    setRotation(nextRot);
   };
 
   const nudge = (step: number) => {
@@ -160,7 +163,9 @@ export function BandWheelPicker({ value, onChange, className }: BandWheelPickerP
     const nextBand = BAND_VALUES[nextIdx];
     onChange(nextBand);
     const targetAngle = -nextIdx * stepAngle;
-    setRotation((prev) => getClosestAngle(prev, targetAngle));
+    const nextRot = getClosestAngle(rotationRef.current, targetAngle);
+    rotationRef.current = nextRot;
+    setRotation(nextRot);
   };
 
   return (
