@@ -992,6 +992,7 @@ export function StellaWorkspaceView({
             uploadRatio={uploadRatio}
             failures={failures}
             corrections={corrections}
+            notice={notice}
             onRunAnalysis={runAnalysis}
             onSaveCorrection={handleSaveCorrection}
             onAskStella={(prompt) => {

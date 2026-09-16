@@ -16,7 +16,7 @@ import { StarMark } from "@/components/shared/brand";
 import { SendToStella, AnalyseAnswerLink } from "@/components/ai/send-to-stella";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Play, Pause, Gauge, NotebookPen, ChevronDown, ChevronRight } from "lucide-react";
+import { Play, Pause, Gauge, NotebookPen, ChevronDown, ChevronRight, Volume2, Mic, AlertCircle } from "lucide-react";
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
 
@@ -89,7 +89,19 @@ function MockPlayer({ mock }: { mock: MockMeta }) {
     }
   };
 
-  if (!mock.fullRecordingId) return null;
+  if (!mock.fullRecordingId) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border bg-card/60 p-5 text-center sm:p-6">
+        <div className="flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground">
+          <Volume2 className="h-4 w-4 opacity-70" />
+          <span>Continuous Session Audio Not Available</span>
+        </div>
+        <p className="mt-1.5 text-xs text-muted-foreground max-w-md mx-auto">
+          The continuous session track was not captured for this mock, but any individual answers you recorded are preserved and playable below.
+        </p>
+      </div>
+    );
+  }
 
   const toggle = async () => {
     const el = audioRef.current;
@@ -314,19 +326,44 @@ export function MockReviewView({ mockId }: { mockId: string }) {
   const navigate = useApp((s) => s.navigate);
   const mock = useProgress((s) => s.mocks.find((m) => m.id === mockId));
   const recordings = useProgress((s) => s.recordings);
-  if (!mock) return null;
+
+  if (!mock) {
+    return (
+      <div className="fade-up mx-auto max-w-md py-16 text-center space-y-4">
+        <div className="mx-auto mb-3 flex justify-center">
+          <StarMark size={44} />
+        </div>
+        <h2 className="text-xl font-semibold tracking-tight">Mock test not found</h2>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          This mock recording session is not stored on this device, or it may have been cleared.
+        </p>
+        <div className="pt-2 flex flex-wrap justify-center gap-2">
+          <Button variant="outline" onClick={() => navigate({ name: "review" })}>
+            Back to Review Hub
+          </Button>
+          <Button onClick={() => navigate({ name: "mock-config" })}>
+            Start New Mock
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const segRecordings = recordings.filter(
-    (r) => r.mockId === mockId && !r.label.includes("complete session")
+    (r) =>
+      r.mockId === mockId &&
+      r.id !== mock.fullRecordingId &&
+      !r.label.toLowerCase().includes("session")
   );
   /**
    * Only the per-answer segments go to Stella. The master full-mock recording
    * contains the same speech end to end, so sending both would transcribe
    * every word twice for no extra insight.
    */
-  const answersForStella = segRecordings.filter((r) => r.id !== mock.fullRecordingId);
+  const answersForStella = segRecordings;
   const fullDuration = recordings.find((r) => r.id === mock.fullRecordingId)?.duration || 0;
   const interrupted = mock.status === "interrupted";
+  const completedSegmentsCount = mock.segments.filter((s) => s.completed).length;
   const parts = [1, 2, 3] as const;
 
   return (
@@ -344,17 +381,39 @@ export function MockReviewView({ mockId }: { mockId: string }) {
         <p className="mt-2 text-sm text-muted-foreground">
           {interrupted
             ? "You ended this mock early — everything up to that point is kept."
-            : `${mock.segments.filter((s) => s.completed).length} answers · ${formatTime(fullDuration)} of speaking`}
+            : completedSegmentsCount > 0
+              ? `${completedSegmentsCount} answers · ${formatTime(fullDuration)} of speaking`
+              : "0 answers recorded"}
         </p>
       </div>
 
       <MockPlayer mock={mock} />
 
-      <SendToStella
-        recordings={answersForStella}
-        mockId={mockId}
-        heading="Get this mock evaluated"
-      />
+      {answersForStella.length > 0 ? (
+        <SendToStella
+          recordings={answersForStella}
+          mockId={mockId}
+          heading="Get this mock evaluated"
+        />
+      ) : (
+        <div className="rounded-2xl border border-dashed border-border bg-card/60 p-6 text-center">
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <Mic className="h-5 w-5" />
+          </div>
+          <h3 className="mt-3 text-sm font-semibold">No answer recordings captured</h3>
+          <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+            No audio segments were saved for this mock test. You can practice individual questions or begin a fresh speaking mock.
+          </p>
+          <div className="mt-4 flex justify-center gap-2">
+            <Button onClick={() => navigate({ name: "mock-config" })} className="gap-2">
+              Start a new mock
+            </Button>
+            <Button variant="outline" onClick={() => navigate({ name: "review" })}>
+              Back to Review
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Part 2 preparation notes */}
       {mock.part2Notes && (

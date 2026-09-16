@@ -91,8 +91,8 @@ function resolveAudioMimeType(file: File): string {
   return "audio/webm";
 }
 
-/** One mock is many answers, but never an unbounded number of them. */
-const MAX_ANSWERS = 20;
+/** One mock is up to ~28-30 answers across parts 1, 2, and 3. Ceiling at 40. */
+const MAX_ANSWERS = 40;
 /** Keep provider load predictable: at most three transcriptions in flight. */
 const TRANSCRIBE_CONCURRENCY = 3;
 /** Audio field naming: audio:<recordingId>, so mapping never relies on order. */

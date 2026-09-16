@@ -22,7 +22,6 @@ import {
   PartBadge,
   MOCK_STATUS_META,
   SESSION_STATUS_META,
-  mockIsReviewable,
   recordingDisplay,
 } from "./shared";
 
@@ -116,7 +115,6 @@ function SessionRow({
 function MockRow({ mock }: { mock: MockMeta }) {
   const navigate = useApp((s) => s.navigate);
   const meta = MOCK_STATUS_META[mock.status];
-  const reviewable = mockIsReviewable(mock.status);
   const completed = mock.segments.filter((s) => s.completed).length;
   const sub = [
     mock.startedAt ? formatStamp(mock.startedAt) : null,
@@ -125,39 +123,44 @@ function MockRow({ mock }: { mock: MockMeta }) {
     .filter(Boolean)
     .join(" · ");
 
-  const content = (
-    <>
+  const isResumable = mock.status === "in_progress" || mock.status === "paused";
+  const isMicCheck = mock.status === "microphone_check";
+
+  const handleClick = () => {
+    if (isResumable) {
+      navigate({ name: "mock-run", mockId: mock.id });
+    } else if (isMicCheck) {
+      navigate({ name: "mock-check", mockId: mock.id });
+    } else {
+      navigate({ name: "mock-review", mockId: mock.id });
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="group flex w-full items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-3 text-left transition-all duration-200 hover:-translate-y-px hover:border-brand-bright/35 hover:shadow-sm sm:gap-3 sm:px-4 cursor-pointer"
+    >
       <PartBadge type="full-mock" />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-medium">Full Speaking Mock</div>
+        <div className="flex items-center gap-2">
+          <span className="truncate text-sm font-medium">Full Speaking Mock</span>
+          {isResumable && (
+            <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand-bright">
+              Resume
+            </span>
+          )}
+        </div>
         <div className="mt-0.5 truncate text-xs text-muted-foreground">{sub}</div>
       </div>
       <StatusPill tone={meta.tone} className="shrink-0">
         {meta.label}
       </StatusPill>
-      {reviewable && (
-        <ChevronRight
-          className="h-4 w-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
-          aria-hidden
-        />
-      )}
-    </>
-  );
-
-  if (!reviewable) {
-    return (
-      <div className="flex items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-3 opacity-80 sm:gap-3 sm:px-4">
-        {content}
-      </div>
-    );
-  }
-  return (
-    <button
-      type="button"
-      onClick={() => navigate({ name: "mock-review", mockId: mock.id })}
-      className="group flex w-full items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-3 text-left transition-all duration-200 hover:-translate-y-px hover:border-brand-bright/35 hover:shadow-sm sm:gap-3 sm:px-4"
-    >
-      {content}
+      <ChevronRight
+        className="h-4 w-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+        aria-hidden
+      />
     </button>
   );
 }

@@ -257,7 +257,47 @@ export function MockRunView({ mockId }: { mockId: string }) {
     // interrupt: save whatever we have
     const master = masterRef.current;
     masterRef.current = null;
-    segRecRef.current?.abort();
+    const currentRec = segRecRef.current;
+    segRecRef.current = null;
+    const curPhase = phaseRef.current;
+    let updatedSegments = segments;
+
+    if (currentRec && curPhase.t === "recording") {
+      const idx = curPhase.segmentIdx;
+      const seg = segments[idx];
+      const segResult = await currentRec.stop();
+      if (seg && segResult && segResult.blob.size > 0) {
+        const topicTitleStr =
+          seg.part === 2 ? part2CardById(seg.topicId || "")?.title || "" : topicTitle(seg.topicId || "");
+        const prompt =
+          seg.part === 1
+            ? part1TopicById(seg.topicId || "")?.questions.find((q) => q.id === seg.questionId)?.prompt
+            : seg.part === 3
+              ? part3TopicById(seg.topicId || "")?.questions.find((q) => q.id === seg.questionId)?.prompt
+              : part2CardById(seg.topicId || "")?.prompt || "";
+        await saveRecording(
+          {
+            sessionId: `mock-${mockId}`,
+            mockId,
+            part: seg.part,
+            topicId: seg.topicId,
+            questionId: seg.questionId,
+            startedAt: Date.now() - segResult.duration * 1000,
+            duration: segResult.duration,
+            mimeType: segResult.mimeType,
+            size: segResult.blob.size,
+            label: `Mock · ${seg.label} — ${topicTitleStr}${prompt ? ` · ${prompt.slice(0, 60)}` : ""}`,
+          },
+          segResult.blob
+        );
+        updatedSegments = segments.map((s, i) =>
+          i === idx ? { ...s, completed: true, duration: segResult.duration } : s
+        );
+      }
+    } else {
+      currentRec?.abort();
+    }
+
     const fullResult = master ? await master.stop() : null;
     let fullRecordingId: string | undefined;
     if (fullResult && fullResult.blob.size > 0) {
@@ -277,7 +317,7 @@ export function MockRunView({ mockId }: { mockId: string }) {
       fullRecordingId = meta.id;
     }
     if (notesRef.current) setMockNotes(mockId, notesRef.current);
-    updateMock(mockId, { status: "interrupted", fullRecordingId });
+    updateMock(mockId, { status: "interrupted", fullRecordingId, segments: updatedSegments });
     micManager.release();
     navigate({ name: "mock-review", mockId });
   };

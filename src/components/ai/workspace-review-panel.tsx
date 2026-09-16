@@ -506,6 +506,7 @@ export interface WorkspaceReviewPanelProps {
   failures?: AiAnswerFailure[];
   corrections?: Record<string, string>;
   heading?: string;
+  notice?: string;
   onSaveCorrection?: (recordingId: string, corrected: string, questionLabel: string) => void;
   onRunAnalysis?: (onlyRecordingIds?: string[]) => void;
   onAskStella?: (promptText: string) => void;
@@ -524,6 +525,7 @@ export function WorkspaceReviewPanel({
   failures = [],
   corrections = {},
   heading,
+  notice,
   onSaveCorrection,
   onRunAnalysis,
   onOpenFullWorkspace,
@@ -634,8 +636,28 @@ export function WorkspaceReviewPanel({
         </div>
       )}
 
+      {/* Notice / Error Banner */}
+      {notice && !running && !result && onRunAnalysis && (
+        <div className="rounded-2xl border border-warning/40 bg-warning/10 p-4">
+          <div className="flex items-center gap-2 text-xs font-semibold text-warning">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>Analysis notice</span>
+          </div>
+          <p className="mt-1.5 text-xs leading-relaxed text-foreground">{notice}</p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => void onRunAnalysis()}
+            className="mt-3 h-8 cursor-pointer gap-1.5 text-xs font-semibold"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Try again
+          </Button>
+        </div>
+      )}
+
       {/* Not started yet: one button, one behaviour. */}
-      {!running && !result && failures.length === 0 && onRunAnalysis && (
+      {!running && !result && failures.length === 0 && !notice && onRunAnalysis && (
         <div className="space-y-3 rounded-2xl border border-dashed border-border p-6 text-center">
           <p className="text-xs font-semibold text-foreground">Ready when you are</p>
           <p className="text-[11px] text-muted-foreground">
